@@ -825,6 +825,185 @@
                 day: 'numeric'
             });
         }
+
+        function generarAnalisis(tipo = 'category') {
+    if (!unsafeConditions.length) {
+        console.log('No hay datos para analizar');
+        return null;
+    }
+    
+    let datos = {};
+    
+    switch(tipo) {
+        case 'category':
+            // Análisis por categoría
+            datos = unsafeConditions.reduce((acc, cond) => {
+                const categoria = cond.Categoria || 'sin categoría';
+                acc[categoria] = (acc[categoria] || 0) + 1;
+                return acc;
+            }, {});
+            break;
+            
+        case 'risk':
+            // Análisis por nivel de riesgo
+            datos = unsafeConditions.reduce((acc, cond) => {
+                const riesgo = cond.Riesgo || 'sin definir';
+                acc[riesgo] = (acc[riesgo] || 0) + 1;
+                return acc;
+            }, {});
+            break;
+            
+        case 'status':
+            // Análisis por estado
+            datos = unsafeConditions.reduce((acc, cond) => {
+                const estado = cond.Estado || 'pendiente';
+                acc[estado] = (acc[estado] || 0) + 1;
+                return acc;
+            }, {});
+            break;
+            
+        default:
+            datos = {};
+    }
+    
+    return datos;
+}
+
+let dataChart = null;
+
+function crearGraficoAnalisis(tipo = 'category') {
+    const ctx = document.getElementById('data-chart');
+    if (!ctx) return;
+    
+    // Destruir gráfico anterior si existe
+    if (dataChart) {
+        dataChart.destroy();
+    }
+    
+    // Obtener datos del análisis
+    const datos = generarAnalisis(tipo);
+    
+    if (!datos || Object.keys(datos).length === 0) {
+        ctx.innerHTML = '<p style="text-align: center; padding: 50px;">No hay datos para mostrar</p>';
+        return;
+    }
+    
+    // Preparar datos para Chart.js
+    const labels = Object.keys(datos);
+    const values = Object.values(datos);
+    
+    // Colores según el tipo
+    let backgroundColor = [];
+    if (tipo === 'category') {
+        backgroundColor = ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF', '#FF9F40'];
+    } else if (tipo === 'risk') {
+        backgroundColor = ['#2ecc71', '#f1c40f', '#e67e22', '#e74c3c'];
+    } else if (tipo === 'status') {
+        backgroundColor = ['#e74c3c', '#3498db', '#2ecc71'];
+    }
+    
+    // Crear nuevo gráfico
+    dataChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: `Cantidad de reportes (${tipo})`,
+                data: values,
+                backgroundColor: backgroundColor,
+                borderColor: backgroundColor.map(color => color.replace('0.8', '1')),
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'top',
+                },
+                title: {
+                    display: true,
+                    text: `Análisis de Condiciones Inseguras - Por ${tipo === 'category' ? 'Categoría' : tipo === 'risk' ? 'Nivel de Riesgo' : 'Estado'}`
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        stepSize: 1
+                    }
+                }
+            }
+        }
+    });
+}
+
+function mostrarAnalisisDetallado() {
+    const analisisPage = document.getElementById('analisis-page');
+    
+    // Si no existe el contenedor de análisis detallado, créalo
+    if (!document.getElementById('analisis-detallado')) {
+        const detalladoHTML = `
+            <div style="margin-top: 30px;">
+                <h3><i class="fas fa-chart-line"></i> Estadísticas Detalladas</h3>
+                <div id="stats-detailed" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 15px; margin-top: 15px;">
+                    <!-- Se llenará con JavaScript -->
+                </div>
+            </div>
+        `;
+        analisisPage.querySelector('.card').insertAdjacentHTML('beforeend', detalladoHTML);
+    }
+    
+    // Calcular estadísticas
+    const total = unsafeConditions.length;
+    const porCategoria = generarAnalisis('category');
+    const porRiesgo = generarAnalisis('risk');
+    const porEstado = generarAnalisis('status');
+    
+    // Calcular tiempo promedio de reparación
+    let tiempoPromedio = 'N/A';
+    const reparados = unsafeConditions.filter(c => c.Estado === 'reparado' && c.Fecha && c.FechaReparacion);
+    if (reparados.length > 0) {
+        const dias = reparados.map(cond => {
+            const fechaReporte = new Date(cond.Fecha);
+            const fechaReparacion = new Date(cond.FechaReparacion || cond.Fecha);
+            return Math.ceil((fechaReparacion - fechaReporte) / (1000 * 60 * 60 * 24));
+        }).filter(d => d > 0);
+        
+        if (dias.length > 0) {
+            const promedio = dias.reduce((a, b) => a + b, 0) / dias.length;
+            tiempoPromedio = `${promedio.toFixed(1)} días`;
+        }
+    }
+    
+    // Actualizar HTML
+    const statsContainer = document.getElementById('stats-detailed');
+    if (statsContainer) {
+        statsContainer.innerHTML = `
+            <div style="background: #f8f9fa; padding: 15px; border-radius: 5px;">
+                <h4><i class="fas fa-info-circle"></i> Resumen General</h4>
+                <p>Total reportes: <strong>${total}</strong></p>
+                <p>Tiempo promedio de reparación: <strong>${tiempoPromedio}</strong></p>
+                <p>Reportes pendientes: <strong>${porEstado?.pendiente || 0}</strong></p>
+            </div>
+            
+            <div style="background: #f8f9fa; padding: 15px; border-radius: 5px;">
+                <h4><i class="fas fa-exclamation-triangle"></i> Por Categoría</h4>
+                ${porCategoria ? Object.entries(porCategoria).map(([cat, count]) => 
+                    `<p>${cat}: <strong>${count}</strong></p>`
+                ).join('') : '<p>No hay datos</p>'}
+            </div>
+            
+            <div style="background: #f8f9fa; padding: 15px; border-radius: 5px;">
+                <h4><i class="fas fa-radiation"></i> Por Nivel de Riesgo</h4>
+                ${porRiesgo ? Object.entries(porRiesgo).map(([riesgo, count]) => 
+                    `<p>${riesgo}: <strong>${count}</strong></p>`
+                ).join('') : '<p>No hay datos</p>'}
+            </div>
+        `;
+    }
+}
         
         // ==============================================
         // FUNCIONES DE CONFIGURACIÓN SUPABASE
@@ -1517,11 +1696,23 @@
                 });
             });
             
+            
             // Configurar análisis
             document.getElementById('analysis-type').addEventListener('change', function() {
-                // Aquí iría tu código para actualizar el gráfico
-                console.log('Tipo de análisis:', this.value);
+                    crearGraficoAnalisis(this.value);
             });
+
+            // Evento específico para la página de análisis
+            document.querySelector('.nav-menu a[data-page="analisis"]').addEventListener('click', function(e) {
+    // Esta función ya está en el listener general, pero agregamos el análisis específico
+            setTimeout(() => {
+                if (document.getElementById('analisis-page').style.display === 'block') {
+                const tipo = document.getElementById('analysis-type').value;
+                crearGraficoAnalisis(tipo);
+            mostrarAnalisisDetallado();
+        }
+    }, 300);
+});
         });
         
         // ==============================================
