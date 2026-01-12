@@ -1393,23 +1393,23 @@ function mostrarAnalisisDetallado() {
                     document.getElementById('total-db-count').textContent = total;
             }
         }
-        
+
         function actualizarTablaReciente() {
-        const tbody = document.querySelector('#recent-table tbody');
-        if (!tbody) return;
+            const tbody = document.querySelector('#recent-table tbody');
+                if (!tbody) return;
     
-    // Tomar los 5 más recientes ORDENADOS POR FECHA
-        const recientes = [...unsafeConditions]
-        .sort((a, b) => {
-            // Ordenar por fecha descendente (más reciente primero)
-            const fechaA = new Date(a.Fecha || a.fecha || a.created_at);
-            const fechaB = new Date(b.Fecha || b.fecha || b.created_at);
-            return fechaB - fechaA;
+                // Tomar los 5 más recientes ORDENADOS POR FECHA
+                const recientes = [...unsafeConditions]
+                .sort((a, b) => {
+                // Ordenar por fecha descendente (más reciente primero)
+                const fechaA = new Date(a.Fecha || a.fecha || a.created_at);
+                const fechaB = new Date(b.Fecha || b.fecha || b.created_at);
+                return fechaB - fechaA;
         })
         .slice(0, 5);
     
         if (recientes.length === 0) {
-            tbody.innerHTML = `
+        tbody.innerHTML = `
             <tr>
                 <td colspan="6" style="text-align: center; padding: 40px; color: #7f8c8d;">
                     <i class="fas fa-inbox" style="font-size: 48px; margin-bottom: 15px; display: block;"></i>
@@ -1420,7 +1420,7 @@ function mostrarAnalisisDetallado() {
         return;
     }
     
-        tbody.innerHTML = recientes.map(cond => {
+    tbody.innerHTML = recientes.map(cond => {
         // Asegurar que tenemos datos
         const id = cond.ID || cond.id || 'N/A';
         const descripcion = cond.Descripcion || cond.descripcion || 'Sin descripción';
@@ -1454,6 +1454,8 @@ function mostrarAnalisisDetallado() {
         `;
     }).join('');
 }
+        
+        
         function actualizarTablaHistorial(filtro = 'all') {
             const tbody = document.querySelector('#history-table tbody');
             if (!tbody) return;
