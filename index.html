@@ -766,12 +766,13 @@
         let unsafeConditions = [];
         let currentFilter = 'all';
         
-        // Configuración por defecto (se sobrescribe con localStorage)
+        
+        // Configuración por defecto (CREDENCIALES DIRECTAS)
         let CONFIG = {
-            supabaseUrl: localStorage.getItem('supabase_url') || '',
-            supabaseKey: localStorage.getItem('supabase_key') || '',
-            lastSync: localStorage.getItem('last_sync') || 'Nunca',
-            offlineMode: localStorage.getItem('offline_mode') === 'true' || false
+        supabaseUrl: localStorage.getItem('supabase_url') || 'https://gcbmkwshpsiovxawkvuy.supabase.co',
+        supabaseKey: localStorage.getItem('supabase_key') || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdjYm1rd3NocHNpb3Z4YXdrdnV5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjgyMjMyMDQsImV4cCI6MjA4Mzc5OTIwNH0.HSW3m1VGK3Vhv-Pq14B_2_TEaxX9AX1JP38HPYRFfyY',
+        lastSync: localStorage.getItem('last_sync') || 'Nunca',
+        offlineMode: localStorage.getItem('offline_mode') === 'true' || false
         };
         
         // ==============================================
