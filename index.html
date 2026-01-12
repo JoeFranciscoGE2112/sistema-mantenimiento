@@ -1390,45 +1390,70 @@ function mostrarAnalisisDetallado() {
             
             // Actualizar en página de configuración
             if (document.getElementById('total-db-count')) {
-                document.getElementById('total-db-count').textContent = total;
+                    document.getElementById('total-db-count').textContent = total;
             }
         }
         
         function actualizarTablaReciente() {
-            const tbody = document.querySelector('#recent-table tbody');
-            if (!tbody) return;
-            
-            // Tomar los 5 más recientes
-            const recientes = [...unsafeConditions]
-                .slice(0, 5);
-            
-            tbody.innerHTML = recientes.map(cond => {
-                let estadoBadge = '';
-                if (cond.Estado === 'pendiente') {
-                    estadoBadge = '<span class="status-badge status-pendiente">Pendiente</span>';
-                } else if (cond.Estado === 'en proceso') {
-                    estadoBadge = '<span class="status-badge status-en-proceso">En Proceso</span>';
-                } else {
-                    estadoBadge = '<span class="status-badge status-reparado">Reparado</span>';
-                }
-                
-                const descCorta = cond.Descripcion.length > 50 
-                    ? cond.Descripcion.substring(0, 50) + '...' 
-                    : cond.Descripcion;
-                
-                return `
-                    <tr>
-                        <td>${cond.ID}</td>
-                        <td>${descCorta}</td>
-                        <td>${cond.Ubicacion}</td>
-                        <td>${cond.ReportadoPor}</td>
-                        <td>${formatDate(cond.Fecha)}</td>
-                        <td>${estadoBadge}</td>
-                    </tr>
-                `;
-            }).join('');
+        const tbody = document.querySelector('#recent-table tbody');
+        if (!tbody) return;
+    
+    // Tomar los 5 más recientes ORDENADOS POR FECHA
+        const recientes = [...unsafeConditions]
+        .sort((a, b) => {
+            // Ordenar por fecha descendente (más reciente primero)
+            const fechaA = new Date(a.Fecha || a.fecha || a.created_at);
+            const fechaB = new Date(b.Fecha || b.fecha || b.created_at);
+            return fechaB - fechaA;
+        })
+        .slice(0, 5);
+    
+        if (recientes.length === 0) {
+            tbody.innerHTML = `
+            <tr>
+                <td colspan="6" style="text-align: center; padding: 40px; color: #7f8c8d;">
+                    <i class="fas fa-inbox" style="font-size: 48px; margin-bottom: 15px; display: block;"></i>
+                    <p>No hay reportes registrados</p>
+                </td>
+            </tr>
+        `;
+        return;
+    }
+    
+        tbody.innerHTML = recientes.map(cond => {
+        // Asegurar que tenemos datos
+        const id = cond.ID || cond.id || 'N/A';
+        const descripcion = cond.Descripcion || cond.descripcion || 'Sin descripción';
+        const ubicacion = cond.Ubicacion || cond.ubicacion || 'Sin ubicación';
+        const reportadoPor = cond.ReportadoPor || cond.reportado_por || cond.reportadoPor || 'Anónimo';
+        const fecha = cond.Fecha || cond.fecha || cond.created_at || 'N/A';
+        const estado = cond.Estado || cond.estado || 'pendiente';
+        
+        let estadoBadge = '';
+        if (estado === 'pendiente') {
+            estadoBadge = '<span class="status-badge status-pendiente">Pendiente</span>';
+        } else if (estado === 'en proceso') {
+            estadoBadge = '<span class="status-badge status-en-proceso">En Proceso</span>';
+        } else {
+            estadoBadge = '<span class="status-badge status-reparado">Reparado</span>';
         }
         
+        const descCorta = descripcion.length > 50 
+            ? descripcion.substring(0, 50) + '...' 
+            : descripcion;
+        
+        return `
+            <tr>
+                <td>${id}</td>
+                <td title="${descripcion}">${descCorta}</td>
+                <td>${ubicacion}</td>
+                <td>${reportadoPor}</td>
+                <td>${formatDate(fecha)}</td>
+                <td>${estadoBadge}</td>
+            </tr>
+        `;
+    }).join('');
+}
         function actualizarTablaHistorial(filtro = 'all') {
             const tbody = document.querySelector('#history-table tbody');
             if (!tbody) return;
