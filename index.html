@@ -299,7 +299,7 @@
         /* ===== EVOLUCIÓN TIEMPO ===== */
         .evolution-card {
             grid-column: span 2;
-            height: 250px;
+            height: 350px; /* Aumentado de 250px */
         }
 
         /* ===== TABLAS ===== */
@@ -337,11 +337,20 @@
             border-bottom: none;
         }
 
-        /* ===== GRÁFICOS ===== */
+        /* ===== GRÁFICOS MEJORADOS ===== */
         .chart-container {
             position: relative;
-            height: 300px;
+            height: 400px; /* Aumentado de 300px */
+            width: 100%;
             margin-top: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .chart-container canvas {
+            max-width: 100%;
+            max-height: 100%;
         }
 
         .chart-row {
@@ -354,8 +363,24 @@
         .chart-item {
             background: white;
             border-radius: 10px;
-            padding: 20px;
+            padding: 25px; /* Aumentado de 20px */
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            min-height: 400px; /* Altura mínima aumentada */
+            display: flex;
+            flex-direction: column;
+        }
+
+        .chart-item h3 {
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .chart-item .chart-wrapper {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 300px;
         }
 
         /* ===== ACCIONES ===== */
@@ -507,7 +532,202 @@
             100% { transform: rotate(360deg); }
         }
 
-        /* ===== RESPONSIVE ===== */
+        /* ===== FOTOGRAFÍAS ===== */
+        .photo-upload-container {
+            border: 2px dashed #3498db;
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            background-color: #f8f9fa;
+            margin-bottom: 15px;
+        }
+
+        .photo-upload-container:hover {
+            border-color: #2980b9;
+            background-color: #e3f2fd;
+        }
+
+        .photo-preview-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .photo-preview {
+            position: relative;
+            width: 150px;
+            height: 150px;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+
+        .photo-preview img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .remove-photo {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background: rgba(231, 76, 60, 0.9);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 25px;
+            height: 25px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+        }
+
+        .remove-photo:hover {
+            background: #c0392b;
+        }
+
+        .photos-section {
+            margin-top: 20px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+
+        .photo-viewer {
+            max-width: 100%;
+            max-height: 400px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            margin-bottom: 10px;
+        }
+
+        .photo-thumbnails {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 15px;
+        }
+
+        .photo-thumb {
+            width: 80px;
+            height: 80px;
+            border-radius: 5px;
+            object-fit: cover;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: all 0.3s;
+        }
+
+        .photo-thumb:hover {
+            border-color: #3498db;
+            transform: scale(1.05);
+        }
+
+        .photo-thumb.active {
+            border-color: #2ecc71;
+            box-shadow: 0 0 5px rgba(46, 204, 113, 0.5);
+        }
+
+        .photo-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .photo-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 3000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .photo-modal-content {
+            max-width: 90%;
+            max-height: 90%;
+            position: relative;
+        }
+
+        .photo-modal-img {
+            max-width: 100%;
+            max-height: 80vh;
+            border-radius: 5px;
+        }
+
+        .close-modal {
+            position: absolute;
+            top: 20px;
+            right: 30px;
+            color: white;
+            font-size: 40px;
+            cursor: pointer;
+            background: none;
+            border: none;
+        }
+
+        /* ===== FORMULARIOS CON FOTOS ===== */
+        .form-section {
+            margin-bottom: 25px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .form-section-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--primary);
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .form-section-title i {
+            color: var(--secondary);
+        }
+
+        /* ===== DASHBOARD MEJORADO ===== */
+        .dashboard-charts {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .dashboard-chart-container {
+            background: white;
+            border-radius: 10px;
+            padding: 25px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            min-height: 450px;
+        }
+
+        .dashboard-chart-container h3 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: var(--primary);
+        }
+
+        .chart-container-large {
+            height: 350px;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* ===== RESPONSIVE MEJORADO ===== */
         @media (max-width: 1200px) {
             .chart-row {
                 grid-template-columns: 1fr;
@@ -515,6 +735,10 @@
             
             .evolution-card {
                 grid-column: span 1;
+            }
+            
+            .dashboard-charts {
+                grid-template-columns: 1fr;
             }
         }
 
@@ -525,6 +749,44 @@
             
             .stats-container {
                 grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .chart-item {
+                min-height: 350px;
+            }
+            
+            .dashboard-chart-container {
+                min-height: 400px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .chart-container {
+                height: 300px;
+            }
+            
+            .chart-container-large {
+                height: 250px;
+            }
+            
+            .chart-item {
+                min-height: 300px;
+                padding: 15px;
+            }
+            
+            .dashboard-chart-container {
+                min-height: 350px;
+                padding: 15px;
+            }
+            
+            .photo-preview {
+                width: 120px;
+                height: 120px;
+            }
+            
+            .photo-thumb {
+                width: 60px;
+                height: 60px;
             }
         }
 
@@ -544,6 +806,27 @@
                 left: 10px;
                 text-align: center;
             }
+            
+            .chart-container {
+                height: 250px;
+            }
+            
+            .chart-container-large {
+                height: 200px;
+            }
+            
+            .chart-item {
+                min-height: 250px;
+            }
+            
+            .dashboard-chart-container {
+                min-height: 300px;
+            }
+            
+            .photo-preview {
+                width: 100px;
+                height: 100px;
+            }
         }
     </style>
 </head>
@@ -558,6 +841,15 @@
     <div id="status-indicator" class="status-indicator status-disconnected">
         <i class="fas fa-database"></i>
         <span>Desconectado</span>
+    </div>
+
+    <!-- Modal para ver fotos -->
+    <div id="photoModal" class="photo-modal">
+        <button class="close-modal" onclick="cerrarModalFoto()">&times;</button>
+        <div class="photo-modal-content">
+            <img id="modalPhoto" class="photo-modal-img" src="" alt="Foto ampliada">
+            <p id="modalCaption" style="color: white; text-align: center; margin-top: 10px;"></p>
+        </div>
     </div>
 
     <!-- Header -->
@@ -665,6 +957,22 @@
                         </div>
                     </div>
 
+                    <!-- Dashboard Charts - Nueva sección -->
+                    <div class="dashboard-charts">
+                        <div class="dashboard-chart-container">
+                            <h3><i class="fas fa-exclamation-triangle"></i> Riesgos por Nivel</h3>
+                            <div class="chart-container-large">
+                                <canvas id="dashboard-risk-chart"></canvas>
+                            </div>
+                        </div>
+                        <div class="dashboard-chart-container">
+                            <h3><i class="fas fa-map-marker-alt"></i> Distribución por Sector</h3>
+                            <div class="chart-container-large">
+                                <canvas id="dashboard-sector-chart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
                     <div class="card">
                         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
                             <h2><i class="fas fa-history"></i> Últimas Actividades</h2>
@@ -682,6 +990,7 @@
                                         <th>Reportado por</th>
                                         <th>Fecha</th>
                                         <th>Estado</th>
+                                        <th>Fotos</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -697,81 +1006,126 @@
                     <div class="card">
                         <h2><i class="fas fa-plus-circle"></i> Nuevo Reporte de Condición Insegura</h2>
                         <form id="report-form">
-                            <div class="form-group">
-                                <label for="reporter-name">Reportado por *</label>
-                                <input type="text" class="form-control" id="reporter-name" 
-                                       placeholder="Ingrese su nombre completo" required>
+                            <div class="form-section">
+                                <div class="form-section-title">
+                                    <i class="fas fa-user"></i> Información del Reportante
+                                </div>
+                                <div class="form-group">
+                                    <label for="reporter-name">Reportado por *</label>
+                                    <input type="text" class="form-control" id="reporter-name" 
+                                           placeholder="Ingrese su nombre completo" required>
+                                </div>
                             </div>
                             
-                            <div class="form-group">
-                                <label for="description">Descripción detallada *</label>
-                                <textarea class="form-control" id="description" rows="4" 
-                                          placeholder="Describa detalladamente la condición insegura, incluyendo posibles consecuencias..." required></textarea>
+                            <div class="form-section">
+                                <div class="form-section-title">
+                                    <i class="fas fa-file-alt"></i> Descripción del Problema
+                                </div>
+                                <div class="form-group">
+                                    <label for="description">Descripción detallada *</label>
+                                    <textarea class="form-control" id="description" rows="4" 
+                                              placeholder="Describa detalladamente la condición insegura, incluyendo posibles consecuencias..." required></textarea>
+                                </div>
                             </div>
                             
-                            <div class="form-group">
-                                <label for="sector">Sector/Área *</label>
-                                <select class="form-control" id="sector" required>
-                                    <option value="">Seleccione el sector</option>
-                                    <option value="produccion">Área de Producción</option>
-                                    <option value="almacen">Almacén</option>
-                                    <option value="mantenimiento">Mantenimiento</option>
-                                    <option value="oficinas">Oficinas</option>
-                                    <option value="laboratorio">Laboratorio</option>
-                                    <option value="exteriores">Áreas Exteriores</option>
-                                    <option value="servicios">Servicios Generales</option>
-                                    <option value="otros">Otros</option>
-                                </select>
+                            <div class="form-section">
+                                <div class="form-section-title">
+                                    <i class="fas fa-camera"></i> Fotografías de la Condición Insegura
+                                </div>
+                                <div class="form-group">
+                                    <label>Subir fotografías (máximo 5, formato JPG/PNG, máximo 5MB cada una):</label>
+                                    <div class="photo-upload-container" onclick="document.getElementById('photos-input').click()">
+                                        <i class="fas fa-cloud-upload-alt" style="font-size: 48px; color: #3498db; margin-bottom: 10px;"></i>
+                                        <p>Haz clic o arrastra imágenes aquí</p>
+                                        <p style="font-size: 12px; color: #7f8c8d; margin-top: 5px;">Selecciona las fotos de la condición insegura</p>
+                                    </div>
+                                    <input type="file" id="photos-input" accept="image/*" multiple 
+                                           style="display: none;" onchange="previewPhotos(this)">
+                                    <div class="photo-preview-container" id="photos-preview"></div>
+                                </div>
                             </div>
                             
-                            <div class="form-group">
-                                <label for="ubicacion-especifica">Ubicación específica *</label>
-                                <input type="text" class="form-control" id="ubicacion-especifica" 
-                                       placeholder="Ej: Línea 3, Estación 5, Pasillo principal" required>
+                            <div class="form-section">
+                                <div class="form-section-title">
+                                    <i class="fas fa-map-marker-alt"></i> Ubicación
+                                </div>
+                                <div class="form-group">
+                                    <label for="sector">Sector/Área *</label>
+                                    <select class="form-control" id="sector" required>
+                                        <option value="">Seleccione el sector</option>
+                                        <option value="produccion">Área de Producción</option>
+                                        <option value="almacen">Almacén</option>
+                                        <option value="mantenimiento">Mantenimiento</option>
+                                        <option value="oficinas">Oficinas</option>
+                                        <option value="laboratorio">Laboratorio</option>
+                                        <option value="exteriores">Áreas Exteriores</option>
+                                        <option value="servicios">Servicios Generales</option>
+                                        <option value="otros">Otros</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="ubicacion-especifica">Ubicación específica *</label>
+                                    <input type="text" class="form-control" id="ubicacion-especifica" 
+                                           placeholder="Ej: Línea 3, Estación 5, Pasillo principal" required>
+                                </div>
                             </div>
                             
-                            <div class="form-group">
-                                <label for="category">Tipo de riesgo *</label>
-                                <select class="form-control" id="category" required>
-                                    <option value="">Seleccione el tipo</option>
-                                    <option value="electrico">Riesgo Eléctrico</option>
-                                    <option value="mecanico">Riesgo Mecánico</option>
-                                    <option value="alturas">Trabajo en Alturas</option>
-                                    <option value="quimico">Riesgo Químico</option>
-                                    <option value="incendio">Riesgo de Incendio</option>
-                                    <option value="ergonomico">Riesgo Ergonómico</option>
-                                    <option value="biologico">Riesgo Biológico</option>
-                                    <option value="psicosocial">Riesgo Psicosocial</option>
-                                    <option value="otro">Otro</option>
-                                </select>
+                            <div class="form-section">
+                                <div class="form-section-title">
+                                    <i class="fas fa-shield-alt"></i> Evaluación de Riesgo
+                                </div>
+                                <div class="form-group">
+                                    <label for="category">Tipo de riesgo *</label>
+                                    <select class="form-control" id="category" required>
+                                        <option value="">Seleccione el tipo</option>
+                                        <option value="electrico">Riesgo Eléctrico</option>
+                                        <option value="mecanico">Riesgo Mecánico</option>
+                                        <option value="alturas">Trabajo en Alturas</option>
+                                        <option value="quimico">Riesgo Químico</option>
+                                        <option value="incendio">Riesgo de Incendio</option>
+                                        <option value="ergonomico">Riesgo Ergonómico</option>
+                                        <option value="biologico">Riesgo Biológico</option>
+                                        <option value="psicosocial">Riesgo Psicosocial</option>
+                                        <option value="otro">Otro</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="risk-level">Nivel de Riesgo *</label>
+                                    <select class="form-control" id="risk-level" required>
+                                        <option value="">Seleccione el nivel</option>
+                                        <option value="bajo">Bajo (Verde)</option>
+                                        <option value="medio">Medio (Amarillo)</option>
+                                        <option value="alto">Alto (Naranja)</option>
+                                        <option value="critico">Crítico (Rojo)</option>
+                                    </select>
+                                </div>
                             </div>
                             
-                            <div class="form-group">
-                                <label for="risk-level">Nivel de Riesgo *</label>
-                                <select class="form-control" id="risk-level" required>
-                                    <option value="">Seleccione el nivel</option>
-                                    <option value="bajo">Bajo (Verde)</option>
-                                    <option value="medio">Medio (Amarillo)</option>
-                                    <option value="alto">Alto (Naranja)</option>
-                                    <option value="critico">Crítico (Rojo)</option>
-                                </select>
+                            <div class="form-section">
+                                <div class="form-section-title">
+                                    <i class="fas fa-sticky-note"></i> Información Adicional
+                                </div>
+                                <div class="form-group">
+                                    <label for="observaciones">Observaciones adicionales</label>
+                                    <textarea class="form-control" id="observaciones" rows="2" 
+                                              placeholder="Observaciones, recomendaciones o información adicional..."></textarea>
+                                </div>
                             </div>
                             
-                            <div class="form-group">
-                                <label for="observaciones">Observaciones adicionales</label>
-                                <textarea class="form-control" id="observaciones" rows="2" 
-                                          placeholder="Observaciones, recomendaciones o información adicional..."></textarea>
-                            </div>
-                            
-                            <div style="display: flex; gap: 10px; margin-top: 25px; padding-top: 15px; border-top: 1px solid #eee;">
+                            <div style="display: flex; gap: 10px; margin-top: 25px; padding-top: 15px; border-top: 1px solid #eee; flex-wrap: wrap;">
                                 <button type="submit" class="btn btn-primary">
                                     <i class="fas fa-save"></i> Guardar Reporte
                                 </button>
-                                <button type="reset" class="btn" style="background-color: #95a5a6; color: white;">
-                                    <i class="fas fa-undo"></i> Limpiar Formulario
+                                <button type="reset" class="btn" style="background-color: #95a5a6; color: white;" onclick="limpiarFotos()">
+                                    <i class="fas fa-undo"></i> Limpiar Todo
                                 </button>
                                 <button type="button" class="btn btn-warning" onclick="mostrarEjemplo()">
                                     <i class="fas fa-eye"></i> Ver Ejemplo
+                                </button>
+                                <button type="button" class="btn" style="background-color: #9b59b6; color: white;" onclick="mostrarReporteConFotos()">
+                                    <i class="fas fa-images"></i> Ejemplo con Fotos
                                 </button>
                             </div>
                         </form>
@@ -808,6 +1162,7 @@
                                         <th>Ubicación</th>
                                         <th>Tipo Riesgo</th>
                                         <th>Nivel Riesgo</th>
+                                        <th>Fotos</th>
                                         <th>Fecha Reporte</th>
                                         <th>Tiempo Reparación</th>
                                         <th>Reportado por</th>
@@ -828,7 +1183,7 @@
                     <div class="card">
                         <h2><i class="fas fa-chart-bar"></i> Análisis de Condiciones Inseguras</h2>
                         
-                        <div style="margin-bottom: 20px; display: flex; gap: 15px; align-items: center;">
+                        <div style="margin-bottom: 20px; display: flex; gap: 15px; align-items: center; flex-wrap: wrap;">
                             <select class="form-control" id="analysis-type" style="width: 200px;">
                                 <option value="risk">Por Nivel de Riesgo</option>
                                 <option value="sector">Por Sector/Área</option>
@@ -841,24 +1196,32 @@
                             </button>
                         </div>
                         
-                        <!-- Gráfico principal -->
+                        <!-- Gráfico principal mejorado -->
                         <div class="chart-container">
                             <canvas id="data-chart"></canvas>
                         </div>
                         
-                        <!-- Dos gráficos adicionales -->
+                        <!-- Dos gráficos adicionales mejorados -->
                         <div class="chart-row">
                             <div class="chart-item">
                                 <h3><i class="fas fa-exclamation-triangle"></i> Riesgos por Sector</h3>
-                                <div style="height: 250px;">
+                                <div class="chart-wrapper">
                                     <canvas id="sector-chart"></canvas>
                                 </div>
                             </div>
                             <div class="chart-item">
                                 <h3><i class="fas fa-chart-pie"></i> Distribución por Estado</h3>
-                                <div style="height: 250px;">
+                                <div class="chart-wrapper">
                                     <canvas id="status-chart"></canvas>
                                 </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Nuevo gráfico de fotos -->
+                        <div class="chart-item" style="margin-top: 20px;">
+                            <h3><i class="fas fa-camera"></i> Reportes con Fotografías</h3>
+                            <div class="chart-wrapper">
+                                <canvas id="photos-chart"></canvas>
                             </div>
                         </div>
                         
@@ -914,9 +1277,11 @@
                             <h3><i class="fas fa-info-circle"></i> Información Técnica</h3>
                             <div style="background: #f8f9fa; padding: 15px; border-radius: 5px; margin-top: 10px;">
                                 <p><strong>Total reportes en base de datos:</strong> <span id="total-db-count">0</span></p>
+                                <p><strong>Reportes con fotos:</strong> <span id="reports-with-photos">0</span></p>
+                                <p><strong>Total fotos almacenadas:</strong> <span id="total-photos">0</span></p>
                                 <p><strong>Última sincronización:</strong> <span id="last-sync">Nunca</span></p>
                                 <p><strong>Modo actual:</strong> <span id="current-mode">Desconocido</span></p>
-                                <p><strong>Versión:</strong> <span id="app-version">2.0.0</span></p>
+                                <p><strong>Versión:</strong> <span id="app-version">2.1.0</span></p>
                             </div>
                         </div>
                     </div>
@@ -941,6 +1306,14 @@
         let sectorChart = null;
         let statusChart = null;
         let evolutionChart = null;
+        let dashboardRiskChart = null;
+        let dashboardSectorChart = null;
+        let photosChart = null;
+        
+        // Variables para fotos
+        let photosToUpload = [];
+        let maxPhotos = 5;
+        let maxFileSize = 5 * 1024 * 1024; // 5MB
         
         // Configuración por defecto
         let CONFIG = {
@@ -1026,6 +1399,254 @@
         
         function obtenerTimestamp() {
             return new Date().toISOString();
+        }
+        
+        // ==============================================
+        // FUNCIONES PARA FOTOGRAFÍAS
+        // ==============================================
+        
+        function previewPhotos(input) {
+            const previewContainer = document.getElementById('photos-preview');
+            const files = input.files;
+            
+            if (files.length > maxPhotos) {
+                alert(`Solo puedes subir un máximo de ${maxPhotos} fotos`);
+                input.value = '';
+                return;
+            }
+            
+            // Limpiar preview anterior
+            previewContainer.innerHTML = '';
+            photosToUpload = [];
+            
+            for (let i = 0; i < files.length; i++) {
+                const file = files[i];
+                
+                // Validar tamaño
+                if (file.size > maxFileSize) {
+                    alert(`La foto "${file.name}" es demasiado grande. Máximo 5MB.`);
+                    continue;
+                }
+                
+                // Validar tipo
+                if (!file.type.match('image.*')) {
+                    alert(`El archivo "${file.name}" no es una imagen válida.`);
+                    continue;
+                }
+                
+                const reader = new FileReader();
+                
+                reader.onload = function(e) {
+                    const photoDiv = document.createElement('div');
+                    photoDiv.className = 'photo-preview';
+                    photoDiv.innerHTML = `
+                        <img src="${e.target.result}" alt="Preview ${i + 1}">
+                        <button type="button" class="remove-photo" onclick="removePhoto(${i})">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    `;
+                    previewContainer.appendChild(photoDiv);
+                    
+                    // Guardar para upload
+                    photosToUpload.push({
+                        file: file,
+                        preview: e.target.result,
+                        name: file.name
+                    });
+                };
+                
+                reader.readAsDataURL(file);
+            }
+            
+            // Actualizar contador
+            updatePhotoCount();
+        }
+        
+        function removePhoto(index) {
+            photosToUpload.splice(index, 1);
+            
+            // Recrear preview
+            const previewContainer = document.getElementById('photos-preview');
+            previewContainer.innerHTML = '';
+            
+            photosToUpload.forEach((photo, i) => {
+                const photoDiv = document.createElement('div');
+                photoDiv.className = 'photo-preview';
+                photoDiv.innerHTML = `
+                    <img src="${photo.preview}" alt="Preview ${i + 1}">
+                    <button type="button" class="remove-photo" onclick="removePhoto(${i})">
+                        <i class="fas fa-times"></i>
+                    </button>
+                `;
+                previewContainer.appendChild(photoDiv);
+            });
+            
+            updatePhotoCount();
+        }
+        
+        function limpiarFotos() {
+            photosToUpload = [];
+            document.getElementById('photos-preview').innerHTML = '';
+            document.getElementById('photos-input').value = '';
+            updatePhotoCount();
+        }
+        
+        function updatePhotoCount() {
+            const count = photosToUpload.length;
+            const uploadContainer = document.querySelector('.photo-upload-container p:last-child');
+            if (uploadContainer) {
+                uploadContainer.textContent = `Fotos seleccionadas: ${count}/${maxPhotos}`;
+            }
+        }
+        
+        async function uploadPhotosToSupabase(conditionId) {
+            if (!supabaseClient || photosToUpload.length === 0) {
+                return [];
+            }
+            
+            const uploadedPhotos = [];
+            
+            for (let i = 0; i < photosToUpload.length; i++) {
+                const photo = photosToUpload[i];
+                const fileName = `${conditionId}_${Date.now()}_${i}.jpg`;
+                
+                try {
+                    // Convertir a blob si es base64
+                    let blob;
+                    if (photo.file) {
+                        blob = photo.file;
+                    } else {
+                        // Convertir base64 a blob
+                        const base64Data = photo.preview.split(',')[1];
+                        const byteCharacters = atob(base64Data);
+                        const byteNumbers = new Array(byteCharacters.length);
+                        for (let j = 0; j < byteCharacters.length; j++) {
+                            byteNumbers[j] = byteCharacters.charCodeAt(j);
+                        }
+                        const byteArray = new Uint8Array(byteNumbers);
+                        blob = new Blob([byteArray], { type: 'image/jpeg' });
+                    }
+                    
+                    const { data, error } = await supabaseClient.storage
+                        .from('condition_photos')
+                        .upload(fileName, blob, {
+                            cacheControl: '3600',
+                            upsert: false
+                        });
+                    
+                    if (error) throw error;
+                    
+                    uploadedPhotos.push({
+                        url: `${CONFIG.supabaseUrl}/storage/v1/object/public/condition_photos/${fileName}`,
+                        name: fileName,
+                        index: i
+                    });
+                    
+                } catch (error) {
+                    console.error('Error subiendo foto:', error);
+                    // Continuar con otras fotos
+                }
+            }
+            
+            return uploadedPhotos;
+        }
+        
+        async function uploadCorrectionPhotoToSupabase(conditionId) {
+            return new Promise((resolve) => {
+                // Crear input para foto de corrección
+                const input = document.createElement('input');
+                input.type = 'file';
+                input.accept = 'image/*';
+                input.style.display = 'none';
+                
+                input.onchange = async function(e) {
+                    const file = e.target.files[0];
+                    if (!file) {
+                        resolve(null);
+                        return;
+                    }
+                    
+                    if (file.size > maxFileSize) {
+                        alert('La foto es demasiado grande. Máximo 5MB.');
+                        resolve(null);
+                        return;
+                    }
+                    
+                    const fileName = `${conditionId}_correction_${Date.now()}.jpg`;
+                    
+                    try {
+                        const { data, error } = await supabaseClient.storage
+                            .from('correction_photos')
+                            .upload(fileName, file, {
+                                cacheControl: '3600',
+                                upsert: false
+                            });
+                        
+                        if (error) throw error;
+                        
+                        resolve({
+                            url: `${CONFIG.supabaseUrl}/storage/v1/object/public/correction_photos/${fileName}`,
+                            name: fileName
+                        });
+                        
+                    } catch (error) {
+                        console.error('Error subiendo foto de corrección:', error);
+                        resolve(null);
+                    }
+                };
+                
+                document.body.appendChild(input);
+                input.click();
+                setTimeout(() => document.body.removeChild(input), 100);
+            });
+        }
+        
+        function mostrarModalFoto(url, descripcion = '') {
+            const modal = document.getElementById('photoModal');
+            const modalImg = document.getElementById('modalPhoto');
+            const caption = document.getElementById('modalCaption');
+            
+            modalImg.src = url;
+            caption.textContent = descripcion;
+            modal.style.display = 'flex';
+        }
+        
+        function cerrarModalFoto() {
+            document.getElementById('photoModal').style.display = 'none';
+        }
+        
+        function mostrarFotosEnTabla(fotos) {
+            if (!fotos || fotos.length === 0) {
+                return '<span style="color: #95a5a6;"><i class="fas fa-times"></i> Sin fotos</span>';
+            }
+            
+            let html = `<div style="display: flex; gap: 5px; flex-wrap: wrap;">`;
+            
+            fotos.forEach((foto, index) => {
+                html += `
+                    <img src="${foto}" 
+                         alt="Foto ${index + 1}" 
+                         style="width: 30px; height: 30px; border-radius: 3px; cursor: pointer; object-fit: cover;"
+                         onclick="mostrarModalFoto('${foto}', 'Foto ${index + 1}')"
+                         title="Ver foto ${index + 1}">
+                `;
+            });
+            
+            html += `</div>`;
+            return html;
+        }
+        
+        function mostrarReporteConFotos() {
+            document.getElementById('reporter-name').value = 'Carlos Rodríguez';
+            document.getElementById('description').value = 'Extintor bloqueado por materiales de almacenamiento en el pasillo principal. No se puede acceder en caso de emergencia.';
+            document.getElementById('sector').value = 'almacen';
+            document.getElementById('ubicacion-especifica').value = 'Pasillo principal del almacén, cerca de la salida de emergencia';
+            document.getElementById('category').value = 'incendio';
+            document.getElementById('risk-level').value = 'alto';
+            document.getElementById('observaciones').value = 'Los materiales deben ser reubicados inmediatamente para liberar acceso al extintor.';
+            
+            // Simular fotos (en realidad se necesitarían archivos reales)
+            alert('En un caso real, aquí se cargarían fotos de ejemplo. Para probar, puedes seleccionar fotos reales desde tu computadora.');
         }
         
         // ==============================================
@@ -1143,11 +1764,35 @@
             showLoading(true, 'Probando conexión con Supabase...');
             
             try {
+                // Probar conexión y crear buckets si no existen
                 const { data, error } = await supabaseClient
                     .from('condiciones_inseguras')
                     .select('count', { count: 'exact', head: true });
                 
                 if (error) throw error;
+                
+                // Intentar crear buckets de almacenamiento
+                try {
+                    // Bucket para fotos de condiciones
+                    await supabaseClient.storage.createBucket('condition_photos', {
+                        public: true,
+                        allowedMimeTypes: ['image/jpeg', 'image/png', 'image/gif'],
+                        fileSizeLimit: 5242880 // 5MB
+                    });
+                } catch (e) {
+                    // El bucket ya existe, está bien
+                }
+                
+                try {
+                    // Bucket para fotos de corrección
+                    await supabaseClient.storage.createBucket('correction_photos', {
+                        public: true,
+                        allowedMimeTypes: ['image/jpeg', 'image/png', 'image/gif'],
+                        fileSizeLimit: 5242880 // 5MB
+                    });
+                } catch (e) {
+                    // El bucket ya existe, está bien
+                }
                 
                 updateStatusIndicator('connected', 'Conectado a Supabase');
                 CONFIG.offlineMode = false;
@@ -1204,22 +1849,60 @@
                 
                 showLoading(false);
                 
-                return data.map(item => ({
-                    ID: item.id,
-                    Fecha: item.fecha,
-                    ReportadoPor: item.reportado_por,
-                    Descripcion: item.descripcion,
-                    Sector: item.sector || 'sin-sector',
-                    Ubicacion: item.ubicacion,
-                    Categoria: item.categoria,
-                    Riesgo: item.riesgo,
-                    Estado: item.estado || 'pendiente',
-                    ReparadoPor: item.reparado_por,
-                    FechaReparacion: item.fecha_reparacion,
-                    Observaciones: item.observaciones,
-                    CreadoEn: item.creado_en,
-                    ultimaModificacion: item.ultima_modificacion || item.fecha
+                // Cargar también fotos si existen
+                const condicionesConFotos = await Promise.all(data.map(async (item) => {
+                    let fotos = [];
+                    let fotosCorreccion = [];
+                    
+                    try {
+                        // Cargar fotos de condición
+                        const { data: photosData } = await supabaseClient.storage
+                            .from('condition_photos')
+                            .list(`${item.id}/`);
+                        
+                        if (photosData) {
+                            fotos = photosData.map(photo => 
+                                `${CONFIG.supabaseUrl}/storage/v1/object/public/condition_photos/${item.id}/${photo.name}`
+                            );
+                        }
+                        
+                        // Cargar fotos de corrección
+                        const { data: correctionPhotosData } = await supabaseClient.storage
+                            .from('correction_photos')
+                            .list(`${item.id}/`);
+                        
+                        if (correctionPhotosData) {
+                            fotosCorreccion = correctionPhotosData.map(photo => 
+                                `${CONFIG.supabaseUrl}/storage/v1/object/public/correction_photos/${item.id}/${photo.name}`
+                            );
+                        }
+                        
+                    } catch (e) {
+                        console.log('No se pudieron cargar las fotos:', e);
+                    }
+                    
+                    return {
+                        ID: item.id,
+                        Fecha: item.fecha,
+                        ReportadoPor: item.reportado_por,
+                        Descripcion: item.descripcion,
+                        Sector: item.sector || 'sin-sector',
+                        Ubicacion: item.ubicacion,
+                        Categoria: item.categoria,
+                        Riesgo: item.riesgo,
+                        Estado: item.estado || 'pendiente',
+                        ReparadoPor: item.reparado_por,
+                        FechaReparacion: item.fecha_reparacion,
+                        Observaciones: item.observaciones,
+                        CreadoEn: item.creado_en,
+                        ultimaModificacion: item.ultima_modificacion || item.fecha,
+                        Fotos: fotos,
+                        FotosCorreccion: fotosCorreccion,
+                        TieneFotos: fotos.length > 0
+                    };
                 }));
+                
+                return condicionesConFotos;
                 
             } catch (error) {
                 console.error('Error cargando desde Supabase:', error);
@@ -1249,7 +1932,8 @@
                     estado: 'pendiente',
                     fecha: new Date().toISOString().split('T')[0],
                     id_secuencial: idSecuencial,
-                    ultima_modificacion: obtenerTimestamp()
+                    ultima_modificacion: obtenerTimestamp(),
+                    tiene_fotos: photosToUpload.length > 0
                 };
                 
                 const { data, error } = await supabaseClient
@@ -1260,14 +1944,24 @@
                 
                 if (error) throw error;
                 
+                // Subir fotos si hay
+                let fotosUrls = [];
+                if (photosToUpload.length > 0) {
+                    fotosUrls = await uploadPhotosToSupabase(data.id);
+                }
+                
                 showLoading(false);
                 updateStatusIndicator('connected', 'Reporte guardado ✓');
+                
+                // Limpiar fotos
+                limpiarFotos();
                 
                 return {
                     success: true,
                     id: idSecuencial,
                     supabaseId: data.id,
-                    data: data
+                    data: data,
+                    fotos: fotosUrls
                 };
                 
             } catch (error) {
@@ -1291,6 +1985,14 @@
                 if (nuevosDatos.repairedBy) {
                     datosActualizar.reparado_por = nuevosDatos.repairedBy;
                     datosActualizar.fecha_reparacion = new Date().toISOString().split('T')[0];
+                }
+                
+                // Subir foto de corrección si se marca como reparado
+                if (nuevosDatos.status === 'reparado' && nuevosDatos.uploadCorrectionPhoto) {
+                    const correctionPhoto = await uploadCorrectionPhotoToSupabase(id);
+                    if (correctionPhoto) {
+                        datosActualizar.tiene_fotos_correccion = true;
+                    }
                 }
                 
                 const { error } = await supabaseClient
@@ -1361,11 +2063,21 @@
                 ReparadoPor: "",
                 local: true,
                 pendienteSincronizacion: true,
-                ultimaModificacion: obtenerTimestamp()
+                ultimaModificacion: obtenerTimestamp(),
+                Fotos: photosToUpload.map(photo => photo.preview),
+                TieneFotos: photosToUpload.length > 0
             };
             
             condiciones.unshift(nuevoReporte);
             localStorage.setItem('condiciones_pendientes', JSON.stringify(condiciones));
+            
+            // Guardar fotos en localStorage
+            if (photosToUpload.length > 0) {
+                localStorage.setItem(`fotos_${nuevoId}`, JSON.stringify(photosToUpload.map(p => p.preview)));
+            }
+            
+            // Limpiar fotos
+            limpiarFotos();
             
             return {
                 success: true,
@@ -1392,7 +2104,7 @@
         }
         
         // ==============================================
-        // FUNCIONES DE ANÁLISIS Y GRÁFICOS
+        // FUNCIONES DE ANÁLISIS Y GRÁFICOS MEJORADOS
         // ==============================================
         
         function generarAnalisis(tipo = 'risk') {
@@ -1458,7 +2170,7 @@
             
             const datos = generarAnalisis(tipo);
             if (!datos || Object.keys(datos).length === 0) {
-                ctx.innerHTML = '<p style="text-align: center; padding: 50px;">No hay datos para mostrar</p>';
+                ctx.parentElement.innerHTML = '<p style="text-align: center; padding: 50px;">No hay datos para mostrar</p>';
                 return;
             }
             
@@ -1475,12 +2187,12 @@
                     break;
                     
                 case 'sector':
-                    backgroundColor = CHART_COLORS.sector;
+                    backgroundColor = CHART_COLORS.sector.slice(0, labels.length);
                     titulo = 'Reportes por Sector/Área';
                     break;
                     
                 case 'category':
-                    backgroundColor = CHART_COLORS.categoria;
+                    backgroundColor = CHART_COLORS.categoria.slice(0, labels.length);
                     titulo = 'Reportes por Tipo de Riesgo';
                     break;
                     
@@ -1508,7 +2220,7 @@
                         borderColor: tipo === 'evolution' ? CHART_COLORS.sector[0] : undefined,
                         fill: tipo === 'evolution',
                         tension: 0.4,
-                        borderWidth: 2
+                        borderWidth: 3
                     }]
                 },
                 options: {
@@ -1517,17 +2229,46 @@
                     plugins: {
                         legend: {
                             position: 'top',
+                            labels: {
+                                font: {
+                                    size: 14
+                                }
+                            }
                         },
                         title: {
                             display: true,
                             text: titulo,
-                            font: { size: 16 }
+                            font: { 
+                                size: 18,
+                                weight: 'bold'
+                            },
+                            padding: 20
                         }
                     },
                     scales: {
                         y: {
                             beginAtZero: true,
-                            ticks: { stepSize: 1 }
+                            ticks: { 
+                                stepSize: 1,
+                                font: {
+                                    size: 12
+                                }
+                            },
+                            grid: {
+                                color: 'rgba(0, 0, 0, 0.1)'
+                            }
+                        },
+                        x: {
+                            ticks: {
+                                font: {
+                                    size: 12
+                                },
+                                maxRotation: 45,
+                                minRotation: 45
+                            },
+                            grid: {
+                                color: 'rgba(0, 0, 0, 0.05)'
+                            }
                         }
                     }
                 }
@@ -1541,7 +2282,10 @@
             if (sectorChart) sectorChart.destroy();
             
             const datos = generarAnalisis('sector');
-            if (!datos || Object.keys(datos).length === 0) return;
+            if (!datos || Object.keys(datos).length === 0) {
+                ctx.parentElement.innerHTML = '<p style="text-align: center; padding: 50px;">No hay datos para mostrar</p>';
+                return;
+            }
             
             const labels = Object.keys(datos);
             const values = Object.values(datos);
@@ -1552,7 +2296,7 @@
                     labels: labels,
                     datasets: [{
                         data: values,
-                        backgroundColor: CHART_COLORS.sector,
+                        backgroundColor: CHART_COLORS.sector.slice(0, labels.length),
                         borderWidth: 1
                     }]
                 },
@@ -1561,9 +2305,24 @@
                     maintainAspectRatio: false,
                     plugins: {
                         legend: {
-                            position: 'right'
+                            position: 'right',
+                            labels: {
+                                font: {
+                                    size: 12
+                                },
+                                padding: 20
+                            }
+                        },
+                        title: {
+                            display: true,
+                            text: 'Distribución por Sector',
+                            font: {
+                                size: 16,
+                                weight: 'bold'
+                            }
                         }
-                    }
+                    },
+                    cutout: '60%'
                 }
             });
         }
@@ -1575,7 +2334,10 @@
             if (statusChart) statusChart.destroy();
             
             const datos = generarAnalisis('status');
-            if (!datos || Object.keys(datos).length === 0) return;
+            if (!datos || Object.keys(datos).length === 0) {
+                ctx.parentElement.innerHTML = '<p style="text-align: center; padding: 50px;">No hay datos para mostrar</p>';
+                return;
+            }
             
             const labels = Object.keys(datos);
             const values = Object.values(datos);
@@ -1596,7 +2358,21 @@
                     maintainAspectRatio: false,
                     plugins: {
                         legend: {
-                            position: 'right'
+                            position: 'right',
+                            labels: {
+                                font: {
+                                    size: 12
+                                },
+                                padding: 20
+                            }
+                        },
+                        title: {
+                            display: true,
+                            text: 'Distribución por Estado',
+                            font: {
+                                size: 16,
+                                weight: 'bold'
+                            }
                         }
                     }
                 }
@@ -1648,21 +2424,178 @@
                         backgroundColor: 'rgba(52, 152, 219, 0.1)',
                         fill: true,
                         tension: 0.4,
-                        borderWidth: 3
+                        borderWidth: 3,
+                        pointBackgroundColor: CHART_COLORS.sector[0],
+                        pointBorderColor: '#fff',
+                        pointBorderWidth: 2,
+                        pointRadius: 6,
+                        pointHoverRadius: 8
                     }]
                 },
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
                     plugins: {
-                        legend: { display: false }
+                        legend: { 
+                            display: false 
+                        },
+                        title: {
+                            display: true,
+                            text: 'Evolución Mensual de Reportes',
+                            font: {
+                                size: 16,
+                                weight: 'bold'
+                            }
+                        }
                     },
                     scales: {
                         y: {
                             beginAtZero: true,
-                            ticks: { stepSize: 1 }
+                            ticks: { 
+                                stepSize: 1,
+                                font: {
+                                    size: 12
+                                }
+                            },
+                            grid: {
+                                color: 'rgba(0, 0, 0, 0.1)'
+                            }
+                        },
+                        x: {
+                            grid: {
+                                color: 'rgba(0, 0, 0, 0.05)'
+                            },
+                            ticks: {
+                                font: {
+                                    size: 12
+                                }
+                            }
                         }
                     }
+                }
+            });
+        }
+        
+        function crearGraficoDashboardRiesgo() {
+            const ctx = document.getElementById('dashboard-risk-chart');
+            if (!ctx) return;
+            
+            if (dashboardRiskChart) dashboardRiskChart.destroy();
+            
+            const datos = generarAnalisis('risk');
+            if (!datos || Object.keys(datos).length === 0) return;
+            
+            const labels = Object.keys(datos);
+            const values = Object.values(datos);
+            const backgroundColor = labels.map(label => CHART_COLORS.riesgo[label] || '#95a5a6');
+            
+            dashboardRiskChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Cantidad',
+                        data: values,
+                        backgroundColor: backgroundColor,
+                        borderColor: backgroundColor.map(color => color.replace('0.8', '1')),
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                stepSize: 1
+                            }
+                        }
+                    }
+                }
+            });
+        }
+        
+        function crearGraficoDashboardSector() {
+            const ctx = document.getElementById('dashboard-sector-chart');
+            if (!ctx) return;
+            
+            if (dashboardSectorChart) dashboardSectorChart.destroy();
+            
+            const datos = generarAnalisis('sector');
+            if (!datos || Object.keys(datos).length === 0) return;
+            
+            const labels = Object.keys(datos);
+            const values = Object.values(datos);
+            
+            dashboardSectorChart = new Chart(ctx, {
+                type: 'pie',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        data: values,
+                        backgroundColor: CHART_COLORS.sector.slice(0, labels.length),
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'right'
+                        }
+                    }
+                }
+            });
+        }
+        
+        function crearGraficoFotos() {
+            const ctx = document.getElementById('photos-chart');
+            if (!ctx) return;
+            
+            if (photosChart) photosChart.destroy();
+            
+            const conFotos = unsafeConditions.filter(c => c.TieneFotos || (c.Fotos && c.Fotos.length > 0)).length;
+            const sinFotos = unsafeConditions.length - conFotos;
+            
+            if (unsafeConditions.length === 0) {
+                ctx.parentElement.innerHTML = '<p style="text-align: center; padding: 50px;">No hay datos para mostrar</p>';
+                return;
+            }
+            
+            photosChart = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Con Fotos', 'Sin Fotos'],
+                    datasets: [{
+                        data: [conFotos, sinFotos],
+                        backgroundColor: ['#3498db', '#95a5a6'],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'right'
+                        },
+                        title: {
+                            display: true,
+                            text: 'Reportes con Fotografías',
+                            font: {
+                                size: 16,
+                                weight: 'bold'
+                            }
+                        }
+                    },
+                    cutout: '60%'
                 }
             });
         }
@@ -1675,6 +2608,7 @@
             const reparados = unsafeConditions.filter(c => c.Estado === 'reparado').length;
             const pendientes = unsafeConditions.filter(c => c.Estado === 'pendiente').length;
             const enProceso = unsafeConditions.filter(c => c.Estado === 'en proceso').length;
+            const conFotos = unsafeConditions.filter(c => c.TieneFotos || (c.Fotos && c.Fotos.length > 0)).length;
             
             // Calcular tiempo promedio de reparación
             let tiempoPromedio = 'N/A';
@@ -1712,9 +2646,9 @@
                     <div style="background: #f8f9fa; padding: 15px; border-radius: 5px;">
                         <h4><i class="fas fa-info-circle"></i> Resumen General</h4>
                         <p>Total reportes: <strong>${total}</strong></p>
+                        <p>Reportes con fotos: <strong>${conFotos} (${total > 0 ? ((conFotos / total) * 100).toFixed(1) : 0}%)</strong></p>
                         <p>Tasa de reparación: <strong>${total > 0 ? ((reparados / total) * 100).toFixed(1) : 0}%</strong></p>
                         <p>Tiempo promedio: <strong>${tiempoPromedio}</strong></p>
-                        <p>Reportes pendientes: <strong>${pendientes}</strong></p>
                     </div>
                     
                     <div style="background: #f8f9fa; padding: 15px; border-radius: 5px;">
@@ -1744,6 +2678,7 @@
             crearGraficoAnalisis(tipo);
             crearGraficoSector();
             crearGraficoStatus();
+            crearGraficoFotos();
             mostrarAnalisisDetallado();
         }
         
@@ -1762,14 +2697,19 @@
             actualizarTablaReciente();
             actualizarTablaHistorial();
             crearGraficoEvolucion();
+            crearGraficoDashboardRiesgo();
+            crearGraficoDashboardSector();
             actualizarUIConfiguracion();
+            actualizarContadoresFotos();
             
             showLoading(false);
             
+            // Actualizar automáticamente cada 30 segundos
             setInterval(async () => {
                 unsafeConditions = await cargarCondicionesDesdeSupabase();
                 actualizarEstadisticas();
                 actualizarTablaReciente();
+                actualizarContadoresFotos();
             }, 30000);
         }
         
@@ -1808,6 +2748,24 @@
             }
         }
         
+        function actualizarContadoresFotos() {
+            const conFotos = unsafeConditions.filter(c => c.TieneFotos || (c.Fotos && c.Fotos.length > 0)).length;
+            let totalFotos = 0;
+            
+            unsafeConditions.forEach(cond => {
+                if (cond.Fotos) totalFotos += cond.Fotos.length;
+                if (cond.FotosCorreccion) totalFotos += cond.FotosCorreccion.length;
+            });
+            
+            if (document.getElementById('reports-with-photos')) {
+                document.getElementById('reports-with-photos').textContent = conFotos;
+            }
+            
+            if (document.getElementById('total-photos')) {
+                document.getElementById('total-photos').textContent = totalFotos;
+            }
+        }
+        
         function actualizarTablaReciente() {
             const tbody = document.querySelector('#recent-table tbody');
             if (!tbody) return;
@@ -1823,7 +2781,7 @@
             if (recientes.length === 0) {
                 tbody.innerHTML = `
                     <tr>
-                        <td colspan="6" style="text-align: center; padding: 40px; color: #7f8c8d;">
+                        <td colspan="7" style="text-align: center; padding: 40px; color: #7f8c8d;">
                             <i class="fas fa-inbox" style="font-size: 48px; margin-bottom: 15px;"></i>
                             <p>No hay reportes registrados</p>
                         </td>
@@ -1853,6 +2811,12 @@
                     ? descripcion.substring(0, 50) + '...' 
                     : descripcion;
                 
+                // Mostrar icono de fotos
+                const tieneFotos = cond.TieneFotos || (cond.Fotos && cond.Fotos.length > 0);
+                const fotosHtml = tieneFotos 
+                    ? `<i class="fas fa-camera" style="color: #3498db;" title="Tiene ${cond.Fotos?.length || 0} fotos"></i>` 
+                    : `<i class="fas fa-times" style="color: #95a5a6;"></i>`;
+                
                 return `
                     <tr>
                         <td><strong>#${idVisual}</strong></td>
@@ -1861,6 +2825,7 @@
                         <td>${reportadoPor}</td>
                         <td>${formatDate(fecha)}</td>
                         <td>${estadoBadge}</td>
+                        <td style="text-align: center;">${fotosHtml}</td>
                     </tr>
                 `;
             }).join('');
@@ -1887,7 +2852,7 @@
             if (condicionesFiltradas.length === 0) {
                 tbody.innerHTML = `
                     <tr>
-                        <td colspan="11" style="text-align: center; padding: 50px; color: #7f8c8d;">
+                        <td colspan="12" style="text-align: center; padding: 50px; color: #7f8c8d;">
                             <i class="fas fa-search" style="font-size: 48px; margin-bottom: 15px;"></i>
                             <p>No hay reportes ${filtro !== 'all' ? `con estado "${filtro}"` : 'registrados'}</p>
                         </td>
@@ -1907,6 +2872,7 @@
                 const reportadoPor = cond.ReportadoPor || 'Anónimo';
                 const reparadoPor = cond.ReparadoPor || '';
                 const estado = cond.Estado || 'pendiente';
+                const fotos = cond.Fotos || [];
                 
                 let estadoBadge = '';
                 if (estado === 'pendiente') {
@@ -1941,6 +2907,9 @@
                     riesgoBadge = `<span style="background-color: ${riesgoColor}20; color: ${riesgoColor}; padding: 3px 8px; border-radius: 10px; border: 1px solid ${riesgoColor}40;">${riesgo}</span>`;
                 }
                 
+                // Mostrar fotos
+                const fotosHTML = mostrarFotosEnTabla(fotos);
+                
                 let acciones = '';
                 if (estado === 'pendiente') {
                     acciones = `
@@ -1965,6 +2934,9 @@
                         <button class="action-btn btn-warning" onclick="cambiarEstado(${id}, 'pendiente')" title="Volver a pendiente">
                             <i class="fas fa-undo"></i>
                         </button>
+                        <button class="action-btn btn-primary" onclick="verFotosCorreccion(${id})" title="Ver fotos de corrección">
+                            <i class="fas fa-camera"></i>
+                        </button>
                     `;
                 }
                 
@@ -1976,6 +2948,7 @@
                         <td>${ubicacion}</td>
                         <td>${categoria}</td>
                         <td>${riesgoBadge}</td>
+                        <td>${fotosHTML}</td>
                         <td>${formatDate(fecha)}</td>
                         <td>${tiempoHTML}</td>
                         <td>${reportadoPor}</td>
@@ -2022,6 +2995,9 @@
                 actualizarTablaReciente();
                 actualizarTablaHistorial(currentFilter);
                 crearGraficoEvolucion();
+                crearGraficoDashboardRiesgo();
+                crearGraficoDashboardSector();
+                actualizarContadoresFotos();
                 
                 document.querySelector('.nav-menu a[data-page="dashboard"]').click();
             } else {
@@ -2040,9 +3016,18 @@
                 return;
             }
             
+            let uploadCorrectionPhoto = false;
+            if (nuevoEstado === 'reparado') {
+                const confirmar = confirm('¿Desea agregar una foto de la corrección realizada?');
+                if (confirmar) {
+                    uploadCorrectionPhoto = true;
+                }
+            }
+            
             const nuevosDatos = { 
                 status: nuevoEstado,
-                fechaReparacion: nuevoEstado === 'reparado' ? new Date().toISOString() : undefined
+                fechaReparacion: nuevoEstado === 'reparado' ? new Date().toISOString() : undefined,
+                uploadCorrectionPhoto: uploadCorrectionPhoto
             };
             
             if (nuevoEstado === 'reparado') {
@@ -2069,8 +3054,32 @@
             actualizarTablaReciente();
             actualizarTablaHistorial(currentFilter);
             crearGraficoEvolucion();
+            crearGraficoDashboardRiesgo();
+            crearGraficoDashboardSector();
+            actualizarContadoresFotos();
             
             alert(resultado.offline ? 'Estado actualizado (modo offline)' : 'Estado actualizado correctamente');
+        }
+        
+        function verFotosCorreccion(id) {
+            const condicion = unsafeConditions.find(c => {
+                const condId = parseInt(c.ID_secuencial || c.ID || 0);
+                return condId === parseInt(id);
+            });
+            
+            if (!condicion) {
+                alert('Reporte no encontrado');
+                return;
+            }
+            
+            const fotosCorreccion = condicion.FotosCorreccion || [];
+            if (fotosCorreccion.length === 0) {
+                alert('No hay fotos de corrección para este reporte');
+                return;
+            }
+            
+            // Mostrar primera foto en modal
+            mostrarModalFoto(fotosCorreccion[0], 'Foto de corrección');
         }
         
         function forzarActualizacion() {
@@ -2100,18 +3109,22 @@
             document.getElementById('category').value = 'electrico';
             document.getElementById('risk-level').value = 'critico';
             document.getElementById('observaciones').value = 'Se requiere intervención inmediata del área de mantenimiento eléctrico. Aislar el área hasta la reparación.';
+            
+            limpiarFotos();
         }
         
         function exportarHistorial() {
             const condiciones = [...unsafeConditions];
-            let csv = 'ID,Descripción,Sector,Ubicación,Tipo Riesgo,Nivel Riesgo,Fecha Reporte,Estado,Reportado por,Reparado por,Tiempo Reparación\n';
+            let csv = 'ID,Descripción,Sector,Ubicación,Tipo Riesgo,Nivel Riesgo,Fecha Reporte,Estado,Reportado por,Reparado por,Tiempo Reparación,Fotos\n';
             
             condiciones.forEach(cond => {
                 const tiempo = cond.Estado === 'reparado' && cond.Fecha && cond.FechaReparacion 
                     ? calcularTiempoReparacion(cond.Fecha, cond.FechaReparacion).texto 
                     : 'Pendiente';
                 
-                csv += `"${cond.ID_secuencial || cond.ID}","${cond.Descripcion || ''}","${cond.Sector || ''}","${cond.Ubicacion || ''}","${cond.Categoria || ''}","${cond.Riesgo || ''}","${cond.Fecha || ''}","${cond.Estado || ''}","${cond.ReportadoPor || ''}","${cond.ReparadoPor || ''}","${tiempo}"\n`;
+                const tieneFotos = cond.TieneFotos || (cond.Fotos && cond.Fotos.length > 0) ? 'Sí' : 'No';
+                
+                csv += `"${cond.ID_secuencial || cond.ID}","${cond.Descripcion || ''}","${cond.Sector || ''}","${cond.Ubicacion || ''}","${cond.Categoria || ''}","${cond.Riesgo || ''}","${cond.Fecha || ''}","${cond.Estado || ''}","${cond.ReportadoPor || ''}","${cond.ReparadoPor || ''}","${tiempo}","${tieneFotos}"\n`;
             });
             
             const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
@@ -2179,6 +3192,8 @@
                     Categoria: 'incendio',
                     Riesgo: 'critico',
                     Estado: 'pendiente',
+                    TieneFotos: true,
+                    Fotos: ['https://via.placeholder.com/150/FF0000/FFFFFF?text=Extintor+Vencido'],
                     ultimaModificacion: '2024-01-15T08:30:00'
                 },
                 {
@@ -2194,6 +3209,9 @@
                     Riesgo: 'alto',
                     Estado: 'reparado',
                     ReparadoPor: 'José Ramírez',
+                    TieneFotos: true,
+                    Fotos: ['https://via.placeholder.com/150/FFA500/FFFFFF?text=Aceite+Derramado'],
+                    FotosCorreccion: ['https://via.placeholder.com/150/008000/FFFFFF?text=Piso+Limpio'],
                     ultimaModificacion: '2024-01-12T14:20:00'
                 },
                 {
@@ -2207,6 +3225,8 @@
                     Categoria: 'alturas',
                     Riesgo: 'alto',
                     Estado: 'en proceso',
+                    TieneFotos: true,
+                    Fotos: ['https://via.placeholder.com/150/FFA500/FFFFFF?text=Sin+Barandas'],
                     ultimaModificacion: '2024-01-08T10:15:00'
                 },
                 {
@@ -2222,6 +3242,7 @@
                     Riesgo: 'medio',
                     Estado: 'reparado',
                     ReparadoPor: 'Juan Electricista',
+                    TieneFotos: false,
                     ultimaModificacion: '2023-12-21T16:45:00'
                 },
                 {
@@ -2235,6 +3256,8 @@
                     Categoria: 'quimico',
                     Riesgo: 'alto',
                     Estado: 'pendiente',
+                    TieneFotos: true,
+                    Fotos: ['https://via.placeholder.com/150/FF0000/FFFFFF?text=Ventilacion+Mala', 'https://via.placeholder.com/150/FFA500/FFFFFF?text=Extractor+Dañado'],
                     ultimaModificacion: '2023-12-15T09:30:00'
                 }
             ];
@@ -2244,6 +3267,9 @@
             actualizarTablaReciente();
             actualizarTablaHistorial();
             crearGraficoEvolucion();
+            crearGraficoDashboardRiesgo();
+            crearGraficoDashboardSector();
+            actualizarContadoresFotos();
             
             alert(`✅ ${datosPrueba.length} datos de prueba agregados`);
         }
@@ -2320,6 +3346,49 @@
             document.getElementById('analysis-type').addEventListener('change', function() {
                 crearGraficoAnalisis(this.value);
             });
+            
+            // Permitir arrastrar y soltar fotos
+            const uploadContainer = document.querySelector('.photo-upload-container');
+            if (uploadContainer) {
+                uploadContainer.addEventListener('dragover', function(e) {
+                    e.preventDefault();
+                    this.style.borderColor = '#2980b9';
+                    this.style.backgroundColor = '#e3f2fd';
+                });
+                
+                uploadContainer.addEventListener('dragleave', function(e) {
+                    e.preventDefault();
+                    this.style.borderColor = '#3498db';
+                    this.style.backgroundColor = '#f8f9fa';
+                });
+                
+                uploadContainer.addEventListener('drop', function(e) {
+                    e.preventDefault();
+                    this.style.borderColor = '#3498db';
+                    this.style.backgroundColor = '#f8f9fa';
+                    
+                    const files = e.dataTransfer.files;
+                    const input = document.getElementById('photos-input');
+                    
+                    // Crear un DataTransfer para asignar los archivos
+                    const dataTransfer = new DataTransfer();
+                    for (let file of files) {
+                        dataTransfer.items.add(file);
+                    }
+                    input.files = dataTransfer.files;
+                    
+                    // Disparar el evento change
+                    const event = new Event('change', { bubbles: true });
+                    input.dispatchEvent(event);
+                });
+            }
+        });
+        
+        // Cerrar modal al hacer clic fuera
+        document.getElementById('photoModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                cerrarModalFoto();
+            }
         });
         
         // ==============================================
@@ -2335,6 +3404,12 @@
         window.exportarHistorial = exportarHistorial;
         window.generarDatosPrueba = generarDatosPrueba;
         window.actualizarAnalisis = actualizarAnalisis;
+        window.mostrarModalFoto = mostrarModalFoto;
+        window.cerrarModalFoto = cerrarModalFoto;
+        window.removePhoto = removePhoto;
+        window.limpiarFotos = limpiarFotos;
+        window.mostrarReporteConFotos = mostrarReporteConFotos;
+        window.verFotosCorreccion = verFotosCorreccion;
         
     </script>
 </body>
