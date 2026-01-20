@@ -26,6 +26,7 @@
             --light: #ecf0f1;
             --dark: #34495e;
             --supabase: #3ecf8e;
+            --fisico: #9b59b6;
         }
 
         body {
@@ -227,6 +228,39 @@
             background-color: rgba(52, 152, 219, 0.2);
             color: #2980b9;
             border: 1px solid rgba(52, 152, 219, 0.3);
+        }
+
+        /* ===== TIEMPO DE REPARACIÓN ===== */
+        .tiempo-reparacion {
+            font-weight: 600;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+        }
+
+        .tiempo-rapido {
+            background-color: rgba(46, 204, 113, 0.2);
+            color: #27ae60;
+        }
+
+        .tiempo-medio {
+            background-color: rgba(243, 156, 18, 0.2);
+            color: #e67e22;
+        }
+
+        .tiempo-lento {
+            background-color: rgba(231, 76, 60, 0.2);
+            color: #e74c3c;
+        }
+
+        /* ===== TIPO FÍSICO ===== */
+        .tipo-fisico {
+            background-color: rgba(155, 89, 182, 0.2);
+            color: #9b59b6;
+            padding: 3px 8px;
+            border-radius: 10px;
+            font-size: 12px;
+            display: inline-block;
         }
 
         /* ===== NAVEGACIÓN ===== */
@@ -731,7 +765,9 @@
                         Sistema para reportar condiciones inseguras en el lugar de trabajo.
                     </p>
                     <p style="font-size: 12px; color: #7f8c8d; margin-top: 10px;">
-                        <i class="fas fa-camera"></i> Ahora con soporte para fotos
+                        <i class="fas fa-camera"></i> Ahora con soporte para fotos<br>
+                        <i class="fas fa-bolt"></i> Nueva opción "Físico" en tipos de riesgo<br>
+                        <i class="fas fa-clock"></i> Calcula tiempo de reparación automáticamente
                     </p>
                 </div>
             </aside>
@@ -758,8 +794,8 @@
                             <div class="stat-value" id="repaired-count">0</div>
                         </div>
                         <div class="stat-card">
-                            <div class="stat-title">Con Fotos</div>
-                            <div class="stat-value" id="photos-count">0</div>
+                            <div class="stat-title">Tiempo Promedio</div>
+                            <div class="stat-value" id="avg-time">0h</div>
                         </div>
                     </div>
 
@@ -786,10 +822,10 @@
                                         <th>ID</th>
                                         <th>Descripción</th>
                                         <th>Sector</th>
-                                        <th>Reportado por</th>
+                                        <th>Tipo</th>
                                         <th>Fecha</th>
+                                        <th>Tiempo</th>
                                         <th>Estado</th>
-                                        <th>Foto</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -834,35 +870,26 @@
                                 <label for="sector">Sector/Área *</label>
                                 <select class="form-control" id="sector" required>
                                     <option value="">Seleccione</option>
-                                    <option value="produccion">Producción</option>
-                                    <option value="almacen">Almacén</option>
-                                    <option value="mantenimiento">Mantenimiento</option>
-                                    <option value="oficinas">Oficinas</option>
-                                    <option value="laboratorio">Laboratorio</option>
-                                    <option value="exteriores">Exteriores</option>
-                                    <option value="servicios">Servicios</option>
-                                    <option value="otros">Otros</option>
+                                    <option value="Zona 1">Zona 1</option>
+                                    <option value="Zona 2">Zona 2</option>
                                 </select>
                             </div>
                             
                             <div class="form-group">
                                 <label for="ubicacion">Ubicación específica *</label>
                                 <input type="text" class="form-control" id="ubicacion" 
-                                       placeholder="Ej: Línea 3, Estación 5" required>
+                                       placeholder="Ej: Zona 1 - Línea 3, Estación 5" required>
                             </div>
                             
                             <div class="form-group">
                                 <label for="category">Tipo de riesgo *</label>
                                 <select class="form-control" id="category" required>
                                     <option value="">Seleccione</option>
-                                    <option value="electrico">Eléctrico</option>
-                                    <option value="mecanico">Mecánico</option>
-                                    <option value="alturas">Alturas</option>
-                                    <option value="quimico">Químico</option>
-                                    <option value="incendio">Incendio</option>
-                                    <option value="ergonomico">Ergonómico</option>
-                                    <option value="biologico">Biológico</option>
-                                    <option value="otro">Otro</option>
+                                    <option value="Físico">Físico</option>
+                                    <option value="Estructural">Estructural</option>
+                                    <option value="Eléctrico">Eléctrico</option>
+                                    <option value="Ambiental">Ambiental</option>
+                                    <option value="Operacional">Operacional</option>
                                 </select>
                             </div>
                             
@@ -870,10 +897,10 @@
                                 <label for="risk-level">Nivel de Riesgo *</label>
                                 <select class="form-control" id="risk-level" required>
                                     <option value="">Seleccione</option>
-                                    <option value="bajo">Bajo</option>
-                                    <option value="medio">Medio</option>
-                                    <option value="alto">Alto</option>
-                                    <option value="critico">Crítico</option>
+                                    <option value="Bajo">Bajo</option>
+                                    <option value="Medio">Medio</option>
+                                    <option value="Alto">Alto</option>
+                                    <option value="Crítico">Crítico</option>
                                 </select>
                             </div>
                             
@@ -911,6 +938,11 @@
                                 <button class="btn btn-success" id="filter-repaired">Reparados</button>
                             </div>
                             <div style="display: flex; gap: 10px;">
+                                <select class="form-control" id="filter-sector" style="width: 150px;">
+                                    <option value="">Todos los sectores</option>
+                                    <option value="Zona 1">Zona 1</option>
+                                    <option value="Zona 2">Zona 2</option>
+                                </select>
                                 <input type="text" class="form-control" id="search-input" placeholder="Buscar..." style="width: 200px;">
                                 <button class="btn" onclick="exportarHistorial()" title="Exportar a CSV">
                                     <i class="fas fa-download"></i>
@@ -925,10 +957,11 @@
                                         <th>ID</th>
                                         <th>Descripción</th>
                                         <th>Sector</th>
+                                        <th>Tipo</th>
                                         <th>Riesgo</th>
                                         <th>Foto</th>
-                                        <th>Fecha</th>
-                                        <th>Tiempo</th>
+                                        <th>Fecha Reporte</th>
+                                        <th>Tiempo Reparación</th>
                                         <th>Reportado por</th>
                                         <th>Estado</th>
                                         <th>Acciones</th>
@@ -971,9 +1004,9 @@
                                 </div>
                             </div>
                             <div class="chart-item">
-                                <h3><i class="fas fa-chart-pie"></i> Estado Actual</h3>
+                                <h3><i class="fas fa-clock"></i> Tiempos de Reparación</h3>
                                 <div class="chart-wrapper">
-                                    <canvas id="status-chart"></canvas>
+                                    <canvas id="time-chart"></canvas>
                                 </div>
                             </div>
                         </div>
@@ -1023,9 +1056,10 @@
                             <div style="background: #f8f9fa; padding: 15px; border-radius: 5px; margin-top: 10px;">
                                 <p><strong>Total reportes:</strong> <span id="total-db-count">0</span></p>
                                 <p><strong>Reportes con fotos:</strong> <span id="reports-with-photos">0</span></p>
+                                <p><strong>Tiempo promedio reparación:</strong> <span id="avg-repair-time">0h</span></p>
                                 <p><strong>Última sincronización:</strong> <span id="last-sync">Nunca</span></p>
                                 <p><strong>Modo:</strong> <span id="current-mode">Desconocido</span></p>
-                                <p><strong>Versión:</strong> 3.0.0</p>
+                                <p><strong>Versión:</strong> 4.0.0</p>
                             </div>
                         </div>
                     </div>
@@ -1034,7 +1068,7 @@
         </div>
         
         <footer style="text-align: center; margin-top: 30px; padding: 20px; color: #7f8c8d; border-top: 1px solid #eee;">
-            <p>Sistema de Condiciones Inseguras &copy; 2024</p>
+            <p>Sistema de Condiciones Inseguras &copy; 2024 | Sectores: Zona 1 y Zona 2 | Tipo: Físico agregado</p>
         </footer>
     </div>
 
@@ -1047,7 +1081,7 @@
         let currentFilter = 'all';
         let dataChart = null;
         let sectorChart = null;
-        let statusChart = null;
+        let timeChart = null;
         let evolutionChart = null;
         let selectedPhoto = null;
         
@@ -1062,17 +1096,24 @@
         // Colores para gráficos
         const CHART_COLORS = {
             riesgo: {
-                critico: '#e74c3c',
-                alto: '#e67e22',
-                medio: '#f1c40f',
-                bajo: '#2ecc71'
+                'Crítico': '#e74c3c',
+                'Alto': '#e67e22',
+                'Medio': '#f1c40f',
+                'Bajo': '#2ecc71'
             },
             estado: {
-                pendiente: '#e74c3c',
-                proceso: '#3498db',
-                reparado: '#2ecc71'
+                'pendiente': '#e74c3c',
+                'en proceso': '#3498db',
+                'reparado': '#2ecc71'
             },
-            sector: ['#3498db', '#2ecc71', '#e74c3c', '#f39c12', '#9b59b6', '#1abc9c']
+            sector: ['#3498db', '#2ecc71'],
+            tipo: {
+                'Físico': '#9b59b6',
+                'Estructural': '#e74c3c',
+                'Eléctrico': '#f1c40f',
+                'Ambiental': '#1abc9c',
+                'Operacional': '#3498db'
+            }
         };
         
         // ==============================================
@@ -1113,7 +1154,9 @@
                 return date.toLocaleDateString('es-ES', {
                     year: 'numeric',
                     month: 'short',
-                    day: 'numeric'
+                    day: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit'
                 });
             } catch (e) {
                 return dateString;
@@ -1126,16 +1169,22 @@
         
         function calcularTiempoReparacion(fechaInicio, fechaFin) {
             if (!fechaInicio || !fechaFin) {
-                return { texto: 'No reparado', dias: 0, clase: '' };
+                return { texto: 'No reparado', horas: 0, clase: '' };
             }
             
             try {
                 const inicio = new Date(fechaInicio);
                 const fin = new Date(fechaFin);
+                
+                // Asegurar que las fechas sean válidas
+                if (isNaN(inicio.getTime()) || isNaN(fin.getTime())) {
+                    return { texto: 'Fechas inválidas', horas: 0, clase: '' };
+                }
+                
                 const diffMs = fin - inicio;
                 
-                if (isNaN(diffMs) || diffMs < 0) {
-                    return { texto: 'Fechas inválidas', dias: 0, clase: '' };
+                if (diffMs < 0) {
+                    return { texto: 'Fecha reparación anterior al reporte', horas: 0, clase: '' };
                 }
                 
                 const dias = Math.floor(diffMs / (1000 * 60 * 60 * 24));
@@ -1144,25 +1193,64 @@
                 
                 let texto = '';
                 if (dias > 0) {
-                    texto = `${dias} día${dias !== 1 ? 's' : ''}`;
-                    if (horas > 0) texto += ` ${horas}h`;
+                    texto = `${dias}d ${horas}h`;
                 } else if (horas > 0) {
-                    texto = `${horas} hora${horas !== 1 ? 's' : ''}`;
-                    if (minutos > 0) texto += ` ${minutos}min`;
+                    texto = `${horas}h ${minutos}m`;
                 } else if (minutos > 0) {
-                    texto = `${minutos} minuto${minutos !== 1 ? 's' : ''}`;
+                    texto = `${minutos} min`;
                 } else {
-                    texto = '< 1 minuto';
+                    texto = '< 1 min';
                 }
                 
                 let clase = 'tiempo-rapido';
-                if (dias > 3) clase = 'tiempo-lento';
-                else if (dias > 1) clase = 'tiempo-medio';
+                const totalHoras = (diffMs / (1000 * 60 * 60));
+                if (totalHoras > 24) clase = 'tiempo-lento';
+                else if (totalHoras > 8) clase = 'tiempo-medio';
                 
-                return { texto, dias, clase };
+                return { 
+                    texto, 
+                    horas: totalHoras, 
+                    dias: dias,
+                    minutos: minutos,
+                    clase 
+                };
                 
             } catch (error) {
-                return { texto: 'Error cálculo', dias: 0, clase: '' };
+                console.error('Error calculando tiempo:', error);
+                return { texto: 'Error cálculo', horas: 0, clase: '' };
+            }
+        }
+        
+        function calcularTiempoPromedioReparacion() {
+            const reparados = unsafeConditions.filter(c => c.Estado === 'reparado' && c.Fecha && c.FechaReparacion);
+            
+            if (reparados.length === 0) {
+                return '0h';
+            }
+            
+            let totalHoras = 0;
+            let contadorValidos = 0;
+            
+            reparados.forEach(cond => {
+                const tiempo = calcularTiempoReparacion(cond.Fecha, cond.FechaReparacion);
+                if (tiempo.horas > 0) {
+                    totalHoras += tiempo.horas;
+                    contadorValidos++;
+                }
+            });
+            
+            if (contadorValidos === 0) return '0h';
+            
+            const promedioHoras = Math.round(totalHoras / contadorValidos);
+            
+            if (promedioHoras < 1) {
+                return '< 1h';
+            } else if (promedioHoras < 24) {
+                return `${promedioHoras}h`;
+            } else {
+                const dias = Math.floor(promedioHoras / 24);
+                const horas = promedioHoras % 24;
+                return horas > 0 ? `${dias}d ${horas}h` : `${dias}d`;
             }
         }
         
@@ -1471,7 +1559,7 @@
                     riesgo: reporte.riskLevel,
                     observaciones: reporte.observaciones,
                     estado: 'pendiente',
-                    fecha: new Date().toISOString().split('T')[0],
+                    fecha: new Date().toISOString(),
                     id_secuencial: idSecuencial
                 };
                 
@@ -1528,7 +1616,7 @@
                 
                 if (nuevosDatos.repairedBy) {
                     datosActualizar.reparado_por = nuevosDatos.repairedBy;
-                    datosActualizar.fecha_reparacion = new Date().toISOString().split('T')[0];
+                    datosActualizar.fecha_reparacion = new Date().toISOString();
                 }
                 
                 if (nuevosDatos.fotoCorreccionUrl) {
@@ -1575,7 +1663,7 @@
             const nuevoReporte = {
                 ID: nuevoId,
                 ID_secuencial: nuevoId,
-                Fecha: new Date().toISOString().split('T')[0],
+                Fecha: new Date().toISOString(),
                 ReportadoPor: reporte.reportedBy,
                 Descripcion: reporte.description,
                 Sector: reporte.sector,
@@ -1585,7 +1673,9 @@
                 Observaciones: reporte.observaciones,
                 Estado: "pendiente",
                 ReparadoPor: "",
+                FechaReparacion: null,
                 FotoUrl: fotoBase64,
+                FotoCorreccionUrl: null,
                 local: true,
                 pendienteSincronizacion: true,
                 ultimaModificacion: obtenerTimestamp()
@@ -1624,10 +1714,12 @@
             
             const datosPorMes = {};
             unsafeConditions.forEach(cond => {
-                const fecha = new Date(cond.Fecha);
-                const mes = `${fecha.getFullYear()}-${String(fecha.getMonth() + 1).padStart(2, '0')}`;
-                if (ultimos6Meses.includes(mes)) {
-                    datosPorMes[mes] = (datosPorMes[mes] || 0) + 1;
+                if (cond.Fecha) {
+                    const fecha = new Date(cond.Fecha);
+                    const mes = `${fecha.getFullYear()}-${String(fecha.getMonth() + 1).padStart(2, '0')}`;
+                    if (ultimos6Meses.includes(mes)) {
+                        datosPorMes[mes] = (datosPorMes[mes] || 0) + 1;
+                    }
                 }
             });
             
@@ -1723,6 +1815,8 @@
                 backgroundColor = labels.map(label => CHART_COLORS.riesgo[label] || '#95a5a6');
             } else if (tipo === 'status') {
                 backgroundColor = labels.map(label => CHART_COLORS.estado[label] || '#95a5a6');
+            } else if (tipo === 'category') {
+                backgroundColor = labels.map(label => CHART_COLORS.tipo[label] || '#95a5a6');
             } else {
                 backgroundColor = CHART_COLORS.sector;
             }
@@ -1768,13 +1862,18 @@
             const labels = Object.keys(datos);
             const values = Object.values(datos);
             
+            // Asegurar colores para Zona 1 y Zona 2
+            const colors = labels.map((label, index) => 
+                CHART_COLORS.sector[index % CHART_COLORS.sector.length]
+            );
+            
             sectorChart = new Chart(ctx, {
                 type: 'doughnut',
                 data: {
                     labels: labels,
                     datasets: [{
                         data: values,
-                        backgroundColor: CHART_COLORS.sector
+                        backgroundColor: colors
                     }]
                 },
                 options: {
@@ -1787,36 +1886,76 @@
             });
         }
         
-        function crearGraficoStatus() {
-            const ctx = document.getElementById('status-chart');
+        function crearGraficoTiempos() {
+            const ctx = document.getElementById('time-chart');
             if (!ctx) return;
             
-            if (statusChart) statusChart.destroy();
+            if (timeChart) timeChart.destroy();
             
-            const datos = unsafeConditions.reduce((acc, cond) => {
-                const estado = cond.Estado || 'pendiente';
-                acc[estado] = (acc[estado] || 0) + 1;
-                return acc;
-            }, {});
+            // Obtener tiempos de reparación para reportes reparados
+            const tiemposReparacion = [];
+            unsafeConditions.forEach(cond => {
+                if (cond.Estado === 'reparado' && cond.Fecha && cond.FechaReparacion) {
+                    const tiempo = calcularTiempoReparacion(cond.Fecha, cond.FechaReparacion);
+                    if (tiempo.horas > 0) {
+                        tiemposReparacion.push(tiempo.horas);
+                    }
+                }
+            });
             
-            const labels = Object.keys(datos);
-            const values = Object.values(datos);
-            const backgroundColors = labels.map(label => CHART_COLORS.estado[label] || '#95a5a6');
+            if (tiemposReparacion.length === 0) {
+                // Mostrar mensaje si no hay datos
+                ctx.parentElement.innerHTML = `
+                    <div style="display: flex; align-items: center; justify-content: center; height: 100%; color: #7f8c8d;">
+                        <div style="text-align: center;">
+                            <i class="fas fa-clock" style="font-size: 48px; margin-bottom: 15px;"></i>
+                            <p>No hay datos de tiempos de reparación</p>
+                        </div>
+                    </div>
+                `;
+                return;
+            }
             
-            statusChart = new Chart(ctx, {
-                type: 'pie',
+            // Crear histograma de tiempos
+            const maxTiempo = Math.max(...tiemposReparacion);
+            const intervalos = 5;
+            const paso = Math.ceil(maxTiempo / intervalos);
+            
+            const labels = [];
+            const data = [];
+            
+            for (let i = 0; i < intervalos; i++) {
+                const min = i * paso;
+                const max = (i + 1) * paso;
+                const label = i === intervalos - 1 
+                    ? `>${min}h` 
+                    : `${min}-${max}h`;
+                
+                labels.push(label);
+                data.push(tiemposReparacion.filter(t => t >= min && (i === intervalos - 1 ? true : t < max)).length);
+            }
+            
+            timeChart = new Chart(ctx, {
+                type: 'bar',
                 data: {
                     labels: labels,
                     datasets: [{
-                        data: values,
-                        backgroundColor: backgroundColors
+                        label: 'Cantidad de reportes',
+                        data: data,
+                        backgroundColor: '#3498db'
                     }]
                 },
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
                     plugins: {
-                        legend: { position: 'right' }
+                        legend: { display: false }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: { stepSize: 1 }
+                        }
                     }
                 }
             });
@@ -1853,19 +1992,25 @@
             const pendientes = unsafeConditions.filter(c => c.Estado === 'pendiente').length;
             const enProceso = unsafeConditions.filter(c => c.Estado === 'en proceso').length;
             const reparados = unsafeConditions.filter(c => c.Estado === 'reparado').length;
-            const conFotos = unsafeConditions.filter(c => c.FotoUrl).length;
+            const tiempoPromedio = calcularTiempoPromedioReparacion();
             
             document.getElementById('total-count').textContent = total;
             document.getElementById('pending-count').textContent = pendientes;
             document.getElementById('process-count').textContent = enProceso;
             document.getElementById('repaired-count').textContent = reparados;
-            document.getElementById('photos-count').textContent = conFotos;
+            document.getElementById('avg-time').textContent = tiempoPromedio;
             
             if (document.getElementById('total-db-count')) {
                 document.getElementById('total-db-count').textContent = total;
             }
+            
             if (document.getElementById('reports-with-photos')) {
+                const conFotos = unsafeConditions.filter(c => c.FotoUrl).length;
                 document.getElementById('reports-with-photos').textContent = conFotos;
+            }
+            
+            if (document.getElementById('avg-repair-time')) {
+                document.getElementById('avg-repair-time').textContent = tiempoPromedio;
             }
         }
         
@@ -1899,26 +2044,33 @@
                 else if (estado === 'en proceso') estadoBadge = '<span class="status-badge status-en-proceso">En Proceso</span>';
                 else estadoBadge = '<span class="status-badge status-reparado">Reparado</span>';
                 
-                // Mostrar foto
-                let fotoHTML = '<span class="no-photo">Sin foto</span>';
-                if (cond.FotoUrl) {
-                    fotoHTML = `
-                        <img src="${cond.FotoUrl}" 
-                             class="table-photo" 
-                             alt="Foto"
-                             onclick="mostrarModalFoto('${cond.FotoUrl}', 'Reporte #${idVisual}')">
-                    `;
+                // Tipo de riesgo (especial para Físico)
+                let tipoHTML = cond.Categoria || 'N/A';
+                if (cond.Categoria === 'Físico') {
+                    tipoHTML = `<span class="tipo-fisico">${cond.Categoria}</span>`;
+                }
+                
+                // Tiempo de reparación
+                let tiempoHTML = '';
+                if (estado === 'reparado' && cond.Fecha && cond.FechaReparacion) {
+                    const tiempo = calcularTiempoReparacion(cond.Fecha, cond.FechaReparacion);
+                    tiempoHTML = `<span class="tiempo-reparacion ${tiempo.clase}">${tiempo.texto}</span>`;
+                } else if (estado === 'en proceso' && cond.Fecha) {
+                    const tiempo = calcularTiempoReparacion(cond.Fecha, new Date());
+                    tiempoHTML = `<span style="color: #3498db"><i class="fas fa-hourglass-half"></i> ${tiempo.texto}</span>`;
+                } else {
+                    tiempoHTML = '<span style="color: #95a5a6"><i class="fas fa-minus"></i> -</span>';
                 }
                 
                 return `
                     <tr>
                         <td><strong>#${idVisual}</strong></td>
-                        <td>${descCorta}</td>
+                        <td title="${cond.Descripcion}">${descCorta}</td>
                         <td>${cond.Sector || 'N/A'}</td>
-                        <td>${cond.ReportadoPor || 'Anónimo'}</td>
+                        <td>${tipoHTML}</td>
                         <td>${formatDate(cond.Fecha)}</td>
+                        <td>${tiempoHTML}</td>
                         <td>${estadoBadge}</td>
-                        <td class="photo-cell">${fotoHTML}</td>
                     </tr>
                 `;
             }).join('');
@@ -1934,12 +2086,18 @@
                 condicionesFiltradas = unsafeConditions.filter(c => (c.Estado || 'pendiente') === filtro);
             }
             
+            // Filtrar por sector si hay selección
+            const filterSector = document.getElementById('filter-sector').value;
+            if (filterSector) {
+                condicionesFiltradas = condicionesFiltradas.filter(c => c.Sector === filterSector);
+            }
+            
             condicionesFiltradas.sort((a, b) => new Date(b.Fecha || b.ultimaModificacion) - new Date(a.Fecha || a.ultimaModificacion));
             
             if (condicionesFiltradas.length === 0) {
                 tbody.innerHTML = `
                     <tr>
-                        <td colspan="10" style="text-align: center; padding: 50px; color: #7f8c8d;">
+                        <td colspan="11" style="text-align: center; padding: 50px; color: #7f8c8d;">
                             <i class="fas fa-search" style="font-size: 48px; margin-bottom: 15px;"></i>
                             <p>No hay reportes ${filtro !== 'all' ? `con estado "${filtro}"` : 'registrados'}</p>
                         </td>
@@ -1962,17 +2120,17 @@
                 let tiempoHTML = '';
                 if (estado === 'reparado' && cond.Fecha && cond.FechaReparacion) {
                     const tiempo = calcularTiempoReparacion(cond.Fecha, cond.FechaReparacion);
-                    tiempoHTML = `<span style="color: ${tiempo.dias > 3 ? '#e74c3c' : tiempo.dias > 1 ? '#f39c12' : '#2ecc71'}">
+                    tiempoHTML = `<span class="tiempo-reparacion ${tiempo.clase}">
                         <i class="fas fa-clock"></i> ${tiempo.texto}
                     </span>`;
-                } else if (estado === 'en proceso') {
+                } else if (estado === 'en proceso' && cond.Fecha) {
                     const tiempo = calcularTiempoReparacion(cond.Fecha, new Date());
                     tiempoHTML = `<span style="color: #3498db"><i class="fas fa-hourglass-half"></i> ${tiempo.texto}</span>`;
                 } else {
                     tiempoHTML = '<span style="color: #95a5a6"><i class="fas fa-minus"></i> -</span>';
                 }
                 
-                // Foto (ahora se muestra claramente)
+                // Foto
                 let fotoHTML = '<span class="no-photo">-</span>';
                 if (cond.FotoUrl) {
                     fotoHTML = `
@@ -1984,12 +2142,18 @@
                     `;
                 }
                 
+                // Tipo de riesgo (especial para Físico)
+                let tipoHTML = cond.Categoria || 'N/A';
+                if (cond.Categoria === 'Físico') {
+                    tipoHTML = `<span class="tipo-fisico">${cond.Categoria}</span>`;
+                }
+                
                 // Badge de riesgo
                 let riesgoColor = '';
-                if (cond.Riesgo === 'critico') riesgoColor = '#e74c3c';
-                else if (cond.Riesgo === 'alto') riesgoColor = '#e67e22';
-                else if (cond.Riesgo === 'medio') riesgoColor = '#f1c40f';
-                else if (cond.Riesgo === 'bajo') riesgoColor = '#2ecc71';
+                if (cond.Riesgo === 'Crítico') riesgoColor = '#e74c3c';
+                else if (cond.Riesgo === 'Alto') riesgoColor = '#e67e22';
+                else if (cond.Riesgo === 'Medio') riesgoColor = '#f1c40f';
+                else if (cond.Riesgo === 'Bajo') riesgoColor = '#2ecc71';
                 
                 const riesgoBadge = riesgoColor ? 
                     `<span style="background-color: ${riesgoColor}20; color: ${riesgoColor}; padding: 3px 8px; border-radius: 10px; font-size: 12px;">${cond.Riesgo}</span>` :
@@ -2021,7 +2185,7 @@
                             <i class="fas fa-undo"></i>
                         </button>
                         ${cond.FotoCorreccionUrl ? `
-                        <button class="action-btn btn-primary" onclick="mostrarModalFoto('${cond.FotoCorreccionUrl}', 'Foto de corrección')" title="Ver corrección">
+                        <button class="action-btn btn-primary" onclick="mostrarModalFoto('${cond.FotoCorreccionUrl}', 'Foto de corrección #${id}')" title="Ver corrección">
                             <i class="fas fa-camera"></i>
                         </button>
                         ` : ''}
@@ -2033,6 +2197,7 @@
                         <td><strong>#${id}</strong></td>
                         <td title="${cond.Descripcion}">${descCorta}</td>
                         <td>${cond.Sector || 'N/A'}</td>
+                        <td>${tipoHTML}</td>
                         <td>${riesgoBadge}</td>
                         <td class="photo-cell">${fotoHTML}</td>
                         <td>${formatDate(cond.Fecha)}</td>
@@ -2057,6 +2222,12 @@
                 riskLevel: document.getElementById('risk-level').value,
                 observaciones: document.getElementById('observaciones').value.trim()
             };
+            
+            // Validar que solo sea Zona 1 o Zona 2
+            if (reporte.sector !== 'Zona 1' && reporte.sector !== 'Zona 2') {
+                alert('❌ Solo se permiten los sectores: Zona 1 o Zona 2');
+                return;
+            }
             
             if (!reporte.reportedBy || !reporte.description || !reporte.sector || 
                 !reporte.location || !reporte.category || !reporte.riskLevel) {
@@ -2097,8 +2268,11 @@
             }
             
             let fotoCorreccionUrl = null;
-            if (nuevoEstado === 'reparado' && confirm('¿Desea agregar una foto de la corrección?')) {
-                fotoCorreccionUrl = await uploadCorrectionPhoto(id);
+            if (nuevoEstado === 'reparado') {
+                const confirmacion = confirm('¿Marcar como reparado?\n\n¿Desea agregar una foto de la corrección?');
+                if (confirmacion) {
+                    fotoCorreccionUrl = await uploadCorrectionPhoto(id);
+                }
             }
             
             const nuevosDatos = { 
@@ -2137,12 +2311,12 @@
         
         function mostrarEjemplo() {
             document.getElementById('reporter-name').value = 'Juan Pérez';
-            document.getElementById('description').value = 'Cable eléctrico expuesto en panel de control. Riesgo de electrocución.';
-            document.getElementById('sector').value = 'produccion';
-            document.getElementById('ubicacion').value = 'Línea 3, Estación 5';
-            document.getElementById('category').value = 'electrico';
-            document.getElementById('risk-level').value = 'critico';
-            document.getElementById('observaciones').value = 'Requiere intervención inmediata.';
+            document.getElementById('description').value = 'Piso resbaladizo por aceite derramado en zona de máquinas.';
+            document.getElementById('sector').value = 'Zona 1';
+            document.getElementById('ubicacion').value = 'Zona 1 - Prensa hidráulica, Estación 3';
+            document.getElementById('category').value = 'Físico';
+            document.getElementById('risk-level').value = 'Alto';
+            document.getElementById('observaciones').value = 'Requiere limpieza inmediata y señalización.';
         }
         
         function forzarActualizacion() {
@@ -2166,24 +2340,34 @@
             const tipo = document.getElementById('analysis-type').value;
             crearGraficoAnalisis(tipo);
             crearGraficoSector();
-            crearGraficoStatus();
+            crearGraficoTiempos();
         }
         
         function exportarHistorial() {
             const csv = unsafeConditions.map(cond => {
+                // Calcular tiempo de reparación si está reparado
+                let tiempoReparacion = '';
+                if (cond.Estado === 'reparado' && cond.Fecha && cond.FechaReparacion) {
+                    const tiempo = calcularTiempoReparacion(cond.Fecha, cond.FechaReparacion);
+                    tiempoReparacion = tiempo.texto;
+                }
+                
                 return [
                     cond.ID_secuencial || cond.ID,
                     `"${cond.Descripcion || ''}"`,
                     cond.Sector || '',
+                    cond.Categoria || '',
                     cond.Riesgo || '',
                     cond.FotoUrl ? 'Sí' : 'No',
                     cond.Fecha || '',
+                    tiempoReparacion,
                     cond.Estado || '',
-                    cond.ReportadoPor || ''
+                    cond.ReportadoPor || '',
+                    cond.ReparadoPor || ''
                 ].join(',');
             }).join('\n');
             
-            const headers = 'ID,Descripción,Sector,Riesgo,Tiene Foto,Fecha,Estado,Reportado por\n';
+            const headers = 'ID,Descripción,Sector,Tipo,Riesgo,Tiene Foto,Fecha Reporte,Tiempo Reparación,Estado,Reportado por,Reparado por\n';
             const blob = new Blob([headers + csv], { type: 'text/csv;charset=utf-8;' });
             const link = document.createElement('a');
             const url = URL.createObjectURL(blob);
@@ -2267,6 +2451,11 @@
             document.getElementById('filter-repaired').addEventListener('click', () => {
                 currentFilter = 'reparado';
                 actualizarTablaHistorial('reparado');
+            });
+            
+            // Filtro por sector
+            document.getElementById('filter-sector').addEventListener('change', function() {
+                actualizarTablaHistorial(currentFilter);
             });
             
             // Búsqueda
