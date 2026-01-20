@@ -2208,4 +2208,356 @@
             }).join('');
         }
         
-        // (Continúa en la siguiente respuesta debido al límite de caracteres...)
+                function actualizarTablaHistorial(filtro = 'all') {
+            const tbody = document.querySelector('#history-table tbody');
+            if (!tbody) return;
+            
+            let condicionesFiltradas = [...unsafeConditions];
+            
+            if (filtro !== 'all') {
+                condicionesFiltradas = unsafeConditions.filter(c => (c.Estado || 'pendiente') === filtro);
+            }
+            
+            // Filtrar por sector
+            const filterSector = document.getElementById('filter-sector').value;
+            if (filterSector) {
+                condicionesFiltradas = condicionesFiltradas.filter(c => c.Sector === filterSector);
+            }
+            
+            // Filtrar por búsqueda de OT
+            const searchTerm = document.getElementById('search-input').value.toLowerCase();
+            if (searchTerm) {
+                condicionesFiltradas = condicionesFiltradas.filter(c => 
+                    (c.NumeroOT && c.NumeroOT.toLowerCase().includes(searchTerm)) ||
+                    (c.Descripcion && c.Descripcion.toLowerCase().includes(searchTerm)) ||
+                    (c.ReportadoPor && c.ReportadoPor.toLowerCase().includes(searchTerm))
+                );
+            }
+            
+            condicionesFiltradas.sort((a, b) => new Date(b.Fecha || b.ultimaModificacion) - new Date(a.Fecha || a.ultimaModificacion));
+            
+            if (condicionesFiltradas.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="12" style="text-align: center; padding: 50px; color: #7f8c8d;">
+                            <i class="fas fa-search" style="font-size: 48px; margin-bottom: 15px;"></i>
+                            <p>No hay reportes ${filtro !== 'all' ? `con estado "${filtro}"` : 'registrados'}</p>
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+            
+            tbody.innerHTML = condicionesFiltradas.map(cond => {
+                const id = cond.ID_secuencial || cond.ID;
+                const descCorta = cond.Descripcion.length > 60 ? cond.Descripcion.substring(0, 60) + '...' : cond.Descripcion;
+                const estado = cond.Estado || 'pendiente';
+                
+                let estadoBadge = '';
+                if (estado === 'pendiente') estadoBadge = '<span class="status-badge status-pendiente">Pendiente</span>';
+                else if (estado === 'en proceso') estadoBadge = '<span class="status-badge status-en-proceso">En Proceso</span>';
+                else estadoBadge = '<span class="status-badge status-reparado">Reparado</span>';
+                
+                // Tiempo de reparación
+                let tiempoHTML = '';
+                if (estado === 'reparado' && cond.Fecha && cond.FechaReparacion) {
+                    const tiempo = calcularTiempoReparacion(cond.Fecha, cond.FechaReparacion);
+                    tiempoHTML = `<span class="tiempo-reparacion ${tiempo.clase}">
+                        <i class="fas fa-clock"></i> ${tiempo.texto}
+                    </span>`;
+                } else if (estado === 'en proceso' && cond.Fecha) {
+                    const tiempo = calcularTiempoReparacion(cond.Fecha, new Date());
+                    tiempoHTML = `<span style="color: #3498db"><i class="fas fa-hourglass-half"></i> ${tiempo.texto}</span>`;
+                } else {
+                    tiempoHTML = '<span style="color: #95a5a6"><i class="fas fa-minus"></i> -</span>';
+                }
+                
+                // Foto
+                let fotoHTML = '<span class="no-photo">-</span>';
+                if (cond.FotoUrl) {
+                    fotoHTML = `
+                        <img src="${cond.FotoUrl}" 
+                             class="table-photo" 
+                             alt="Foto"
+                             onclick="mostrarModalFoto('${cond.FotoUrl}', 'Reporte #${id} - ${cond.NumeroOT || 'Sin OT'}')"
+                             title="Ver foto del reporte">
+                    `;
+                }
+                
+                // Tipo de riesgo
+                let tipoHTML = cond.Categoria || 'N/A';
+                if (cond.Categoria === 'Físico') {
+                    tipoHTML = `<span class="tipo-fisico">${cond.Categoria}</span>`;
+                }
+                
+                // OT
+                const otHTML = cond.NumeroOT ? `<span class="ot-badge">${cond.NumeroOT}</span>` : '<span style="color: #95a5a6">-</span>';
+                
+                // Badge de riesgo
+                let riesgoColor = '';
+                if (cond.Riesgo === 'Crítico') riesgoColor = '#ec2c3c';
+                else if (cond.Riesgo === 'Alto') riesgoColor = '#e67e22';
+                else if (cond.Riesgo === 'Medio') riesgoColor = '#f39c12';
+                else if (cond.Riesgo === 'Bajo') riesgoColor = '#27ae60';
+                
+                const riesgoBadge = riesgoColor ? 
+                    `<span style="background-color: ${riesgoColor}20; color: ${riesgoColor}; padding: 3px 8px; border-radius: 10px; font-size: 12px;">${cond.Riesgo}</span>` :
+                    cond.Riesgo || 'N/A';
+                
+                // Acciones
+                let acciones = '';
+                if (estado === 'pendiente') {
+                    acciones = `
+                        <button class="action-btn" style="background-color: var(--dane-accent); color: white;" onclick="cambiarEstado('${cond.ID}', 'en proceso')" title="En proceso">
+                            <i class="fas fa-play"></i>
+                        </button>
+                        <button class="action-btn btn-success" onclick="cambiarEstado('${cond.ID}', 'reparado')" title="Reparado">
+                            <i class="fas fa-check"></i>
+                        </button>
+                    `;
+                } else if (estado === 'en proceso') {
+                    acciones = `
+                        <button class="action-btn btn-success" onclick="cambiarEstado('${cond.ID}', 'reparado')" title="Reparado">
+                            <i class="fas fa-check"></i>
+                        </button>
+                        <button class="action-btn btn-primary" onclick="cambiarEstado('${cond.ID}', 'pendiente')" title="Pendiente">
+                            <i class="fas fa-undo"></i>
+                        </button>
+                    `;
+                } else {
+                    acciones = `
+                        <button class="action-btn btn-primary" onclick="cambiarEstado('${cond.ID}', 'pendiente')" title="Pendiente">
+                            <i class="fas fa-undo"></i>
+                        </button>
+                        ${cond.FotoCorreccionUrl ? `
+                        <button class="action-btn" style="background-color: var(--dane-accent); color: white;" onclick="mostrarModalFoto('${cond.FotoCorreccionUrl}', 'Foto de corrección #${id}')" title="Ver corrección">
+                            <i class="fas fa-camera"></i>
+                        </button>
+                        ` : ''}
+                    `;
+                }
+                
+                return `
+                    <tr>
+                        <td><strong>#${id}</strong></td>
+                        <td title="${cond.Descripcion}">${descCorta}</td>
+                        <td>${cond.Sector || 'N/A'}</td>
+                        <td>${otHTML}</td>
+                        <td>${tipoHTML}</td>
+                        <td>${riesgoBadge}</td>
+                        <td class="photo-cell">${fotoHTML}</td>
+                        <td>${formatDate(cond.Fecha)}</td>
+                        <td>${tiempoHTML}</td>
+                        <td>${cond.ReportadoPor || 'Anónimo'}</td>
+                        <td>${estadoBadge}</td>
+                        <td class="actions">${acciones}</td>
+                    </tr>
+                `;
+            }).join('');
+        }
+        
+        async function guardarNuevoReporte(event) {
+            event.preventDefault();
+            
+            const reporte = {
+                numeroOT: document.getElementById('ot-number').value.trim(),
+                reportedBy: document.getElementById('reporter-name').value.trim(),
+                description: document.getElementById('description').value.trim(),
+                sector: document.getElementById('sector').value,
+                location: document.getElementById('ubicacion').value.trim(),
+                category: document.getElementById('category').value,
+                riskLevel: document.getElementById('risk-level').value,
+                observaciones: document.getElementById('observaciones').value.trim()
+            };
+            
+            // Validar número OT
+            if (!reporte.numeroOT.match(/^OT-\d{4}-\d{5}$/)) {
+                alert('❌ Formato de OT inválido. Use: OT-AAAA-NNNNN (Ej: OT-2024-00123)');
+                return;
+            }
+            
+            // Validar sector
+            if (reporte.sector !== 'Zona 1' && reporte.sector !== 'Zona 2') {
+                alert('❌ Solo se permiten los sectores: Zona 1 o Zona 2');
+                return;
+            }
+            
+            if (!reporte.reportedBy || !reporte.description || !reporte.sector || 
+                !reporte.location || !reporte.category || !reporte.riskLevel) {
+                alert('❌ Complete todos los campos obligatorios');
+                return;
+            }
+            
+            const resultado = await guardarCondicionEnSupabase(reporte);
+            
+            if (resultado.success) {
+                // Recargar datos
+                if (!CONFIG.offlineMode) {
+                    unsafeConditions = await cargarCondicionesDesdeSupabase();
+                } else {
+                    unsafeConditions = cargarDesdeLocalStorage();
+                }
+                
+                if (resultado.offline) {
+                    alert(`⚠️ Modo offline. Reporte guardado localmente (ID: #${resultado.id}, OT: ${reporte.numeroOT})`);
+                } else {
+                    alert(`✅ Reporte guardado (ID: #${resultado.id}, OT: ${reporte.numeroOT})`);
+                }
+                
+                document.getElementById('report-form').reset();
+                resetPhoto();
+                
+                actualizarEstadisticas();
+                actualizarTablaReciente();
+                actualizarTablaHistorial(currentFilter);
+                crearGraficoEvolucion();
+                
+                document.querySelector('.nav-menu a[data-page="dashboard"]').click();
+            } else {
+                alert('❌ Error guardando el reporte');
+            }
+        }
+        
+        function mostrarEjemplo() {
+            document.getElementById('ot-number').value = 'OT-2024-00123';
+            document.getElementById('reporter-name').value = 'Juan Pérez';
+            document.getElementById('description').value = 'Piso resbaladizo por aceite derramado en zona de máquinas. Riesgo de caída.';
+            document.getElementById('sector').value = 'Zona 1';
+            document.getElementById('ubicacion').value = 'Zona 1 - Prensa hidráulica, Estación 3';
+            document.getElementById('category').value = 'Físico';
+            document.getElementById('risk-level').value = 'Alto';
+            document.getElementById('observaciones').value = 'Requiere limpieza inmediata y señalización.';
+        }
+        
+        // ==============================================
+        // INICIALIZACIÓN
+        // ==============================================
+        document.addEventListener('DOMContentLoaded', async function() {
+            console.log('Sistema DANEC - Iniciando...');
+            await inicializarSistema();
+            
+            // Formulario
+            document.getElementById('report-form').addEventListener('submit', guardarNuevoReporte);
+            
+            // Navegación
+            document.querySelectorAll('.nav-menu a').forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const pageId = this.getAttribute('data-page');
+                    
+                    document.querySelectorAll('.nav-menu a').forEach(l => l.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    document.querySelectorAll('.page').forEach(page => page.style.display = 'none');
+                    document.getElementById(`${pageId}-page`).style.display = 'block';
+                    
+                    if (pageId === 'analisis') {
+                        setTimeout(actualizarAnalisis, 100);
+                    }
+                    
+                    if (pageId !== 'config') {
+                        document.getElementById('supabase-config-panel').style.display = 'none';
+                    } else {
+                        actualizarUIConfiguracion();
+                    }
+                });
+            });
+            
+            // Filtros
+            document.getElementById('filter-all').addEventListener('click', () => {
+                currentFilter = 'all';
+                actualizarTablaHistorial('all');
+            });
+            document.getElementById('filter-pending').addEventListener('click', () => {
+                currentFilter = 'pendiente';
+                actualizarTablaHistorial('pendiente');
+            });
+            document.getElementById('filter-process').addEventListener('click', () => {
+                currentFilter = 'en proceso';
+                actualizarTablaHistorial('en proceso');
+            });
+            document.getElementById('filter-repaired').addEventListener('click', () => {
+                currentFilter = 'reparado';
+                actualizarTablaHistorial('reparado');
+            });
+            
+            // Filtro por sector
+            document.getElementById('filter-sector').addEventListener('change', function() {
+                actualizarTablaHistorial(currentFilter);
+            });
+            
+            // Búsqueda
+            document.getElementById('search-input').addEventListener('input', function() {
+                actualizarTablaHistorial(currentFilter);
+            });
+            
+            // Drag & drop para foto
+            const dropArea = document.getElementById('photo-drop-area');
+            const fileInput = document.getElementById('photo-input');
+            
+            dropArea.addEventListener('click', () => fileInput.click());
+            
+            ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+                dropArea.addEventListener(eventName, preventDefaults, false);
+            });
+            
+            function preventDefaults(e) {
+                e.preventDefault();
+                e.stopPropagation();
+            }
+            
+            ['dragenter', 'dragover'].forEach(eventName => {
+                dropArea.addEventListener(eventName, highlight, false);
+            });
+            
+            ['dragleave', 'drop'].forEach(eventName => {
+                dropArea.addEventListener(eventName, unhighlight, false);
+            });
+            
+            function highlight() {
+                dropArea.classList.add('dragging');
+            }
+            
+            function unhighlight() {
+                dropArea.classList.remove('dragging');
+            }
+            
+            dropArea.addEventListener('drop', handleDrop, false);
+            
+            function handleDrop(e) {
+                const dt = e.dataTransfer;
+                const file = dt.files[0];
+                handlePhotoUpload(file);
+            }
+        });
+        
+        // Cerrar modal al hacer clic fuera
+        document.getElementById('photoModal').addEventListener('click', function(e) {
+            if (e.target === this) cerrarModalFoto();
+        });
+        
+        // ==============================================
+        // FUNCIONES GLOBALES
+        // ==============================================
+        window.mostrarConfigPanel = function() {
+            document.getElementById('supabase-config-panel').style.display = 'block';
+            document.getElementById('supabase-url').value = CONFIG.supabaseUrl;
+            document.getElementById('supabase-key').value = CONFIG.supabaseKey;
+            
+            const statusText = CONFIG.offlineMode ? 
+                '<span style="color: #f39c12;">Modo offline</span>' : 
+                '<span style="color: #27ae60;">Conectado</span>';
+            document.getElementById('connection-status-text').innerHTML = statusText;
+        };
+        
+        window.probarConexion = probarConexionSupabase;
+        window.probarConfiguracionActual = probarConfiguracionActual;
+        window.guardarYProbarConfiguracion = guardarYProbarConfiguracion;
+        window.mostrarEjemplo = mostrarEjemplo;
+        window.resetPhoto = resetPhoto;
+        window.mostrarModalFoto = mostrarModalFoto;
+        window.cerrarModalFoto = cerrarModalFoto;
+        window.toggleDebug = toggleDebug;
+    </script>
+</body>
+</html>
