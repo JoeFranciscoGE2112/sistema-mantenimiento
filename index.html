@@ -563,6 +563,31 @@
             transform: scale(1.1);
         }
 
+        /* ===== MODO OFFLINE ===== */
+        .offline-warning {
+            background-color: rgba(243, 156, 18, 0.2);
+            border: 1px solid rgba(243, 156, 18, 0.3);
+            color: #e67e22;
+            padding: 10px 15px;
+            border-radius: 5px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .online-indicator {
+            background-color: rgba(46, 204, 113, 0.2);
+            border: 1px solid rgba(46, 204, 113, 0.3);
+            color: #27ae60;
+            padding: 10px 15px;
+            border-radius: 5px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
         /* ===== RESPONSIVE ===== */
         @media (max-width: 1200px) {
             .chart-row {
@@ -719,13 +744,22 @@
                 </div>
                 <div class="user-info">
                     <i class="fas fa-database"></i>
-                    <span id="db-status">Supabase</span>
+                    <span id="db-status">Sin conexión</span>
                 </div>
             </div>
         </div>
     </header>
 
     <div class="container">
+        <!-- Banner de estado de conexión -->
+        <div id="connection-banner" class="offline-warning" style="display: none;">
+            <i class="fas fa-exclamation-triangle"></i>
+            <div>
+                <strong>Modo offline</strong>
+                <p style="font-size: 14px; margin-top: 5px;">Los datos se guardarán localmente. Ve a Configuración para conectar a Supabase.</p>
+            </div>
+        </div>
+        
         <div class="main-content">
             <!-- Sidebar -->
             <aside class="sidebar">
@@ -742,32 +776,51 @@
                 <!-- Supabase Config Panel -->
                 <div id="supabase-config-panel" class="card" style="display: none; margin-top: 20px;">
                     <h3><i class="fas fa-database"></i> Configurar Supabase</h3>
+                    
+                    <div class="form-group">
+                        <label>Guía rápida:</label>
+                        <div style="background: #f8f9fa; padding: 10px; border-radius: 5px; margin-bottom: 10px;">
+                            <p style="font-size: 12px; margin-bottom: 5px;">1. Ve a <a href="https://supabase.com" target="_blank">supabase.com</a></p>
+                            <p style="font-size: 12px; margin-bottom: 5px;">2. Crea un nuevo proyecto</p>
+                            <p style="font-size: 12px;">3. En Settings → API, copia la URL y la API Key</p>
+                        </div>
+                    </div>
+                    
                     <div class="form-group">
                         <label for="supabase-url">URL de Supabase:</label>
                         <input type="text" id="supabase-url" class="form-control" 
-                               placeholder="https://abc123.supabase.co">
+                               placeholder="https://tu-proyecto.supabase.co">
+                        <small style="font-size: 12px; color: #7f8c8d;">Ej: https://xyzabc123.supabase.co</small>
                     </div>
                     
                     <div class="form-group">
                         <label for="supabase-key">API Key (anon public):</label>
                         <input type="text" id="supabase-key" class="form-control" 
                                placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...">
+                        <small style="font-size: 12px; color: #7f8c8d;">La clave pública, no la service_role</small>
                     </div>
                     
-                    <button class="btn btn-success" onclick="guardarConfigSupabase()">
-                        <i class="fas fa-plug"></i> Conectar
-                    </button>
+                    <div style="display: flex; gap: 10px; margin-top: 20px;">
+                        <button class="btn btn-success" onclick="guardarConfigSupabase()">
+                            <i class="fas fa-plug"></i> Conectar
+                        </button>
+                        <button class="btn" onclick="probarConfiguracionSupabase()">
+                            <i class="fas fa-test"></i> Probar
+                        </button>
+                    </div>
+                    
+                    <div id="test-result" style="margin-top: 15px; display: none;"></div>
                 </div>
 
                 <div class="card" style="margin-top: 30px;">
                     <h3><i class="fas fa-info-circle"></i> Información</h3>
-                    <p style="margin-top: 10px; font-size: 14px;">
-                        Sistema para reportar condiciones inseguras en el lugar de trabajo.
+                    <p style="margin-top: 10px; font-size: 14px;" id="connection-info">
+                        Conectando...
                     </p>
                     <p style="font-size: 12px; color: #7f8c8d; margin-top: 10px;">
-                        <i class="fas fa-camera"></i> Ahora con soporte para fotos<br>
-                        <i class="fas fa-bolt"></i> Nueva opción "Físico" en tipos de riesgo<br>
-                        <i class="fas fa-clock"></i> Calcula tiempo de reparación automáticamente
+                        <i class="fas fa-camera"></i> Soporte para fotos<br>
+                        <i class="fas fa-bolt"></i> Tipo "Físico" agregado<br>
+                        <i class="fas fa-clock"></i> Calcula tiempo de reparación
                     </p>
                 </div>
             </aside>
@@ -776,6 +829,14 @@
             <main class="main-panel">
                 <!-- Dashboard Page -->
                 <div id="dashboard-page" class="page active">
+                    <div id="dashboard-warning" class="offline-warning" style="display: none;">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <div>
+                            <strong>Modo offline</strong>
+                            <p style="font-size: 14px; margin-top: 5px;">Los datos mostrados son del almacenamiento local.</p>
+                        </div>
+                    </div>
+                    
                     <div class="stats-container">
                         <div class="stat-card">
                             <div class="stat-title">Total Reportes</div>
@@ -811,9 +872,14 @@
                     <div class="card">
                         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
                             <h2><i class="fas fa-history"></i> Últimas Actividades</h2>
-                            <button onclick="forzarActualizacion()" class="btn" style="padding: 5px 10px;">
-                                <i class="fas fa-sync-alt"></i> Actualizar
-                            </button>
+                            <div style="display: flex; gap: 10px;">
+                                <button onclick="forzarActualizacion()" class="btn" title="Actualizar datos">
+                                    <i class="fas fa-sync-alt"></i> Actualizar
+                                </button>
+                                <button onclick="sincronizarOffline()" class="btn btn-success" id="sync-button" style="display: none;" title="Sincronizar datos offline">
+                                    <i class="fas fa-cloud-upload-alt"></i> Sincronizar
+                                </button>
+                            </div>
                         </div>
                         <div class="table-container">
                             <table id="recent-table">
@@ -838,6 +904,14 @@
 
                 <!-- Registro Page -->
                 <div id="registro-page" class="page" style="display: none;">
+                    <div id="registro-warning" class="offline-warning" style="display: none;">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <div>
+                            <strong>Modo offline</strong>
+                            <p style="font-size: 14px; margin-top: 5px;">El reporte se guardará localmente y se sincronizará cuando haya conexión.</p>
+                        </div>
+                    </div>
+                    
                     <div class="card">
                         <h2><i class="fas fa-plus-circle"></i> Nuevo Reporte</h2>
                         <form id="report-form">
@@ -1043,7 +1117,10 @@
                                     <i class="fas fa-sync-alt"></i> Probar Conexión
                                 </button>
                                 <button class="btn btn-warning" onclick="mostrarConfigPanel()">
-                                    <i class="fas fa-edit"></i> Cambiar
+                                    <i class="fas fa-edit"></i> Cambiar Configuración
+                                </button>
+                                <button class="btn btn-primary" onclick="sincronizarOffline()" id="sync-offline-btn" style="display: none;">
+                                    <i class="fas fa-cloud-upload-alt"></i> Sincronizar Offline
                                 </button>
                                 <button class="btn btn-danger" onclick="limpiarDatos()">
                                     <i class="fas fa-trash"></i> Limpiar Local
@@ -1052,14 +1129,15 @@
                         </div>
                         
                         <div style="margin-top: 30px;">
-                            <h3><i class="fas fa-info-circle"></i> Información</h3>
+                            <h3><i class="fas fa-info-circle"></i> Información del Sistema</h3>
                             <div style="background: #f8f9fa; padding: 15px; border-radius: 5px; margin-top: 10px;">
                                 <p><strong>Total reportes:</strong> <span id="total-db-count">0</span></p>
+                                <p><strong>Reportes offline:</strong> <span id="offline-count">0</span></p>
                                 <p><strong>Reportes con fotos:</strong> <span id="reports-with-photos">0</span></p>
                                 <p><strong>Tiempo promedio reparación:</strong> <span id="avg-repair-time">0h</span></p>
                                 <p><strong>Última sincronización:</strong> <span id="last-sync">Nunca</span></p>
-                                <p><strong>Modo:</strong> <span id="current-mode">Desconocido</span></p>
-                                <p><strong>Versión:</strong> 4.0.0</p>
+                                <p><strong>Modo actual:</strong> <span id="current-mode">Desconocido</span></p>
+                                <p><strong>Versión:</strong> 4.1.0</p>
                             </div>
                         </div>
                     </div>
@@ -1068,7 +1146,7 @@
         </div>
         
         <footer style="text-align: center; margin-top: 30px; padding: 20px; color: #7f8c8d; border-top: 1px solid #eee;">
-            <p>Sistema de Condiciones Inseguras &copy; 2024 | Sectores: Zona 1 y Zona 2 | Tipo: Físico agregado</p>
+            <p>Sistema de Condiciones Inseguras &copy; 2024 | <span id="footer-status">Sin conexión a Supabase</span></p>
         </footer>
     </div>
 
@@ -1084,13 +1162,15 @@
         let timeChart = null;
         let evolutionChart = null;
         let selectedPhoto = null;
+        let offlineData = []; // Datos guardados localmente pendientes de sincronizar
         
         // Configuración por defecto
         let CONFIG = {
             supabaseUrl: localStorage.getItem('supabase_url') || '',
             supabaseKey: localStorage.getItem('supabase_key') || '',
             lastSync: localStorage.getItem('last_sync') || 'Nunca',
-            offlineMode: localStorage.getItem('offline_mode') === 'true' || false
+            offlineMode: localStorage.getItem('offline_mode') === 'true' || true,
+            initialized: false
         };
         
         // Colores para gráficos
@@ -1129,6 +1209,8 @@
         
         function updateStatusIndicator(status, message) {
             const indicator = document.getElementById('status-indicator');
+            const footerStatus = document.getElementById('footer-status');
+            
             if (!indicator) return;
             
             indicator.classList.remove('status-connected', 'status-disconnected', 'status-error');
@@ -1143,7 +1225,67 @@
             
             const dbStatus = document.getElementById('db-status');
             if (dbStatus) {
-                dbStatus.textContent = status === 'connected' ? 'Conectado' : 'Desconectado';
+                dbStatus.textContent = status === 'connected' ? 'Supabase Conectado' : 'Sin conexión';
+            }
+            
+            if (footerStatus) {
+                footerStatus.textContent = status === 'connected' ? 'Conectado a Supabase' : 'Sin conexión a Supabase';
+            }
+        }
+        
+        function updateConnectionUI(isConnected) {
+            const connectionBanner = document.getElementById('connection-banner');
+            const dashboardWarning = document.getElementById('dashboard-warning');
+            const registroWarning = document.getElementById('registro-warning');
+            const syncButton = document.getElementById('sync-button');
+            const syncOfflineBtn = document.getElementById('sync-offline-btn');
+            const connectionInfo = document.getElementById('connection-info');
+            
+            if (isConnected) {
+                // Modo online
+                if (connectionBanner) connectionBanner.style.display = 'none';
+                if (dashboardWarning) dashboardWarning.style.display = 'none';
+                if (registroWarning) registroWarning.style.display = 'none';
+                if (syncButton) syncButton.style.display = 'none';
+                if (syncOfflineBtn) syncOfflineBtn.style.display = 'none';
+                if (connectionInfo) {
+                    connectionInfo.innerHTML = '<span style="color: #27ae60;"><i class="fas fa-check-circle"></i> Conectado a Supabase</span>';
+                }
+                
+                // Cambiar el banner a online
+                if (connectionBanner) {
+                    connectionBanner.className = 'online-indicator';
+                    connectionBanner.innerHTML = `
+                        <i class="fas fa-check-circle"></i>
+                        <div>
+                            <strong>Conectado a Supabase</strong>
+                            <p style="font-size: 14px; margin-top: 5px;">Los datos se guardarán en la nube.</p>
+                        </div>
+                    `;
+                    connectionBanner.style.display = 'block';
+                }
+                
+            } else {
+                // Modo offline
+                if (connectionBanner) {
+                    connectionBanner.className = 'offline-warning';
+                    connectionBanner.innerHTML = `
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <div>
+                            <strong>Modo offline</strong>
+                            <p style="font-size: 14px; margin-top: 5px;">Los datos se guardarán localmente. Ve a Configuración para conectar a Supabase.</p>
+                        </div>
+                    `;
+                    connectionBanner.style.display = 'block';
+                }
+                
+                if (dashboardWarning) dashboardWarning.style.display = 'block';
+                if (registroWarning) registroWarning.style.display = 'block';
+                if (syncButton) syncButton.style.display = 'inline-flex';
+                if (syncOfflineBtn) syncOfflineBtn.style.display = 'inline-flex';
+                if (connectionInfo) {
+                    connectionInfo.innerHTML = '<span style="color: #e67e22;"><i class="fas fa-exclamation-triangle"></i> Modo offline - Datos locales</span>';
+                }
             }
         }
         
@@ -1394,6 +1536,51 @@
             document.getElementById('supabase-key').value = CONFIG.supabaseKey;
         }
         
+        async function probarConfiguracionSupabase() {
+            const url = document.getElementById('supabase-url').value.trim();
+            const key = document.getElementById('supabase-key').value.trim();
+            
+            if (!url || !key) {
+                document.getElementById('test-result').innerHTML = '<div style="color: #e74c3c; background: rgba(231, 76, 60, 0.1); padding: 10px; border-radius: 5px;"><i class="fas fa-times-circle"></i> Ingresa la URL y API Key</div>';
+                document.getElementById('test-result').style.display = 'block';
+                return;
+            }
+            
+            showLoading(true, 'Probando conexión...');
+            
+            try {
+                // Crear cliente temporal para probar
+                const tempClient = supabase.createClient(url, key);
+                
+                // Probar conexión a la tabla
+                const { data, error } = await tempClient
+                    .from('condiciones_inseguras')
+                    .select('count', { count: 'exact', head: true });
+                
+                if (error) throw error;
+                
+                document.getElementById('test-result').innerHTML = `<div style="color: #27ae60; background: rgba(46, 204, 113, 0.1); padding: 10px; border-radius: 5px;"><i class="fas fa-check-circle"></i> Conexión exitosa. Puedes guardar la configuración.</div>`;
+                document.getElementById('test-result').style.display = 'block';
+                
+            } catch (error) {
+                console.error('Error probando conexión:', error);
+                
+                let mensaje = 'Error desconocido';
+                if (error.message.includes('JWT')) {
+                    mensaje = 'API Key inválida. Verifica que sea la clave pública (anon)';
+                } else if (error.message.includes('network')) {
+                    mensaje = 'Error de red. Verifica la URL';
+                } else if (error.message.includes('permission')) {
+                    mensaje = 'Error de permisos. Verifica las políticas RLS en Supabase';
+                }
+                
+                document.getElementById('test-result').innerHTML = `<div style="color: #e74c3c; background: rgba(231, 76, 60, 0.1); padding: 10px; border-radius: 5px;"><i class="fas fa-times-circle"></i> ${mensaje}</div>`;
+                document.getElementById('test-result').style.display = 'block';
+            }
+            
+            showLoading(false);
+        }
+        
         function guardarConfigSupabase() {
             const url = document.getElementById('supabase-url').value.trim();
             const key = document.getElementById('supabase-key').value.trim();
@@ -1415,24 +1602,33 @@
         
         function inicializarSupabase() {
             if (!CONFIG.supabaseUrl || !CONFIG.supabaseKey) {
+                console.log('Sin configuración de Supabase');
                 updateStatusIndicator('disconnected', 'Sin configuración');
-                mostrarConfigPanel();
+                updateConnectionUI(false);
+                CONFIG.offlineMode = true;
+                localStorage.setItem('offline_mode', 'true');
                 return false;
             }
             
             try {
                 supabaseClient = supabase.createClient(CONFIG.supabaseUrl, CONFIG.supabaseKey);
-                probarConexionSupabase();
+                console.log('Cliente Supabase inicializado');
                 return true;
             } catch (error) {
+                console.error('Error inicializando Supabase:', error);
                 updateStatusIndicator('error', 'Error de configuración');
-                mostrarConfigPanel();
+                updateConnectionUI(false);
+                CONFIG.offlineMode = true;
+                localStorage.setItem('offline_mode', 'true');
                 return false;
             }
         }
         
         async function probarConexionSupabase() {
-            if (!supabaseClient) return false;
+            if (!supabaseClient) {
+                console.log('No hay cliente Supabase');
+                return false;
+            }
             
             showLoading(true, 'Probando conexión...');
             
@@ -1442,25 +1638,53 @@
                     .from('condiciones_inseguras')
                     .select('count', { count: 'exact', head: true });
                 
-                if (error) throw error;
+                if (error) {
+                    console.error('Error de Supabase:', error);
+                    
+                    if (error.message.includes('JWT')) {
+                        updateStatusIndicator('error', 'API Key inválida');
+                        document.getElementById('connection-status').innerHTML = 
+                            '<span style="color: #e74c3c;"><i class="fas fa-times-circle"></i> API Key inválida</span>';
+                        alert('❌ API Key inválida. Verifica que sea la clave pública (anon)');
+                    } else if (error.message.includes('permission')) {
+                        updateStatusIndicator('error', 'Error de permisos');
+                        document.getElementById('connection-status').innerHTML = 
+                            '<span style="color: #e74c3c;"><i class="fas fa-times-circle"></i> Error de permisos</span>';
+                        alert('❌ Error de permisos. Verifica las políticas RLS en Supabase');
+                    } else {
+                        throw error;
+                    }
+                    
+                    CONFIG.offlineMode = true;
+                    localStorage.setItem('offline_mode', 'true');
+                    updateConnectionUI(false);
+                    showLoading(false);
+                    return false;
+                }
                 
-                // Crear bucket si no existe
+                // Intentar crear el bucket si no existe
                 try {
                     await supabaseClient.storage.createBucket('safety_photos', {
                         public: true,
                         allowedMimeTypes: ['image/jpeg', 'image/png'],
                         fileSizeLimit: 5242880 // 5MB
                     });
+                    console.log('Bucket de fotos creado o ya existente');
                 } catch (e) {
-                    // El bucket ya existe
+                    // El bucket ya existe o hay error de permisos
+                    console.log('Bucket ya existe o error de permisos:', e.message);
                 }
                 
                 updateStatusIndicator('connected', 'Conectado ✓');
                 CONFIG.offlineMode = false;
                 localStorage.setItem('offline_mode', 'false');
+                updateConnectionUI(true);
                 
                 document.getElementById('connection-status').innerHTML = 
                     '<span style="color: #3ecf8e;"><i class="fas fa-check-circle"></i> Conectado</span>';
+                
+                // Sincronizar datos offline si existen
+                sincronizarOffline();
                 
                 showLoading(false);
                 return true;
@@ -1468,16 +1692,19 @@
             } catch (error) {
                 console.error('Error de conexión:', error);
                 
-                if (error.message.includes('permission') || error.message.includes('JWT')) {
-                    updateStatusIndicator('error', 'Error de permisos');
-                    alert('❌ Error de permisos. Verifica la API Key y políticas RLS.');
-                } else if (error.message.includes('network')) {
+                if (error.message.includes('network') || error.message.includes('Failed to fetch')) {
                     updateStatusIndicator('disconnected', 'Sin conexión');
-                    CONFIG.offlineMode = true;
-                    localStorage.setItem('offline_mode', 'true');
+                    document.getElementById('connection-status').innerHTML = 
+                        '<span style="color: #e67e22;"><i class="fas fa-exclamation-triangle"></i> Sin conexión a internet</span>';
                 } else {
                     updateStatusIndicator('error', 'Error de conexión');
+                    document.getElementById('connection-status').innerHTML = 
+                        `<span style="color: #e74c3c;"><i class="fas fa-times-circle"></i> Error: ${error.message.substring(0, 50)}...</span>`;
                 }
+                
+                CONFIG.offlineMode = true;
+                localStorage.setItem('offline_mode', 'true');
+                updateConnectionUI(false);
                 
                 showLoading(false);
                 return false;
@@ -1485,14 +1712,149 @@
         }
         
         // ==============================================
+        // SINCRONIZACIÓN OFFLINE
+        // ==============================================
+        async function sincronizarOffline() {
+            if (!supabaseClient || CONFIG.offlineMode) {
+                alert('No hay conexión a Supabase para sincronizar');
+                return;
+            }
+            
+            const datosOffline = cargarDatosOffline();
+            
+            if (datosOffline.length === 0) {
+                alert('No hay datos offline para sincronizar');
+                return;
+            }
+            
+            showLoading(true, `Sincronizando ${datosOffline.length} reportes...`);
+            
+            let sincronizados = 0;
+            let errores = 0;
+            
+            for (const reporte of datosOffline) {
+                try {
+                    // Obtener próximo ID de Supabase
+                    const { data: lastId } = await supabaseClient
+                        .from('condiciones_inseguras')
+                        .select('id_secuencial')
+                        .order('id_secuencial', { ascending: false })
+                        .limit(1);
+                    
+                    const idSecuencial = lastId && lastId[0] ? lastId[0].id_secuencial + 1 : 1;
+                    
+                    // Preparar datos para Supabase
+                    const datosSupabase = {
+                        reportado_por: reporte.ReportadoPor,
+                        descripcion: reporte.Descripcion,
+                        sector: reporte.Sector,
+                        ubicacion: reporte.Ubicacion,
+                        categoria: reporte.Categoria,
+                        riesgo: reporte.Riesgo,
+                        observaciones: reporte.Observaciones,
+                        estado: reporte.Estado,
+                        fecha: reporte.Fecha,
+                        id_secuencial: idSecuencial,
+                        ultima_modificacion: obtenerTimestamp()
+                    };
+                    
+                    // Si está reparado, agregar esos datos
+                    if (reporte.Estado === 'reparado') {
+                        datosSupabase.reparado_por = reporte.ReparadoPor;
+                        datosSupabase.fecha_reparacion = reporte.FechaReparacion;
+                    }
+                    
+                    // Insertar en Supabase
+                    const { data, error } = await supabaseClient
+                        .from('condiciones_inseguras')
+                        .insert([datosSupabase])
+                        .select()
+                        .single();
+                    
+                    if (error) throw error;
+                    
+                    // Subir foto si existe (como base64)
+                    if (reporte.FotoUrl && reporte.FotoUrl.startsWith('data:image')) {
+                        try {
+                            // Convertir base64 a blob
+                            const base64Response = await fetch(reporte.FotoUrl);
+                            const blob = await base64Response.blob();
+                            
+                            const fileName = `cond_${data.id}_${Date.now()}.jpg`;
+                            const { error: uploadError } = await supabaseClient.storage
+                                .from('safety_photos')
+                                .upload(fileName, blob, {
+                                    cacheControl: '3600',
+                                    upsert: false
+                                });
+                            
+                            if (!uploadError) {
+                                const fotoUrl = `${CONFIG.supabaseUrl}/storage/v1/object/public/safety_photos/${fileName}`;
+                                await supabaseClient
+                                    .from('condiciones_inseguras')
+                                    .update({ foto_url: fotoUrl })
+                                    .eq('id', data.id);
+                            }
+                        } catch (fotoError) {
+                            console.error('Error subiendo foto offline:', fotoError);
+                        }
+                    }
+                    
+                    sincronizados++;
+                    
+                } catch (error) {
+                    console.error('Error sincronizando reporte:', error);
+                    errores++;
+                }
+            }
+            
+            // Eliminar datos sincronizados exitosamente
+            if (sincronizados > 0) {
+                eliminarDatosOfflineSincronizados(datosOffline.slice(0, sincronizados));
+            }
+            
+            showLoading(false);
+            
+            if (errores === 0) {
+                alert(`✅ ${sincronizados} reportes sincronizados exitosamente`);
+                // Recargar datos
+                unsafeConditions = await cargarCondicionesDesdeSupabase();
+                actualizarEstadisticas();
+                actualizarTablaReciente();
+                actualizarTablaHistorial();
+            } else {
+                alert(`⚠️ ${sincronizados} sincronizados, ${errores} con error`);
+            }
+        }
+        
+        function cargarDatosOffline() {
+            const datos = localStorage.getItem('condiciones_offline');
+            return datos ? JSON.parse(datos) : [];
+        }
+        
+        function guardarDatoOffline(reporte) {
+            const datos = cargarDatosOffline();
+            datos.push(reporte);
+            localStorage.setItem('condiciones_offline', JSON.stringify(datos));
+        }
+        
+        function eliminarDatosOfflineSincronizados(reportesSincronizados) {
+            const datosActuales = cargarDatosOffline();
+            const idsSincronizados = reportesSincronizados.map(r => r.ID_local);
+            const nuevosDatos = datosActuales.filter(d => !idsSincronizados.includes(d.ID_local));
+            localStorage.setItem('condiciones_offline', JSON.stringify(nuevosDatos));
+        }
+        
+        // ==============================================
         // CRUD OPERATIONS
         // ==============================================
         async function cargarCondicionesDesdeSupabase() {
             if (!supabaseClient || CONFIG.offlineMode) {
+                console.log('Cargando desde localStorage (modo offline)');
                 return cargarDesdeLocalStorage();
             }
             
-            showLoading(true, 'Cargando datos...');
+            showLoading(true, 'Cargando datos desde Supabase...');
             
             try {
                 const { data, error } = await supabaseClient
@@ -1504,6 +1866,7 @@
                 
                 CONFIG.lastSync = new Date().toLocaleString();
                 localStorage.setItem('last_sync', CONFIG.lastSync);
+                console.log(`Cargados ${data.length} registros desde Supabase`);
                 
                 showLoading(false);
                 
@@ -1523,22 +1886,25 @@
                     Observaciones: item.observaciones,
                     FotoUrl: item.foto_url,
                     FotoCorreccionUrl: item.foto_correccion_url,
-                    ultimaModificacion: item.ultima_modificacion
+                    ultimaModificacion: item.ultima_modificacion,
+                    origen: 'supabase'
                 }));
                 
             } catch (error) {
-                console.error('Error cargando:', error);
+                console.error('Error cargando desde Supabase:', error);
                 showLoading(false);
+                updateConnectionUI(false);
                 return cargarDesdeLocalStorage();
             }
         }
         
         async function guardarCondicionEnSupabase(reporte) {
             if (!supabaseClient || CONFIG.offlineMode) {
+                console.log('Guardando en localStorage (modo offline)');
                 return guardarEnLocalStorage(reporte);
             }
             
-            showLoading(true, 'Guardando reporte...');
+            showLoading(true, 'Guardando reporte en Supabase...');
             
             try {
                 // Obtener próximo ID
@@ -1589,22 +1955,27 @@
                 // Resetear foto
                 resetPhoto();
                 
+                console.log('Reporte guardado en Supabase, ID:', idSecuencial);
+                
                 return {
                     success: true,
                     id: idSecuencial,
                     supabaseId: data.id,
-                    fotoUrl: fotoUrl
+                    fotoUrl: fotoUrl,
+                    offline: false
                 };
                 
             } catch (error) {
-                console.error('Error guardando:', error);
+                console.error('Error guardando en Supabase:', error);
                 showLoading(false);
+                updateConnectionUI(false);
                 return guardarEnLocalStorage(reporte);
             }
         }
         
         async function actualizarEstadoEnSupabase(id, nuevosDatos) {
             if (!supabaseClient || CONFIG.offlineMode) {
+                console.log('Actualizando en localStorage (modo offline)');
                 return { success: false, offline: true };
             }
             
@@ -1630,10 +2001,12 @@
                 
                 if (error) throw error;
                 
-                return { success: true };
+                console.log('Estado actualizado en Supabase, ID:', id);
+                return { success: true, offline: false };
                 
             } catch (error) {
-                console.error('Error actualizando:', error);
+                console.error('Error actualizando en Supabase:', error);
+                updateConnectionUI(false);
                 return { success: false, offline: true };
             }
         }
@@ -1643,12 +2016,14 @@
         // ==============================================
         function cargarDesdeLocalStorage() {
             const datos = localStorage.getItem('condiciones_pendientes');
-            return datos ? JSON.parse(datos) : [];
+            const datosParsed = datos ? JSON.parse(datos) : [];
+            console.log(`Cargados ${datosParsed.length} registros desde localStorage`);
+            return datosParsed;
         }
         
         function guardarEnLocalStorage(reporte) {
             const condiciones = cargarDesdeLocalStorage();
-            const nuevoId = condiciones.length + 1;
+            const nuevoId = condiciones.length > 0 ? Math.max(...condiciones.map(c => c.ID)) + 1 : 1;
             
             // Convertir foto a base64 para almacenamiento local
             let fotoBase64 = null;
@@ -1658,31 +2033,51 @@
                     fotoBase64 = e.target.result;
                 };
                 reader.readAsDataURL(selectedPhoto);
+                // Esperar a que se complete la lectura
+                setTimeout(() => {
+                    // Guardar con foto
+                    guardarReporteConFoto();
+                }, 100);
+                return { success: true, id: nuevoId, offline: true };
             }
             
-            const nuevoReporte = {
-                ID: nuevoId,
-                ID_secuencial: nuevoId,
-                Fecha: new Date().toISOString(),
-                ReportadoPor: reporte.reportedBy,
-                Descripcion: reporte.description,
-                Sector: reporte.sector,
-                Ubicacion: reporte.location,
-                Categoria: reporte.category,
-                Riesgo: reporte.riskLevel,
-                Observaciones: reporte.observaciones,
-                Estado: "pendiente",
-                ReparadoPor: "",
-                FechaReparacion: null,
-                FotoUrl: fotoBase64,
-                FotoCorreccionUrl: null,
-                local: true,
-                pendienteSincronizacion: true,
-                ultimaModificacion: obtenerTimestamp()
-            };
+            function guardarReporteConFoto() {
+                const nuevoReporte = {
+                    ID: nuevoId,
+                    ID_secuencial: nuevoId,
+                    Fecha: new Date().toISOString(),
+                    ReportadoPor: reporte.reportedBy,
+                    Descripcion: reporte.description,
+                    Sector: reporte.sector,
+                    Ubicacion: reporte.location,
+                    Categoria: reporte.category,
+                    Riesgo: reporte.riskLevel,
+                    Observaciones: reporte.observaciones,
+                    Estado: "pendiente",
+                    ReparadoPor: "",
+                    FechaReparacion: null,
+                    FotoUrl: fotoBase64,
+                    FotoCorreccionUrl: null,
+                    origen: 'local',
+                    pendienteSincronizacion: true,
+                    ultimaModificacion: obtenerTimestamp()
+                };
+                
+                condiciones.unshift(nuevoReporte);
+                localStorage.setItem('condiciones_pendientes', JSON.stringify(condiciones));
+                
+                // También guardar en lista offline para sincronización
+                guardarDatoOffline({
+                    ...nuevoReporte,
+                    ID_local: Date.now() // ID único para sincronización
+                });
+                
+                console.log('Reporte guardado localmente, ID:', nuevoId);
+            }
             
-            condiciones.unshift(nuevoReporte);
-            localStorage.setItem('condiciones_pendientes', JSON.stringify(condiciones));
+            if (!selectedPhoto) {
+                guardarReporteConFoto();
+            }
             
             resetPhoto();
             
@@ -1965,12 +2360,25 @@
         // INTERFAZ PRINCIPAL
         // ==============================================
         async function inicializarSistema() {
-            showLoading(true, 'Inicializando...');
+            showLoading(true, 'Inicializando sistema...');
             
-            inicializarSupabase();
+            // Inicializar Supabase
+            const supabaseInicializado = inicializarSupabase();
             
-            unsafeConditions = await cargarCondicionesDesdeSupabase();
+            if (supabaseInicializado) {
+                // Probar conexión
+                const conexionExitosa = await probarConexionSupabase();
+                
+                if (conexionExitosa) {
+                    unsafeConditions = await cargarCondicionesDesdeSupabase();
+                } else {
+                    unsafeConditions = cargarDesdeLocalStorage();
+                }
+            } else {
+                unsafeConditions = cargarDesdeLocalStorage();
+            }
             
+            // Actualizar interfaz
             actualizarEstadisticas();
             actualizarTablaReciente();
             actualizarTablaHistorial();
@@ -1979,11 +2387,26 @@
             
             showLoading(false);
             
-            // Actualizar cada 30 segundos
+            // Verificar conexión periódicamente
             setInterval(async () => {
-                unsafeConditions = await cargarCondicionesDesdeSupabase();
-                actualizarEstadisticas();
-                actualizarTablaReciente();
+                if (supabaseClient && !CONFIG.offlineMode) {
+                    try {
+                        await supabaseClient.from('condiciones_inseguras').select('count', { count: 'exact', head: true });
+                        // Si no hay error, estamos conectados
+                        if (CONFIG.offlineMode) {
+                            CONFIG.offlineMode = false;
+                            updateConnectionUI(true);
+                            updateStatusIndicator('connected', 'Conectado ✓');
+                        }
+                    } catch (error) {
+                        // Error de conexión
+                        if (!CONFIG.offlineMode) {
+                            CONFIG.offlineMode = true;
+                            updateConnectionUI(false);
+                            updateStatusIndicator('disconnected', 'Sin conexión');
+                        }
+                    }
+                }
             }, 30000);
         }
         
@@ -1993,6 +2416,8 @@
             const enProceso = unsafeConditions.filter(c => c.Estado === 'en proceso').length;
             const reparados = unsafeConditions.filter(c => c.Estado === 'reparado').length;
             const tiempoPromedio = calcularTiempoPromedioReparacion();
+            const offlineCount = unsafeConditions.filter(c => c.origen === 'local').length;
+            const conFotos = unsafeConditions.filter(c => c.FotoUrl).length;
             
             document.getElementById('total-count').textContent = total;
             document.getElementById('pending-count').textContent = pendientes;
@@ -2004,8 +2429,11 @@
                 document.getElementById('total-db-count').textContent = total;
             }
             
+            if (document.getElementById('offline-count')) {
+                document.getElementById('offline-count').textContent = offlineCount;
+            }
+            
             if (document.getElementById('reports-with-photos')) {
-                const conFotos = unsafeConditions.filter(c => c.FotoUrl).length;
                 document.getElementById('reports-with-photos').textContent = conFotos;
             }
             
@@ -2062,9 +2490,12 @@
                     tiempoHTML = '<span style="color: #95a5a6"><i class="fas fa-minus"></i> -</span>';
                 }
                 
+                // Indicador offline
+                const offlineBadge = cond.origen === 'local' ? ' <span style="font-size: 10px; color: #e67e22;" title="Guardado localmente">(offline)</span>' : '';
+                
                 return `
                     <tr>
-                        <td><strong>#${idVisual}</strong></td>
+                        <td><strong>#${idVisual}</strong>${offlineBadge}</td>
                         <td title="${cond.Descripcion}">${descCorta}</td>
                         <td>${cond.Sector || 'N/A'}</td>
                         <td>${tipoHTML}</td>
@@ -2159,6 +2590,10 @@
                     `<span style="background-color: ${riesgoColor}20; color: ${riesgoColor}; padding: 3px 8px; border-radius: 10px; font-size: 12px;">${cond.Riesgo}</span>` :
                     cond.Riesgo || 'N/A';
                 
+                // Indicador offline
+                const offlineIndicator = cond.origen === 'local' ? 
+                    '<span style="font-size: 10px; color: #e67e22; margin-left: 5px;" title="Guardado localmente">●</span>' : '';
+                
                 // Acciones
                 let acciones = '';
                 if (estado === 'pendiente') {
@@ -2194,7 +2629,7 @@
                 
                 return `
                     <tr>
-                        <td><strong>#${id}</strong></td>
+                        <td><strong>#${id}</strong>${offlineIndicator}</td>
                         <td title="${cond.Descripcion}">${descCorta}</td>
                         <td>${cond.Sector || 'N/A'}</td>
                         <td>${tipoHTML}</td>
@@ -2238,12 +2673,17 @@
             const resultado = await guardarCondicionEnSupabase(reporte);
             
             if (resultado.success) {
-                unsafeConditions = await cargarCondicionesDesdeSupabase();
+                // Recargar datos
+                if (!CONFIG.offlineMode) {
+                    unsafeConditions = await cargarCondicionesDesdeSupabase();
+                } else {
+                    unsafeConditions = cargarDesdeLocalStorage();
+                }
                 
                 if (resultado.offline) {
                     alert('⚠️ Modo offline. Reporte guardado localmente.');
                 } else {
-                    alert(`✅ Reporte guardado (ID: #${resultado.id})`);
+                    alert(`✅ Reporte guardado en Supabase (ID: #${resultado.id})`);
                 }
                 
                 document.getElementById('report-form').reset();
@@ -2301,17 +2741,27 @@
                 condicion.FotoCorreccionUrl = fotoCorreccionUrl;
             }
             
+            // Actualizar localStorage si es offline
+            if (resultado.offline || condicion.origen === 'local') {
+                const condiciones = cargarDesdeLocalStorage();
+                const index = condiciones.findIndex(c => c.ID === id);
+                if (index !== -1) {
+                    condiciones[index] = condicion;
+                    localStorage.setItem('condiciones_pendientes', JSON.stringify(condiciones));
+                }
+            }
+            
             actualizarEstadisticas();
             actualizarTablaReciente();
             actualizarTablaHistorial(currentFilter);
             crearGraficoEvolucion();
             
-            alert(resultado.offline ? 'Estado actualizado (offline)' : 'Estado actualizado');
+            alert(resultado.offline ? 'Estado actualizado (offline)' : 'Estado actualizado en Supabase');
         }
         
         function mostrarEjemplo() {
             document.getElementById('reporter-name').value = 'Juan Pérez';
-            document.getElementById('description').value = 'Piso resbaladizo por aceite derramado en zona de máquinas.';
+            document.getElementById('description').value = 'Piso resbaladizo por aceite derramado en zona de máquinas. Riesgo de caída.';
             document.getElementById('sector').value = 'Zona 1';
             document.getElementById('ubicacion').value = 'Zona 1 - Prensa hidráulica, Estación 3';
             document.getElementById('category').value = 'Físico';
@@ -2332,7 +2782,11 @@
             status.style.backgroundColor = '#2ecc71';
             
             setTimeout(() => {
-                updateStatusIndicator('connected', 'Conectado ✓');
+                if (CONFIG.offlineMode) {
+                    updateStatusIndicator('disconnected', 'Modo offline');
+                } else {
+                    updateStatusIndicator('connected', 'Conectado ✓');
+                }
             }, 2000);
         }
         
@@ -2363,11 +2817,12 @@
                     tiempoReparacion,
                     cond.Estado || '',
                     cond.ReportadoPor || '',
-                    cond.ReparadoPor || ''
+                    cond.ReparadoPor || '',
+                    cond.origen === 'local' ? 'Offline' : 'Supabase'
                 ].join(',');
             }).join('\n');
             
-            const headers = 'ID,Descripción,Sector,Tipo,Riesgo,Tiene Foto,Fecha Reporte,Tiempo Reparación,Estado,Reportado por,Reparado por\n';
+            const headers = 'ID,Descripción,Sector,Tipo,Riesgo,Tiene Foto,Fecha Reporte,Tiempo Reparación,Estado,Reportado por,Reparado por,Origen\n';
             const blob = new Blob([headers + csv], { type: 'text/csv;charset=utf-8;' });
             const link = document.createElement('a');
             const url = URL.createObjectURL(blob);
@@ -2383,23 +2838,48 @@
             document.getElementById('last-sync').textContent = CONFIG.lastSync;
             document.getElementById('current-mode').textContent = 
                 CONFIG.offlineMode ? 'Modo Offline' : 'Modo Online';
+            
+            // Mostrar/ocultar botón de sincronización
+            const syncOfflineBtn = document.getElementById('sync-offline-btn');
+            if (syncOfflineBtn) {
+                syncOfflineBtn.style.display = CONFIG.offlineMode ? 'inline-flex' : 'none';
+            }
+            
+            // Actualizar información de conexión
+            const connectionStatus = document.getElementById('connection-status');
+            if (connectionStatus) {
+                if (CONFIG.offlineMode) {
+                    connectionStatus.innerHTML = '<span style="color: #e67e22;"><i class="fas fa-exclamation-triangle"></i> Modo offline</span>';
+                } else {
+                    connectionStatus.innerHTML = '<span style="color: #3ecf8e;"><i class="fas fa-check-circle"></i> Conectado</span>';
+                }
+            }
         }
         
         function probarConexion() {
             probarConexionSupabase().then(success => {
                 if (success) {
-                    alert('✅ Conexión exitosa');
+                    alert('✅ Conexión exitosa a Supabase');
+                    // Recargar datos
+                    cargarCondicionesDesdeSupabase().then(data => {
+                        unsafeConditions = data;
+                        actualizarEstadisticas();
+                        actualizarTablaReciente();
+                        actualizarTablaHistorial();
+                    });
                 } else {
-                    alert('❌ Error de conexión');
+                    alert('❌ Error de conexión. Revisa la configuración.');
                 }
                 actualizarUIConfiguracion();
             });
         }
         
         function limpiarDatos() {
-            if (confirm('¿Limpiar datos locales? (No afecta la base de datos)')) {
+            if (confirm('¿Limpiar TODOS los datos locales?\n\n⚠️ Esta acción no se puede deshacer.\nLos datos en Supabase no se verán afectados.')) {
                 localStorage.removeItem('condiciones_pendientes');
-                alert('✅ Datos locales eliminados');
+                localStorage.removeItem('condiciones_offline');
+                localStorage.removeItem('last_sync');
+                alert('✅ Todos los datos locales han sido eliminados');
                 location.reload();
             }
         }
@@ -2431,6 +2911,8 @@
                     
                     if (pageId !== 'config') {
                         document.getElementById('supabase-config-panel').style.display = 'none';
+                    } else {
+                        actualizarUIConfiguracion();
                     }
                 });
             });
@@ -2528,6 +3010,7 @@
         window.probarConexion = probarConexion;
         window.limpiarDatos = limpiarDatos;
         window.guardarConfigSupabase = guardarConfigSupabase;
+        window.probarConfiguracionSupabase = probarConfiguracionSupabase;
         window.forzarActualizacion = forzarActualizacion;
         window.mostrarEjemplo = mostrarEjemplo;
         window.exportarHistorial = exportarHistorial;
@@ -2535,6 +3018,7 @@
         window.mostrarModalFoto = mostrarModalFoto;
         window.cerrarModalFoto = cerrarModalFoto;
         window.resetPhoto = resetPhoto;
+        window.sincronizarOffline = sincronizarOffline;
     </script>
 </body>
 </html>
