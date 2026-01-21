@@ -2786,84 +2786,76 @@
 }
         
         async function guardarNuevoReporte(event) {
-            event.preventDefault();
-            
-            const reporte = {
-                otCode: document.getElementById('ot-code').value.trim(),
-                reportedBy: document.getElementById('reporter-name').value.trim(),
-                description: document.getElementById('description').value.trim(),
-                sector: document.getElementById('sector').value,
-                location: document.getElementById('ubicacion').value.trim(),
-                category: document.getElementById('category').value,
-                riskLevel: document.getElementById('risk-level').value,
-                fechaEstimada: document.getElementById('fecha-estimada').value,
-                observaciones: document.getElementById('observaciones').value.trim()
-            };
-            
-            // Validaciones
-            // Validar formato de OT (5 dígitos numéricos)
+    event.preventDefault();
+    
+    const reporte = {
+        otCode: document.getElementById('ot-code').value.trim(),
+        reportedBy: document.getElementById('reporter-name').value.trim(),
+        description: document.getElementById('description').value.trim(),
+        sector: document.getElementById('sector').value,
+        location: document.getElementById('ubicacion').value.trim(),
+        category: document.getElementById('category').value,
+        riskLevel: document.getElementById('risk-level').value,
+        fechaEstimada: document.getElementById('fecha-estimada').value,
+        observaciones: document.getElementById('observaciones').value.trim()
+    };
+    
+    // Validar formato de OT (5 dígitos numéricos)
 if (!reporte.otCode.match(/^\d{5}$/)) {
     alert('❌ Código OT inválido. Debe ser exactamente 5 dígitos numéricos.');
     return;
 }
 
-// Validar que OT no esté duplicado
-const otExistente = unsafeConditions.find(c => c.OT === reporte.otCode);
-if (otExistente) {
+// Validar que OT no esté duplicado (usando variable con nombre diferente)
+const existeOT = unsafeConditions.find(c => c.OT === reporte.otCode);
+if (existeOT) {
     alert(`❌ Ya existe un reporte con OT ${reporte.otCode}. Use un código diferente.`);
     return;
 }
-            
-           // Validar que solo sea Aceites o Jabonería-Confitería
-            const zonasValidas = ['Aceites', 'Jabonería-Confitería'];
-                if (!zonasValidas.includes(reporte.sector)) {
-                alert('❌ Solo se permiten los sectores: Aceites o Jabonería-Confitería');
-            return;
-            }
-            
-            if (!reporte.otCode || !reporte.reportedBy || !reporte.description || !reporte.sector || 
-                !reporte.location || !reporte.category || !reporte.riskLevel || !reporte.fechaEstimada) {
-                alert('❌ Complete todos los campos obligatorios (*)');
-                return;
-            }
-            
-            // Verificar si ya existe el código OT
-            const otExistente = unsafeConditions.find(c => c.OT === reporte.otCode);
-            if (otExistente) {
-                alert('❌ Ya existe un reporte con ese código OT. Use uno diferente.');
-                return;
-            }
-            
-            const resultado = await guardarCondicionEnSupabase(reporte);
-            
-            if (resultado.success) {
-                unsafeConditions = await cargarCondicionesDesdeSupabase();
-                
-                if (resultado.offline) {
-                    alert('⚠️ Modo offline. Reporte guardado localmente.');
-                } else {
-                    alert(`✅ Reporte guardado exitosamente\nOT: ${resultado.ot}\nID: #${resultado.id}`);
-                }
-                
-                document.getElementById('report-form').reset();
-                resetPhoto();
-                
-                // Restablecer fecha por defecto
-                const hoy = new Date();
-                const fechaDefault = new Date(hoy);
-                fechaDefault.setDate(fechaDefault.getDate() + 7);
-                document.getElementById('fecha-estimada').value = fechaDefault.toISOString().split('T')[0];
-                
-                actualizarEstadisticas();
-                actualizarTablaReciente();
-                actualizarTablaHistorial(currentFilter);
-                crearGraficoEvolucion();
-                
-                document.querySelector('.nav-menu a[data-page="dashboard"]').click();
-            } else {
-                alert('❌ Error guardando el reporte');
-            }
+    
+    // Validar que solo sea Aceites o Jabonería-Confitería
+    const zonasValidas = ['Aceites', 'Jabonería-Confitería'];
+    if (!zonasValidas.includes(reporte.sector)) {
+        alert('❌ Solo se permiten los sectores: Aceites o Jabonería-Confitería');
+        return;
+    }
+    
+    if (!reporte.otCode || !reporte.reportedBy || !reporte.description || !reporte.sector || 
+        !reporte.location || !reporte.category || !reporte.riskLevel || !reporte.fechaEstimada) {
+        alert('❌ Complete todos los campos obligatorios (*)');
+        return;
+    }
+    
+    const resultado = await guardarCondicionEnSupabase(reporte);
+    
+    if (resultado.success) {
+        unsafeConditions = await cargarCondicionesDesdeSupabase();
+        
+        if (resultado.offline) {
+            alert('⚠️ Modo offline. Reporte guardado localmente.');
+        } else {
+            alert(`✅ Reporte guardado exitosamente\nOT: ${resultado.ot}\nID: #${resultado.id}`);
         }
+        
+        document.getElementById('report-form').reset();
+        resetPhoto();
+        
+        // Restablecer fecha por defecto
+        const hoy = new Date();
+        const fechaDefault = new Date(hoy);
+        fechaDefault.setDate(fechaDefault.getDate() + 7);
+        document.getElementById('fecha-estimada').value = fechaDefault.toISOString().split('T')[0];
+        
+        actualizarEstadisticas();
+        actualizarTablaReciente();
+        actualizarTablaHistorial(currentFilter);
+        crearGraficoEvolucion();
+        
+        document.querySelector('.nav-menu a[data-page="dashboard"]').click();
+    } else {
+        alert('❌ Error guardando el reporte');
+    }
+}
         
       async function cambiarEstado(otCode, nuevoEstado) {
     console.log('=== INICIANDO CAMBIO DE ESTADO ===');
