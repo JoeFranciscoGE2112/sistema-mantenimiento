@@ -2785,50 +2785,65 @@
     }).join('');
 }
         
-        async function guardarNuevoReporte(event) {
+       async function guardarNuevoReporte(event) {
     event.preventDefault();
     
+    // Obtener valores del formulario
+    const otCodeValue = document.getElementById('ot-code').value.trim();
+    const reporterName = document.getElementById('reporter-name').value.trim();
+    const description = document.getElementById('description').value.trim();
+    const sector = document.getElementById('sector').value;
+    const location = document.getElementById('ubicacion').value.trim();
+    const category = document.getElementById('category').value;
+    const riskLevel = document.getElementById('risk-level').value;
+    const fechaEstimada = document.getElementById('fecha-estimada').value;
+    const observaciones = document.getElementById('observaciones').value.trim();
+    
+    // Crear objeto reporte
     const reporte = {
-        otCode: document.getElementById('ot-code').value.trim(),
-        reportedBy: document.getElementById('reporter-name').value.trim(),
-        description: document.getElementById('description').value.trim(),
-        sector: document.getElementById('sector').value,
-        location: document.getElementById('ubicacion').value.trim(),
-        category: document.getElementById('category').value,
-        riskLevel: document.getElementById('risk-level').value,
-        fechaEstimada: document.getElementById('fecha-estimada').value,
-        observaciones: document.getElementById('observaciones').value.trim()
+        otCode: otCodeValue,
+        reportedBy: reporterName,
+        description: description,
+        sector: sector,
+        location: location,
+        category: category,
+        riskLevel: riskLevel,
+        fechaEstimada: fechaEstimada,
+        observaciones: observaciones
     };
     
     // Validar formato de OT (5 dígitos numéricos)
-if (!reporte.otCode.match(/^\d{5}$/)) {
-    alert('❌ Código OT inválido. Debe ser exactamente 5 dígitos numéricos.');
-    return;
-}
-
-// Validar que OT no esté duplicado (usando variable con nombre diferente)
-const existeOT = unsafeConditions.find(c => c.OT === reporte.otCode);
-if (existeOT) {
-    alert(`❌ Ya existe un reporte con OT ${reporte.otCode}. Use un código diferente.`);
-    return;
-}
+    if (!/^\d{5}$/.test(reporte.otCode)) {
+        alert('❌ Código OT inválido. Debe ser exactamente 5 dígitos numéricos (ej: 00001).');
+        return;
+    }
+    
+    // Validar que OT no esté duplicado (usando nombre único)
+    const otDuplicadoEnSistema = unsafeConditions.find(condicion => condicion.OT === reporte.otCode);
+    if (otDuplicadoEnSistema) {
+        alert(`❌ Ya existe un reporte con OT ${reporte.otCode}. Use un código diferente.`);
+        return;
+    }
     
     // Validar que solo sea Aceites o Jabonería-Confitería
-    const zonasValidas = ['Aceites', 'Jabonería-Confitería'];
-    if (!zonasValidas.includes(reporte.sector)) {
+    const zonasPermitidas = ['Aceites', 'Jabonería-Confitería'];
+    if (!zonasPermitidas.includes(reporte.sector)) {
         alert('❌ Solo se permiten los sectores: Aceites o Jabonería-Confitería');
         return;
     }
     
+    // Validar campos obligatorios
     if (!reporte.otCode || !reporte.reportedBy || !reporte.description || !reporte.sector || 
         !reporte.location || !reporte.category || !reporte.riskLevel || !reporte.fechaEstimada) {
         alert('❌ Complete todos los campos obligatorios (*)');
         return;
     }
     
+    // Guardar reporte
     const resultado = await guardarCondicionEnSupabase(reporte);
     
     if (resultado.success) {
+        // Recargar datos
         unsafeConditions = await cargarCondicionesDesdeSupabase();
         
         if (resultado.offline) {
@@ -2837,20 +2852,23 @@ if (existeOT) {
             alert(`✅ Reporte guardado exitosamente\nOT: ${resultado.ot}\nID: #${resultado.id}`);
         }
         
+        // Limpiar formulario
         document.getElementById('report-form').reset();
         resetPhoto();
         
         // Restablecer fecha por defecto
         const hoy = new Date();
-        const fechaDefault = new Date(hoy);
-        fechaDefault.setDate(fechaDefault.getDate() + 7);
-        document.getElementById('fecha-estimada').value = fechaDefault.toISOString().split('T')[0];
+        const fechaPorDefecto = new Date(hoy);
+        fechaPorDefecto.setDate(fechaPorDefecto.getDate() + 7);
+        document.getElementById('fecha-estimada').value = fechaPorDefecto.toISOString().split('T')[0];
         
+        // Actualizar interfaz
         actualizarEstadisticas();
         actualizarTablaReciente();
         actualizarTablaHistorial(currentFilter);
         crearGraficoEvolucion();
         
+        // Ir al dashboard
         document.querySelector('.nav-menu a[data-page="dashboard"]').click();
     } else {
         alert('❌ Error guardando el reporte');
@@ -2916,20 +2934,20 @@ if (existeOT) {
     
     alert(resultado.offline ? '✅ Estado actualizado (modo offline)' : '✅ Estado actualizado');
 }
-        
         function mostrarEjemplo() {
-    // Generar un OT de ejemplo basado en los existentes
-    const numerosUsados = unsafeConditions
-        .filter(c => c.OT && c.OT.match(/^\d{5}$/))
-        .map(c => parseInt(c.OT))
-        .filter(n => !isNaN(n));
+    // Generar un OT de ejemplo
+    const otNumerosUsados = unsafeConditions
+        .filter(cond => cond.OT && /^\d{5}$/.test(cond.OT))
+        .map(cond => parseInt(cond.OT))
+        .filter(num => !isNaN(num));
     
-    let ejemploNumero = 10001;
-    if (numerosUsados.length > 0) {
-        ejemploNumero = Math.max(...numerosUsados) + 100;
+    let numeroEjemplo = 10001;
+    if (otNumerosUsados.length > 0) {
+        numeroEjemplo = Math.max(...otNumerosUsados) + 100;
     }
     
-    document.getElementById('ot-code').value = String(ejemploNumero).padStart(5, '0');
+    // Llenar formulario con datos de ejemplo
+    document.getElementById('ot-code').value = String(numeroEjemplo).padStart(5, '0');
     document.getElementById('reporter-name').value = 'Juan Pérez Rodríguez';
     document.getElementById('description').value = 'Piso resbaladizo por aceite derramado en zona de máquinas. El área no está señalizada y representa un riesgo de caída para el personal.';
     document.getElementById('sector').value = 'Aceites';
@@ -2938,12 +2956,13 @@ if (existeOT) {
     document.getElementById('risk-level').value = 'Alto';
     
     // Fecha 5 días después
-    const fecha = new Date();
-    fecha.setDate(fecha.getDate() + 5);
-    document.getElementById('fecha-estimada').value = fecha.toISOString().split('T')[0];
+    const fechaEjemplo = new Date();
+    fechaEjemplo.setDate(fechaEjemplo.getDate() + 5);
+    document.getElementById('fecha-estimada').value = fechaEjemplo.toISOString().split('T')[0];
     
     document.getElementById('observaciones').value = 'Requiere limpieza inmediata y señalización con conos. Prioridad alta por ser zona de paso frecuente.';
 }
+        
         
         function forzarActualizacion() {
             unsafeConditions = [...unsafeConditions].sort((a, b) => 
@@ -3070,6 +3089,29 @@ if (existeOT) {
         function generarReportePDF() {
             alert('🚧 Función en desarrollo. Por ahora, use la opción "Exportar" para CSV.');
         }
+        // Detector de variables duplicadas
+function buscarVariablesDuplicadas() {
+    console.log('=== BUSCANDO VARIABLES DUPLICADAS ===');
+    
+    const palabrasClave = [
+        'otExistente', 'acciones', 'tiempo', 'estadoBadge', 
+        'fotoHTML', 'riesgoBadge', 'tipoHTML'
+    ];
+    
+    palabrasClave.forEach(palabra => {
+        const regex = new RegExp(`(let|const|var)\\s+${palabra}\\s*=`, 'g');
+        const matches = document.body.innerHTML.match(regex);
+        
+        if (matches && matches.length > 1) {
+            console.warn(`⚠️ VARIABLE DUPLICADA: "${palabra}" aparece ${matches.length} veces`);
+        }
+    });
+    
+    console.log('=== BÚSQUEDA COMPLETADA ===');
+}
+
+// Ejecutar al cargar
+setTimeout(buscarVariablesDuplicadas, 2000);
         
         function abrirManualSupabase() {
             const manual = `
