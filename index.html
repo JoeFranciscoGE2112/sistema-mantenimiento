@@ -1061,13 +1061,15 @@
                                 </h3>
                                 
                                 <div class="form-group">
-                                    <label for="ot-code" class="required">Código OT *</label>
-                                    <input type="text" class="form-control" id="ot-code" 
-                                           placeholder="Ej: OT-2024-001, MNT-2024-045" required
-                                           pattern="^[A-Za-z0-9-]+$"
-                                           title="Ingrese un código OT válido (solo letras, números y guiones)">
-                                    <small style="color: #7f8c8d; font-size: 12px;">Identificador único de la orden de trabajo</small>
-                                </div>
+    <label for="ot-code" class="required">Código OT *</label>
+    <input type="text" class="form-control" id="ot-code" 
+           placeholder="Ej: 00001, 12345 (5 dígitos)" 
+           required
+           pattern="^\d{5}$"
+           title="Ingrese un código OT de 5 dígitos numéricos"
+           maxlength="5">
+    <small style="color: #7f8c8d; font-size: 12px;">Código único de 5 dígitos (ej: 00001)</small>
+</div>
                                 
                                 <div class="form-group">
                                     <label for="reporter-name" class="required">Reportado por *</label>
@@ -1479,25 +1481,32 @@
         }
         
         function generarCodigoOT() {
-            const fecha = new Date();
-            const year = fecha.getFullYear();
-            const month = String(fecha.getMonth() + 1).padStart(2, '0');
-            const day = String(fecha.getDate()).padStart(2, '0');
-            const random = Math.floor(Math.random() * 1000).toString().padStart(3, '0');
-            
-            const otCode = `OT-${year}${month}${day}-${random}`;
-            document.getElementById('ot-code').value = otCode;
-            
-            // Mostrar feedback
-            const otField = document.getElementById('ot-code');
-            otField.style.borderColor = '#27ae60';
-            otField.style.boxShadow = '0 0 0 3px rgba(39, 174, 96, 0.2)';
-            
-            setTimeout(() => {
-                otField.style.borderColor = '';
-                otField.style.boxShadow = '';
-            }, 1500);
-        }
+    // Obtener el próximo número disponible
+    const numerosUsados = unsafeConditions
+        .filter(c => c.OT && c.OT.match(/^\d{5}$/))
+        .map(c => parseInt(c.OT))
+        .filter(n => !isNaN(n));
+    
+    let siguienteNumero = 1;
+    if (numerosUsados.length > 0) {
+        const maxNumero = Math.max(...numerosUsados);
+        siguienteNumero = maxNumero + 1;
+    }
+    
+    // Formatear a 5 dígitos con ceros a la izquierda
+    const otCode = String(siguienteNumero).padStart(5, '0');
+    document.getElementById('ot-code').value = otCode;
+    
+    // Mostrar feedback
+    const otField = document.getElementById('ot-code');
+    otField.style.borderColor = '#27ae60';
+    otField.style.boxShadow = '0 0 0 3px rgba(39, 174, 96, 0.2)';
+    
+    setTimeout(() => {
+        otField.style.borderColor = '';
+        otField.style.boxShadow = '';
+    }, 1500);
+}
         
         function calcularTiempoReparacion(fechaInicio, fechaFin) {
             if (!fechaInicio || !fechaFin) {
@@ -2724,36 +2733,40 @@
                 
                 // Acciones
                 let acciones = '';
-                if (estado === 'pendiente') {
-                    acciones = `
-                        <button class="action-btn btn-primary" onclick="cambiarEstado('${cond.ID}', 'en proceso')" title="Marcar como en proceso">
-                            <i class="fas fa-play"></i> Proceso
-                        </button>
-                        <button class="action-btn btn-success" onclick="cambiarEstado('${cond.ID}', 'reparado')" title="Marcar como reparado">
-                            <i class="fas fa-check"></i> Reparar
-                        </button>
-                    `;
-                } else if (estado === 'en proceso') {
-                    acciones = `
-                        <button class="action-btn btn-success" onclick="cambiarEstado('${cond.ID}', 'reparado')" title="Marcar como reparado">
-                            <i class="fas fa-check"></i> Reparar
-                        </button>
-                        <button class="action-btn btn-warning" onclick="cambiarEstado('${cond.ID}', 'pendiente')" title="Volver a pendiente">
-                            <i class="fas fa-undo"></i> Pendiente
-                        </button>
-                    `;
-                } else {
-                    acciones = `
-                        <button class="action-btn btn-warning" onclick="cambiarEstado('${cond.ID}', 'pendiente')" title="Volver a pendiente">
-                            <i class="fas fa-undo"></i> Pendiente
-                        </button>
-                        ${cond.FotoCorreccionUrl ? `
-                        <button class="action-btn btn-primary" onclick="mostrarModalFoto('${cond.FotoCorreccionUrl}', 'Foto de corrección ${otCode}')" title="Ver corrección">
-                            <i class="fas fa-camera"></i> Corr.
-                        </button>
-                        ` : ''}
-                    `;
-                }
+                // Acciones
+let acciones = '';
+const otCode = cond.OT;
+
+if (estado === 'pendiente') {
+    acciones = `
+        <button class="action-btn btn-primary" onclick="cambiarEstado('${otCode}', 'en proceso')" title="Marcar como en proceso">
+            <i class="fas fa-play"></i> Proceso
+        </button>
+        <button class="action-btn btn-success" onclick="cambiarEstado('${otCode}', 'reparado')" title="Marcar como reparado">
+            <i class="fas fa-check"></i> Reparar
+        </button>
+    `;
+} else if (estado === 'en proceso') {
+    acciones = `
+        <button class="action-btn btn-success" onclick="cambiarEstado('${otCode}', 'reparado')" title="Marcar como reparado">
+            <i class="fas fa-check"></i> Reparar
+        </button>
+        <button class="action-btn btn-warning" onclick="cambiarEstado('${otCode}', 'pendiente')" title="Volver a pendiente">
+            <i class="fas fa-undo"></i> Pendiente
+        </button>
+    `;
+} else {
+    acciones = `
+        <button class="action-btn btn-warning" onclick="cambiarEstado('${otCode}', 'pendiente')" title="Volver a pendiente">
+            <i class="fas fa-undo"></i> Pendiente
+        </button>
+        ${cond.FotoCorreccionUrl ? `
+        <button class="action-btn btn-primary" onclick="mostrarModalFoto('${cond.FotoCorreccionUrl}', 'Foto de corrección ${otCode}')" title="Ver corrección">
+            <i class="fas fa-camera"></i> Corr.
+        </button>
+        ` : ''}
+    `;
+}  
                 
                 return `
                     <tr>
@@ -2790,10 +2803,18 @@
             };
             
             // Validaciones
-            if (!reporte.otCode.match(/^[A-Za-z0-9-]+$/)) {
-                alert('❌ Código OT inválido. Solo letras, números y guiones.');
-                return;
-            }
+            // Validar formato de OT (5 dígitos numéricos)
+if (!reporte.otCode.match(/^\d{5}$/)) {
+    alert('❌ Código OT inválido. Debe ser exactamente 5 dígitos numéricos.');
+    return;
+}
+
+// Validar que OT no esté duplicado
+const otExistente = unsafeConditions.find(c => c.OT === reporte.otCode);
+if (otExistente) {
+    alert(`❌ Ya existe un reporte con OT ${reporte.otCode}. Use un código diferente.`);
+    return;
+}
             
            // Validar que solo sea Aceites o Jabonería-Confitería
             const zonasValidas = ['Aceites', 'Jabonería-Confitería'];
@@ -2846,19 +2867,18 @@
             }
         }
         
-        async function cambiarEstado(idSecuencial, nuevoEstado) {
-    console.log('Intentando cambiar estado:', { idSecuencial, nuevoEstado });
+      async function cambiarEstado(otCode, nuevoEstado) {
+    console.log('Intentando cambiar estado:', { otCode, nuevoEstado });
     
-    // Buscar por ID_secuencial en lugar de ID
-    const condicion = unsafeConditions.find(c => c.ID_secuencial == idSecuencial);
+    // Buscar por OT (código único)
+    const condicion = unsafeConditions.find(c => c.OT === otCode);
     
     if (!condicion) {
-        alert(`❌ Reporte con ID #${idSecuencial} no encontrado`);
+        alert(`❌ Reporte con OT "${otCode}" no encontrado`);
         console.log('Reportes disponibles:', unsafeConditions.map(c => ({ 
-            ID: c.ID, 
-            ID_secuencial: c.ID_secuencial,
             OT: c.OT,
-            Estado: c.Estado 
+            Estado: c.Estado,
+            Descripcion: c.Descripcion
         })));
         return;
     }
@@ -2895,7 +2915,7 @@
         nuevosDatos.repairedBy = reparador && reparador.trim() ? reparador.trim() : 'Técnico';
     }
     
-    // Actualizar en Supabase usando el ID real (no el secuencial)
+    // Actualizar en Supabase usando el ID real
     const resultado = await actualizarEstadoEnSupabase(condicion.ID, nuevosDatos);
     
     // Actualizar localmente
@@ -2922,21 +2942,32 @@
 }
         
         function mostrarEjemplo() {
-            document.getElementById('ot-code').value = 'OT-2024-001';
-            document.getElementById('reporter-name').value = 'Juan Pérez Rodríguez';
-            document.getElementById('description').value = 'Piso resbaladizo por aceite derramado en zona de máquinas. El área no está señalizada y representa un riesgo de caída para el personal.';
-            document.getElementById('sector').value = 'Aceites';
-            document.getElementById('ubicacion').value = 'Zona 1 - Prensa hidráulica, Estación 3, Lado derecho';
-            document.getElementById('category').value = 'Físico';
-            document.getElementById('risk-level').value = 'Alto';
-            
-            // Fecha 5 días después
-            const fecha = new Date();
-            fecha.setDate(fecha.getDate() + 5);
-            document.getElementById('fecha-estimada').value = fecha.toISOString().split('T')[0];
-            
-            document.getElementById('observaciones').value = 'Requiere limpieza inmediata y señalización con conos. Prioridad alta por ser zona de paso frecuente.';
-        }
+    // Generar un OT de ejemplo basado en los existentes
+    const numerosUsados = unsafeConditions
+        .filter(c => c.OT && c.OT.match(/^\d{5}$/))
+        .map(c => parseInt(c.OT))
+        .filter(n => !isNaN(n));
+    
+    let ejemploNumero = 10001;
+    if (numerosUsados.length > 0) {
+        ejemploNumero = Math.max(...numerosUsados) + 100;
+    }
+    
+    document.getElementById('ot-code').value = String(ejemploNumero).padStart(5, '0');
+    document.getElementById('reporter-name').value = 'Juan Pérez Rodríguez';
+    document.getElementById('description').value = 'Piso resbaladizo por aceite derramado en zona de máquinas. El área no está señalizada y representa un riesgo de caída para el personal.';
+    document.getElementById('sector').value = 'Aceites';
+    document.getElementById('ubicacion').value = 'Área de producción, Línea 3, Lado derecho';
+    document.getElementById('category').value = 'Físico';
+    document.getElementById('risk-level').value = 'Alto';
+    
+    // Fecha 5 días después
+    const fecha = new Date();
+    fecha.setDate(fecha.getDate() + 5);
+    document.getElementById('fecha-estimada').value = fecha.toISOString().split('T')[0];
+    
+    document.getElementById('observaciones').value = 'Requiere limpieza inmediata y señalización con conos. Prioridad alta por ser zona de paso frecuente.';
+}
         
         function forzarActualizacion() {
             unsafeConditions = [...unsafeConditions].sort((a, b) => 
@@ -2963,46 +2994,47 @@
         }
         
         function exportarHistorial() {
-            const csv = unsafeConditions.map(cond => {
-                // Calcular tiempo de reparación si está reparado
-                let tiempoReparacion = '';
-                if (cond.Estado === 'reparado' && cond.Fecha && cond.FechaReparacion) {
-                    const tiempo = calcularTiempoReparacion(cond.Fecha, cond.FechaReparacion);
-                    tiempoReparacion = tiempo.texto;
-                }
-                
-                // Estado de fecha estimada
-                let estadoFecha = '';
-                if (cond.FechaEstimadaReparacion) {
-                    const estado = verificarEstadoFecha(cond.FechaEstimadaReparacion, cond.FechaReparacion);
-                    estadoFecha = estado.texto;
-                }
-                
-                return [
-                    cond.OT || '',
-                    `"${cond.Descripcion || ''}"`,
-                    cond.Sector || '',
-                    cond.Categoria || '',
-                    cond.Riesgo || '',
-                    cond.FechaEstimadaReparacion || '',
-                    estadoFecha,
-                    cond.Fecha || '',
-                    tiempoReparacion,
-                    cond.Estado || '',
-                    cond.ReportadoPor || '',
-                    cond.ReparadoPor || '',
-                    cond.FotoUrl ? 'Sí' : 'No'
-                ].join(',');
-            }).join('\n');
-            
-            const headers = 'OT,Descripción,Sector,Tipo,Riesgo,Fecha Estimada,Estado Fecha,Fecha Reporte,Tiempo Reparación,Estado,Reportado por,Reparado por,Tiene Foto\n';
-            const blob = new Blob([headers + csv], { type: 'text/csv;charset=utf-8;' });
-            const link = document.createElement('a');
-            const url = URL.createObjectURL(blob);
-            link.setAttribute('href', url);
-            link.setAttribute('download', `condiciones_danec_${new Date().toISOString().split('T')[0]}.csv`);
-            link.click();
+    const csv = unsafeConditions.map(cond => {
+        // Calcular tiempo de reparación si está reparado
+        let tiempoReparacion = '';
+        if (cond.Estado === 'reparado' && cond.Fecha && cond.FechaReparacion) {
+            const tiempo = calcularTiempoReparacion(cond.Fecha, cond.FechaReparacion);
+            tiempoReparacion = tiempo.texto;
         }
+        
+        // Estado de fecha estimada
+        let estadoFecha = '';
+        if (cond.FechaEstimadaReparacion) {
+            const estado = verificarEstadoFecha(cond.FechaEstimadaReparacion, cond.FechaReparacion);
+            estadoFecha = estado.texto;
+        }
+        
+        return [
+            cond.OT || '',
+            `"${cond.Descripcion || ''}"`,
+            cond.Sector || '',
+            cond.Categoria || '',
+            cond.Riesgo || '',
+            cond.FechaEstimadaReparacion || '',
+            estadoFecha,
+            cond.Fecha || '',
+            tiempoReparacion,
+            cond.Estado || '',
+            cond.ReportadoPor || '',
+            cond.ReparadoPor || '',
+            cond.FotoUrl ? 'Sí' : 'No',
+            cond.ID_secuencial || ''
+        ].join(',');
+    }).join('\n');
+    
+    const headers = 'OT,Descripción,Sector,Tipo,Riesgo,Fecha Estimada,Estado Fecha,Fecha Reporte,Tiempo Reparación,Estado,Reportado por,Reparado por,Tiene Foto,ID Secuencial\n';
+    const blob = new Blob([headers + csv], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    const url = URL.createObjectURL(blob);
+    link.setAttribute('href', url);
+    link.setAttribute('download', `condiciones_danec_${new Date().toISOString().split('T')[0]}.csv`);
+    link.click();
+}
         
         function actualizarUIConfiguracion() {
             document.getElementById('current-url').value = CONFIG.supabaseUrl || 'No configurado';
