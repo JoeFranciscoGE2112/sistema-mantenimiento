@@ -1486,19 +1486,26 @@
         let evolutionChart = null;
         let fotoSeleccionada = null;
         
-        // ⭐⭐ CONFIGURA TUS CREDENCIALES AQUÍ ⭐⭐
-        const MIS_CREDENCIALES = {
-            URL: 'https://poaqbdzvqdqdxvchwjwc.supabase.co',  // ← TU URL DE SUPABASE
-            API_KEY: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBvYXFiZHp2cWRxZHh2Y2h3andjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njg5OTczNDEsImV4cCI6MjA4NDU3MzM0MX0.LQw5ytCns_xl_Z-wAEeIbNvz1wgpFoiABd5ie1fgmIk'  // ← TU API KEY
-        };
-        
-        // Configuración por defecto
-        let CONFIG = {
-            supabaseUrl: MIS_CREDENCIALES.URL,
-            supabaseKey: MIS_CREDENCIALES.API_KEY,
-            lastSync: localStorage.getItem('last_sync') || 'Nunca',
-            offlineMode: localStorage.getItem('offline_mode') === 'true' || false
-        };
+        // ==============================================
+// CONFIGURACIÓN GLOBAL - VERSIÓN CORREGIDA
+// ==============================================
+let supabaseClient = null;
+let unsafeConditions = [];
+let currentFilter = 'all';
+
+// ⭐⭐ CREDENCIALES ACTUALIZADAS ⭐⭐
+const MIS_CREDENCIALES = {
+    URL: 'https://poaqbdzvqdqdxvchwjwc.supabase.co',
+    API_KEY: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBvYXFiZHp2cWRxZHh2Y2h3andjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njg5OTczNDEsImV4cCI6MjA4NDU3MzM0MX0.LQw5ytCns_xl_Z-wAEeIbNvz1wgpFoiABd5ie1fgmIk'
+};
+
+let CONFIG = {
+    supabaseUrl: '',
+    supabaseKey: '',
+    lastSync: 'Nunca',
+    offlineMode: true,
+    initialized: false
+};
         
         // Guardar en localStorage también
         localStorage.setItem('supabase_url', CONFIG.supabaseUrl);
@@ -3047,96 +3054,125 @@
         // FUNCIONES DE SINCRONIZACIÓN
         // ==============================================
         async function sincronizarDatos() {
-            if (!supabaseClient) {
-                console.log('No hay cliente Supabase, modo offline');
-                CONFIG.offlineMode = true;
-                cargarDatosLocales();
-                updateStatusIndicator('disconnected', 'Modo Offline');
-                return;
+    if (!supabaseClient || CONFIG.offlineMode) {
+        console.log('⏸️  Sincronización omitida - Modo offline');
+        return;
+    }
+    
+    showLoading(true, 'Sincronizando con Supabase...');
+    
+    try {
+        // 1. Descargar datos de Supabase
+        console.log('⬇️  Descargando datos de Supabase...');
+        const { data: remoteData, error: fetchError } = await supabaseClient
+            .from('condiciones_inseguras')
+            .select('*')
+            .order('Fecha', { ascending: false });
+        
+        if (fetchError) {
+            console.error('❌ Error descargando datos:', fetchError);
+            
+            // Si la tabla no existe, crear estructura básica
+            if (fetchError.message.includes('does not exist')) {
+                alert('⚠️ La tabla no existe. Creando estructura básica...');
+                
+                // Crear tabla vía API (esto requiere permisos adicionales)
+                // Por ahora, solo mostrar instrucciones
+                mostrarInstruccionesTabla();
+                throw fetchError;
+            } else {
+                throw fetchError;
             }
+        }
+        
+        console.log(`✅ Datos descargados: ${remoteData?.length || 0} registros`);
+        
+        // 2. Procesar datos locales
+        const localData = JSON.parse(localStorage.getItem('unsafe_conditions') || '[]');
+        
+        // 3. Combinar datos (los remotos tienen prioridad)
+        let combinedData = [...(remoteData || [])];
+        
+        // 4. Subir datos locales que no están en remoto
+        if (localData.length > 0) {
+            console.log('🔼 Verificando datos locales para subir...');
             
-            showLoading(true, 'Sincronizando con Supabase...');
+            const localToUpload = localData.filter(localItem => {
+                // Buscar si ya existe en remoto
+                const existsInRemote = remoteData?.some(remoteItem => 
+                    remoteItem.OT === localItem.OT
+                );
+                return !existsInRemote;
+            });
             
-            try {
-                // 1. Descargar datos de Supabase
-                const { data: remoteData, error: fetchError } = await supabaseClient
+            if (localToUpload.length > 0) {
+                console.log(`🔼 Subiendo ${localToUpload.length} registros locales...`);
+                
+                for (const item of localToUpload) {
+                    try {
+                        const { error: uploadError } = await supabaseClient
+                            .from('condiciones_inseguras')
+                            .upsert([item], { 
+                                onConflict: 'OT',
+                                ignoreDuplicates: false 
+                            });
+                        
+                        if (uploadError) {
+                            console.error(`❌ Error subiendo OT ${item.OT}:`, uploadError);
+                        } else {
+                            console.log(`✅ Subido OT ${item.OT}`);
+                        }
+                    } catch (uploadError) {
+                        console.error(`❌ Error en upload de OT ${item.OT}:`, uploadError);
+                    }
+                }
+                
+                // Volver a descargar después de subir
+                const { data: updatedData, error: updatedError } = await supabaseClient
                     .from('condiciones_inseguras')
                     .select('*')
                     .order('Fecha', { ascending: false });
                 
-                if (fetchError) throw fetchError;
-                
-                // 2. Cargar datos locales
-                const localData = JSON.parse(localStorage.getItem('unsafe_conditions') || '[]');
-                
-                // 3. Combinar datos (prioridad a datos remotos)
-                const combinedData = [...remoteData || []];
-                
-                // 4. Encontrar diferencias y subir datos locales no sincronizados
-                if (localData.length > 0) {
-                    const localNotInRemote = localData.filter(local => {
-                        return !combinedData.some(remote => remote.OT === local.OT);
-                    });
-                    
-                    if (localNotInRemote.length > 0) {
-                        console.log(`Subiendo ${localNotInRemote.length} registros locales a Supabase`);
-                        
-                        for (const localRecord of localNotInRemote) {
-                            const { error: uploadError } = await supabaseClient
-                                .from('condiciones_inseguras')
-                                .upsert([localRecord]);
-                            
-                            if (uploadError) {
-                                console.error('Error subiendo registro local:', uploadError);
-                            }
-                        }
-                        
-                        // Volver a descargar después de subir
-                        const { data: updatedData, error: updatedError } = await supabaseClient
-                            .from('condiciones_inseguras')
-                            .select('*')
-                            .order('Fecha', { ascending: false });
-                        
-                        if (!updatedError) {
-                            combinedData.length = 0;
-                            combinedData.push(...updatedData);
-                        }
-                    }
+                if (!updatedError) {
+                    combinedData = updatedData;
                 }
-                
-                // 5. Actualizar datos locales
-                unsafeConditions = combinedData;
-                guardarDatosLocales();
-                
-                // 6. Actualizar timestamp de última sincronización
-                CONFIG.lastSync = new Date().toLocaleString('es-ES');
-                localStorage.setItem('last_sync', CONFIG.lastSync);
-                
-                // 7. Actualizar UI
-                updateStatusIndicator('connected', 'Sincronizado con Supabase');
-                CONFIG.offlineMode = false;
-                
-                console.log(`Sincronización completada: ${combinedData.length} registros`);
-                
-                // 8. Actualizar todas las vistas
-                actualizarEstadisticas();
-                if (document.getElementById('dashboard-page').classList.contains('active')) {
-                    cargarDashboard();
-                }
-                
-            } catch (error) {
-                console.error('Error en sincronización:', error);
-                
-                // Si falla la sincronización, usar datos locales
-                cargarDatosLocales();
-                updateStatusIndicator('error', 'Error de sincronización');
-                CONFIG.offlineMode = true;
-                
-                alert(`⚠️ Error sincronizando con Supabase. Usando datos locales.\n\n${error.message}`);
-            } finally {
-                showLoading(false);
             }
         }
+        
+        // 5. Actualizar datos en memoria y localStorage
+        unsafeConditions = combinedData;
+        guardarDatosLocales();
+        
+        // 6. Actualizar timestamp
+        CONFIG.lastSync = new Date().toLocaleString('es-ES');
+        localStorage.setItem('last_sync', CONFIG.lastSync);
+        
+        console.log(`✅ Sincronización completada: ${combinedData.length} registros`);
+        
+        // 7. Actualizar UI
+        actualizarEstadisticas();
+        
+        if (document.getElementById('dashboard-page').classList.contains('active')) {
+            cargarDashboard();
+        }
+        
+        // Mostrar notificación
+        mostrarNotificacion('✅ Sincronización completada', 'success');
+        
+    } catch (error) {
+        console.error('❌ Error en sincronización:', error);
+        
+        // Mantener datos locales
+        cargarDatosLocales();
+        CONFIG.offlineMode = true;
+        updateStatusIndicator('error', 'Error de sincronización');
+        
+        mostrarNotificacion('❌ Error sincronizando con Supabase', 'error');
+        
+    } finally {
+        showLoading(false);
+    }
+}
 
         function guardarDatosLocales() {
             try {
@@ -3198,107 +3234,380 @@
         // INICIALIZACIÓN
         // ==============================================
         async function inicializarApp() {
-            console.log('🚀 Inicializando Sistema de Condiciones Inseguras...');
-            
-            // Mostrar loading inicial
-            showLoading(true, 'Iniciando sistema...');
+    console.log('🚀 Inicializando Sistema de Condiciones Inseguras...');
+    showLoading(true, 'Iniciando sistema...');
+    
+    try {
+        // 1. Verificar si hay credenciales guardadas
+        const savedUrl = localStorage.getItem('supabase_url');
+        const savedKey = localStorage.getItem('supabase_key');
+        
+        if (savedUrl && savedKey) {
+            CONFIG.supabaseUrl = savedUrl;
+            CONFIG.supabaseKey = savedKey;
+            console.log('📦 Credenciales encontradas en localStorage');
+        } else {
+            // Usar credenciales por defecto
+            CONFIG.supabaseUrl = MIS_CREDENCIALES.URL;
+            CONFIG.supabaseKey = MIS_CREDENCIALES.API_KEY;
+            console.log('⚙️ Usando credenciales por defecto');
+        }
+        
+        // 2. Intentar conectar con Supabase
+        if (CONFIG.supabaseUrl && CONFIG.supabaseKey) {
+            console.log('🔗 Intentando conectar con Supabase...');
+            console.log('URL:', CONFIG.supabaseUrl);
+            console.log('API Key:', CONFIG.supabaseKey.substring(0, 20) + '...');
             
             try {
-                // Cargar configuración
-                const savedUrl = localStorage.getItem('supabase_url') || CONFIG.supabaseUrl;
-                const savedKey = localStorage.getItem('supabase_key') || CONFIG.supabaseKey;
+                // Crear cliente Supabase
+                supabaseClient = supabase.createClient(CONFIG.supabaseUrl, CONFIG.supabaseKey, {
+                    auth: {
+                        persistSession: false
+                    }
+                });
                 
-                if (savedUrl && savedKey) {
-                    CONFIG.supabaseUrl = savedUrl;
-                    CONFIG.supabaseKey = savedKey;
+                // Probar conexión con un ping simple
+                const { data, error } = await supabaseClient
+                    .from('condiciones_inseguras')
+                    .select('count', { count: 'exact', head: true })
+                    .limit(1);
+                
+                if (error) {
+                    console.error('❌ Error probando conexión:', error);
                     
-                    // Crear cliente Supabase
-                    supabaseClient = supabase.createClient(savedUrl, savedKey);
-                    
-                    // Probar conexión
-                    updateStatusIndicator('connected', 'Conectando...');
-                    await sincronizarDatos();
+                    // Verificar si es error de tabla no existente
+                    if (error.message.includes('relation "condiciones_inseguras" does not exist')) {
+                        alert('⚠️ La tabla "condiciones_inseguras" no existe en Supabase.\n\nPor favor créala ejecutando el SQL proporcionado en la documentación.');
+                        updateStatusIndicator('error', 'Falta tabla en Supabase');
+                    } else {
+                        throw error;
+                    }
                 } else {
-                    // Modo offline
-                    cargarDatosLocales();
-                    updateStatusIndicator('disconnected', 'Modo Offline - Configura Supabase');
-                    alert('⚠️ Bienvenido al Sistema de Condiciones Inseguras\n\nPara usar todas las funciones, configura Supabase en Configuración > Conexión Supabase.');
+                    console.log('✅ Conexión exitosa con Supabase');
+                    updateStatusIndicator('connected', 'Conectado a Supabase');
+                    CONFIG.offlineMode = false;
+                    
+                    // Guardar credenciales en localStorage
+                    localStorage.setItem('supabase_url', CONFIG.supabaseUrl);
+                    localStorage.setItem('supabase_key', CONFIG.supabaseKey);
+                    
+                    // Sincronizar datos
+                    await sincronizarDatos();
                 }
                 
-                // Configurar navegación
-                document.querySelectorAll('.nav-menu a').forEach(link => {
-                    link.addEventListener('click', (e) => {
-                        e.preventDefault();
-                        const pagina = link.getAttribute('data-page');
-                        cambiarPagina(pagina);
-                    });
-                });
+            } catch (connectionError) {
+                console.error('❌ Error de conexión:', connectionError);
+                updateStatusIndicator('error', 'Error de conexión');
+                CONFIG.offlineMode = true;
                 
-                // Configurar formulario
-                document.getElementById('report-form').addEventListener('submit', manejarRegistro);
+                // Mostrar mensaje específico
+                let errorMsg = 'Error conectando a Supabase. ';
                 
-                // Configurar filtros de historial
-                document.getElementById('filter-all').addEventListener('click', () => {
-                    currentFilter = 'all';
-                    cargarHistorial();
-                });
-                document.getElementById('filter-pending').addEventListener('click', () => {
-                    currentFilter = 'pending';
-                    cargarHistorial();
-                });
-                document.getElementById('filter-process').addEventListener('click', () => {
-                    currentFilter = 'process';
-                    cargarHistorial();
-                });
-                document.getElementById('filter-repaired').addEventListener('click', () => {
-                    currentFilter = 'repaired';
-                    cargarHistorial();
-                });
-                
-                document.getElementById('filter-sector').addEventListener('change', cargarHistorial);
-                document.getElementById('search-input').addEventListener('input', cargarHistorial);
-                
-                // Configurar fecha estimada (mínimo hoy)
-                const fechaInput = document.getElementById('fecha-estimada');
-                if (fechaInput) {
-                    const hoy = new Date().toISOString().split('T')[0];
-                    fechaInput.min = hoy;
-                    fechaInput.value = hoy; // Por defecto hoy
+                if (connectionError.message.includes('Failed to fetch')) {
+                    errorMsg += 'Posible problema de CORS o URL incorrecta.';
+                } else if (connectionError.message.includes('Invalid API key')) {
+                    errorMsg += 'API Key inválida. Verifica en Settings > API de Supabase.';
+                } else {
+                    errorMsg += connectionError.message;
                 }
                 
-                // Mostrar dashboard por defecto
-                cambiarPagina('dashboard');
-                
-                console.log('✅ Sistema inicializado correctamente');
-                
-            } catch (error) {
-                console.error('❌ Error inicializando aplicación:', error);
-                updateStatusIndicator('error', 'Error de inicialización');
-                alert('Error inicializando la aplicación. Revisa la consola para más detalles.');
-            } finally {
-                showLoading(false);
+                console.error('Detalles:', errorMsg);
             }
+        } else {
+            console.log('📴 Modo offline - Sin credenciales');
+            updateStatusIndicator('disconnected', 'Modo Offline');
+            CONFIG.offlineMode = true;
         }
+        
+        // 3. Cargar datos locales siempre
+        cargarDatosLocales();
+        console.log(`📊 Datos locales cargados: ${unsafeConditions.length} registros`);
+        
+        // 4. Configurar interfaz
+        configurarInterfaz();
+        
+        // 5. Mostrar dashboard
+        cambiarPagina('dashboard');
+        
+        CONFIG.initialized = true;
+        console.log('✅ Sistema inicializado correctamente');
+        
+    } catch (error) {
+        console.error('❌ Error crítico en inicialización:', error);
+        updateStatusIndicator('error', 'Error de inicialización');
+        alert('Error inicializando la aplicación. Revisa la consola (F12) para más detalles.');
+    } finally {
+        showLoading(false);
+    }
+}
+        function configurarInterfaz() {
+    // Configurar navegación
+    document.querySelectorAll('.nav-menu a').forEach(link => {
+        link.addEventListener('click', (e) => {
+            e.preventDefault();
+            const pagina = link.getAttribute('data-page');
+            cambiarPagina(pagina);
+        });
+    });
+    
+    // Configurar formulario
+    const reportForm = document.getElementById('report-form');
+    if (reportForm) {
+        reportForm.addEventListener('submit', manejarRegistro);
+    }
+    
+    // Configurar filtros de historial
+    document.getElementById('filter-all')?.addEventListener('click', () => {
+        currentFilter = 'all';
+        cargarHistorial();
+    });
+    document.getElementById('filter-pending')?.addEventListener('click', () => {
+        currentFilter = 'pending';
+        cargarHistorial();
+    });
+    document.getElementById('filter-process')?.addEventListener('click', () => {
+        currentFilter = 'process';
+        cargarHistorial();
+    });
+    document.getElementById('filter-repaired')?.addEventListener('click', () => {
+        currentFilter = 'repaired';
+        cargarHistorial();
+    });
+    
+    document.getElementById('filter-sector')?.addEventListener('change', cargarHistorial);
+    document.getElementById('search-input')?.addEventListener('input', cargarHistorial);
+    
+    // Configurar fecha estimada (mínimo hoy)
+    const fechaInput = document.getElementById('fecha-estimada');
+    if (fechaInput) {
+        const hoy = new Date().toISOString().split('T')[0];
+        fechaInput.min = hoy;
+        if (!fechaInput.value) {
+            fechaInput.value = hoy; // Por defecto hoy
+        }
+    }
+}
+
+// ==============================================
+// FUNCIONES AUXILIARES NUEVAS
+// ==============================================
+function mostrarInstruccionesTabla() {
+    alert(`📋 INSTRUCCIONES PARA CREAR TABLA EN SUPABASE:
+
+1. Ve al dashboard de Supabase: ${CONFIG.supabaseUrl}
+2. En el menú izquierdo, haz clic en "SQL Editor"
+3. Crea un nuevo query
+4. Copia y pega este SQL:
+
+--------------------------------------------------
+CREATE TABLE condiciones_inseguras (
+    OT VARCHAR(5) PRIMARY KEY,
+    ReportadoPor TEXT NOT NULL,
+    Descripcion TEXT NOT NULL,
+    Sector TEXT NOT NULL,
+    Ubicacion TEXT NOT NULL,
+    Tipo TEXT NOT NULL,
+    NivelRiesgo TEXT NOT NULL,
+    FechaEstimadaReparacion DATE,
+    Observaciones TEXT,
+    Foto TEXT,
+    Fecha TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    Estado TEXT DEFAULT 'pendiente',
+    FechaReparacion TIMESTAMP WITH TIME ZONE,
+    TipoReparacion TEXT,
+    CostoEstimado DECIMAL(10,2)
+);
+--------------------------------------------------
+
+5. Ejecuta el query
+6. Luego ve a "Storage" y crea un bucket llamado "condiciones_imagenes"
+7. Configura el bucket para acceso público
+
+Una vez hecho esto, recarga esta página.`);
+}
+
+function mostrarNotificacion(mensaje, tipo = 'info') {
+    // Crear elemento de notificación
+    const notificacion = document.createElement('div');
+    notificacion.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        padding: 15px 20px;
+        border-radius: 8px;
+        color: white;
+        font-weight: 600;
+        z-index: 10000;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        animation: slideIn 0.3s ease;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    `;
+    
+    if (tipo === 'success') {
+        notificacion.style.backgroundColor = '#27ae60';
+    } else if (tipo === 'error') {
+        notificacion.style.backgroundColor = '#e74c3c';
+    } else {
+        notificacion.style.backgroundColor = '#3498db';
+    }
+    
+    notificacion.innerHTML = `
+        <i class="fas fa-${tipo === 'success' ? 'check-circle' : tipo === 'error' ? 'exclamation-triangle' : 'info-circle'}"></i>
+        <span>${mensaje}</span>
+    `;
+    
+    document.body.appendChild(notificacion);
+    
+    // Auto-eliminar después de 5 segundos
+    setTimeout(() => {
+        notificacion.style.animation = 'slideOut 0.3s ease';
+        setTimeout(() => {
+            if (notificacion.parentNode) {
+                notificacion.parentNode.removeChild(notificacion);
+            }
+        }, 300);
+    }, 5000);
+    
+    // Agregar estilos de animación si no existen
+    if (!document.getElementById('notification-styles')) {
+        const style = document.createElement('style');
+        style.id = 'notification-styles';
+        style.textContent = `
+            @keyframes slideIn {
+                from { transform: translateX(100%); opacity: 0; }
+                to { transform: translateX(0); opacity: 1; }
+            }
+            @keyframes slideOut {
+                from { transform: translateX(0); opacity: 1; }
+                to { transform: translateX(100%); opacity: 0; }
+            }
+        `;
+        document.head.appendChild(style);
+    }
+}
+
+// ==============================================
+// FUNCIÓN DE DIAGNÓSTICO DE CONEXIÓN
+// ==============================================
+async function diagnosticarConexion() {
+    console.log('🔍 Iniciando diagnóstico de conexión...');
+    
+    const diagnosticos = [];
+    
+    // 1. Verificar credenciales
+    if (!CONFIG.supabaseUrl || !CONFIG.supabaseKey) {
+        diagnosticos.push('❌ No hay credenciales configuradas');
+    } else {
+        diagnosticos.push(`✅ Credenciales configuradas:
+           URL: ${CONFIG.supabaseUrl}
+           API Key: ${CONFIG.supabaseKey.substring(0, 20)}...`);
+    }
+    
+    // 2. Verificar conexión a Internet
+    diagnosticos.push(navigator.onLine ? '✅ Conectado a Internet' : '❌ Sin conexión a Internet');
+    
+    // 3. Verificar cliente Supabase
+    if (!supabaseClient) {
+        diagnosticos.push('❌ Cliente Supabase no creado');
+    } else {
+        diagnosticos.push('✅ Cliente Supabase creado');
+    }
+    
+    // 4. Intentar conexión directa
+    try {
+        const testUrl = `${CONFIG.supabaseUrl}/rest/v1/`;
+        const response = await fetch(testUrl, {
+            headers: {
+                'apikey': CONFIG.supabaseKey,
+                'Authorization': `Bearer ${CONFIG.supabaseKey}`
+            }
+        });
+        
+        if (response.ok) {
+            diagnosticos.push('✅ Supabase responde correctamente');
+        } else {
+            diagnosticos.push(`❌ Supabase responde con error: ${response.status}`);
+        }
+    } catch (error) {
+        diagnosticos.push(`❌ Error conectando a Supabase: ${error.message}`);
+    }
+    
+    // Mostrar diagnóstico
+    const mensaje = diagnosticos.join('\n\n');
+    alert(`🔍 DIAGNÓSTICO DE CONEXIÓN:\n\n${mensaje}`);
+    
+    console.log('Diagnóstico completo:', diagnosticos);
+}
+
+// ==============================================
+// ACTUALIZAR BOTÓN DE CONFIGURACIÓN
+// ==============================================
+function agregarBotonDiagnostico() {
+    const configPage = document.getElementById('config-page');
+    if (!configPage) return;
+    
+    // Buscar la sección de herramientas
+    const toolsSection = configPage.querySelector('.card:last-child');
+    if (toolsSection) {
+        // Verificar si ya existe el botón
+        if (!document.querySelector('#btn-diagnostico')) {
+            const nuevoBoton = document.createElement('button');
+            nuevoBoton.id = 'btn-diagnostico';
+            nuevoBoton.className = 'btn btn-warning';
+            nuevoBoton.innerHTML = '<i class="fas fa-stethoscope"></i> Diagnosticar Conexión';
+            nuevoBoton.onclick = diagnosticarConexion;
+            
+            toolsSection.querySelector('div').appendChild(nuevoBoton);
+        }
+    }
+}
+        
 
         // ==============================================
         // EVENTOS GLOBALES
         // ==============================================
-        document.addEventListener('DOMContentLoaded', inicializarApp);
-
-        // Detectar cambios de conexión
-        window.addEventListener('online', () => {
-            console.log('🌐 Conexión a Internet restablecida');
-            if (supabaseClient) {
-                updateStatusIndicator('connected', 'Reconectando...');
-                sincronizarDatos();
+       // ==============================================
+// INICIALIZAR AL CARGAR LA PÁGINA
+// ==============================================
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('📄 Página cargada, iniciando aplicación...');
+    
+    // Inicializar aplicación
+    inicializarApp();
+    
+    // Agregar botón de diagnóstico después de cargar
+    setTimeout(agregarBotonDiagnostico, 1000);
+    
+    // Verificar CORS - Si hay problemas, mostrar opción alternativa
+    setTimeout(() => {
+        if (!supabaseClient && CONFIG.supabaseUrl) {
+            console.log('⚠️ Verificando problemas de CORS...');
+            
+            // Si después de 3 segundos no hay conexión, mostrar ayuda
+            if (!CONFIG.initialized) {
+                mostrarNotificacion('⚠️ Problemas de conexión detectados. Usa "Diagnosticar Conexión" en Configuración.', 'error');
             }
-        });
+        }
+    }, 3000);
+});
 
-        window.addEventListener('offline', () => {
-            console.log('📴 Sin conexión a Internet');
-            updateStatusIndicator('disconnected', 'Sin conexión - Modo Offline');
-            CONFIG.offlineMode = true;
-        });
+// Detectar cambios de conexión
+window.addEventListener('online', () => {
+    console.log('🌐 Conexión a Internet restablecida');
+    if (supabaseClient) {
+        updateStatusIndicator('connected', 'Reconectando...');
+        sincronizarDatos();
+    }
+});
+
+window.addEventListener('offline', () => {
+    console.log('📴 Sin conexión a Internet');
+    updateStatusIndicator('disconnected', 'Sin conexión - Modo Offline');
+    CONFIG.offlineMode = true;
+});
 
         // Prevenir salida sin guardar
         window.addEventListener('beforeunload', (e) => {
