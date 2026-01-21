@@ -1395,13 +1395,18 @@
         let evolutionChart = null;
         let selectedPhoto = null;
         
-        // Configuración por defecto
+        // Configuración por defecto CON CREDENCIALES FIJAS
         let CONFIG = {
-            supabaseUrl: localStorage.getItem('supabase_url') || '',
-            supabaseKey: localStorage.getItem('supabase_key') || '',
-            lastSync: localStorage.getItem('last_sync') || 'Nunca',
-            offlineMode: localStorage.getItem('offline_mode') === 'true' || false
+    // REEMPLAZA ESTOS VALORES CON TUS CREDENCIALES REALES
+        supabaseUrl: 'https://poaqbdzvqdqdxvchwjwc.supabase.co',  // ← TU URL AQUÍ
+        supabaseKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBvYXFiZHp2cWRxZHh2Y2h3andjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njg5OTczNDEsImV4cCI6MjA4NDU3MzM0MX0.LQw5ytCns_xl_Z-wAEeIbNvz1wgpFoiABd5ie1fgmIk',  // ← TU API KEY AQUÍ
+        lastSync: localStorage.getItem('last_sync') || 'Nunca',
+        offlineMode: localStorage.getItem('offline_mode') === 'true' || false
         };
+
+// También guardar en localStorage para persistencia
+localStorage.setItem('supabase_url', CONFIG.supabaseUrl);
+localStorage.setItem('supabase_key', CONFIG.supabaseKey);
         
         // Colores Danec para gráficos
         const CHART_COLORS = {
@@ -1788,10 +1793,16 @@
         // CONFIGURACIÓN SUPABASE
         // ==============================================
         function mostrarConfigPanel() {
-            document.getElementById('supabase-config-panel').style.display = 'block';
-            document.getElementById('supabase-url').value = CONFIG.supabaseUrl;
-            document.getElementById('supabase-key').value = CONFIG.supabaseKey;
-        }
+    // Si ya hay credenciales configuradas, no mostrar panel
+    if (CONFIG.supabaseUrl && CONFIG.supabaseKey) {
+        alert('✅ Las credenciales ya están configuradas.\n\nURL: ' + CONFIG.supabaseUrl + '\n\nSi necesitas cambiarlas, edita el código.');
+        return;
+    }
+    
+    document.getElementById('supabase-config-panel').style.display = 'block';
+    document.getElementById('supabase-url').value = CONFIG.supabaseUrl;
+    document.getElementById('supabase-key').value = CONFIG.supabaseKey;
+}
         
         function guardarConfigSupabase() {
             const url = document.getElementById('supabase-url').value.trim();
@@ -1811,24 +1822,27 @@
             alert('✅ Configuración guardada. Conectando...');
             inicializarSupabase();
         }
-        
+
         function inicializarSupabase() {
-            if (!CONFIG.supabaseUrl || !CONFIG.supabaseKey) {
-                updateStatusIndicator('disconnected', 'Sin configuración');
-                mostrarConfigPanel();
-                return false;
-            }
-            
-            try {
-                supabaseClient = supabase.createClient(CONFIG.supabaseUrl, CONFIG.supabaseKey);
-                probarConexionSupabase();
-                return true;
-            } catch (error) {
-                updateStatusIndicator('error', 'Error de configuración');
-                mostrarConfigPanel();
-                return false;
-            }
-        }
+    // Ya no mostrar panel de configuración si hay credenciales fijas
+    if (!CONFIG.supabaseUrl || !CONFIG.supabaseKey) {
+        console.error('❌ Credenciales de Supabase no configuradas');
+        updateStatusIndicator('error', 'Credenciales faltantes');
+        return false;
+    }
+    
+    try {
+        console.log('🔗 Conectando a Supabase con URL:', CONFIG.supabaseUrl);
+        supabaseClient = supabase.createClient(CONFIG.supabaseUrl, CONFIG.supabaseKey);
+        probarConexionSupabase();
+        return true;
+    } catch (error) {
+        console.error('❌ Error creando cliente Supabase:', error);
+        updateStatusIndicator('error', 'Error de configuración');
+        return false;
+    }
+}
+        
         
         async function probarConexionSupabase() {
             if (!supabaseClient) return false;
