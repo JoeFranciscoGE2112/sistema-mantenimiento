@@ -2636,156 +2636,154 @@
         }
         
         function actualizarTablaHistorial(filtro = 'all') {
-            const tbody = document.querySelector('#history-table tbody');
-            if (!tbody) return;
-            
-            let condicionesFiltradas = [...unsafeConditions];
-            
-            if (filtro !== 'all') {
-                condicionesFiltradas = unsafeConditions.filter(c => (c.Estado || 'pendiente') === filtro);
-            }
-            
-            // Filtrar por sector si hay selección
-            const filterSector = document.getElementById('filter-sector').value;
-            if (filterSector) {
-                condicionesFiltradas = condicionesFiltradas.filter(c => c.Sector === filterSector);
-            }
-            
-            condicionesFiltradas.sort((a, b) => new Date(b.Fecha || b.ultimaModificacion) - new Date(a.Fecha || a.ultimaModificacion));
-            
-            if (condicionesFiltradas.length === 0) {
-                tbody.innerHTML = `
-                    <tr>
-                        <td colspan="12" style="text-align: center; padding: 50px; color: #7f8c8d;">
-                            <i class="fas fa-search" style="font-size: 48px; margin-bottom: 15px; color: #dc2c3c;"></i>
-                            <p>No hay reportes ${filtro !== 'all' ? `con estado "${filtro}"` : 'registrados'}</p>
-                            <p style="font-size: 12px; margin-top: 5px;">Intenta con otro filtro o crea un nuevo reporte</p>
-                        </td>
-                    </tr>
-                `;
-                return;
-            }
-            
-            tbody.innerHTML = condicionesFiltradas.map(cond => {
-                const otCode = cond.OT || 'SIN-OT';
-                const descCorta = cond.Descripcion.length > 60 ? cond.Descripcion.substring(0, 60) + '...' : cond.Descripcion;
-                const estado = cond.Estado || 'pendiente';
-                
-                let estadoBadge = '';
-                if (estado === 'pendiente') estadoBadge = '<span class="status-badge status-pendiente">Pendiente</span>';
-                else if (estado === 'en proceso') estadoBadge = '<span class="status-badge status-en-proceso">En Proceso</span>';
-                else estadoBadge = '<span class="status-badge status-reparado">Reparado</span>';
-                
-                // Tiempo de reparación
-                let tiempoHTML = '';
-                if (estado === 'reparado' && cond.Fecha && cond.FechaReparacion) {
-                    const tiempo = calcularTiempoReparacion(cond.Fecha, cond.FechaReparacion);
-                    tiempoHTML = `<span class="tiempo-reparacion ${tiempo.clase}">
-                        <i class="fas fa-clock"></i> ${tiempo.texto}
-                    </span>`;
-                } else if (estado === 'en proceso' && cond.Fecha) {
-                    const tiempo = calcularTiempoReparacion(cond.Fecha, new Date());
-                    tiempoHTML = `<span style="color: #3498db"><i class="fas fa-hourglass-half"></i> ${tiempo.texto}</span>`;
-                } else {
-                    tiempoHTML = '<span style="color: #95a5a6"><i class="fas fa-minus"></i> -</span>';
-                }
-                
-                // Foto
-                let fotoHTML = '<span class="no-photo">-</span>';
-                if (cond.FotoUrl) {
-                    fotoHTML = `
-                        <img src="${cond.FotoUrl}" 
-                             class="table-photo" 
-                             alt="Foto"
-                             onclick="mostrarModalFoto('${cond.FotoUrl}', 'Reporte ${otCode}')"
-                             title="Ver foto del reporte">
-                    `;
-                }
-                
-                // Tipo de riesgo (especial para Físico)
-                let tipoHTML = cond.Categoria || 'N/A';
-                if (cond.Categoria === 'Físico') {
-                    tipoHTML = `<span class="tipo-fisico">${cond.Categoria}</span>`;
-                }
-                
-                // Badge de riesgo
-                let riesgoClass = '';
-                if (cond.Riesgo === 'Crítico') riesgoClass = 'risk-critico';
-                else if (cond.Riesgo === 'Alto') riesgoClass = 'risk-alto';
-                else if (cond.Riesgo === 'Medio') riesgoClass = 'risk-medio';
-                else if (cond.Riesgo === 'Bajo') riesgoClass = 'risk-bajo';
-                
-                const riesgoBadge = riesgoClass ? 
-                    `<span class="risk-badge ${riesgoClass}">${cond.Riesgo}</span>` :
-                    cond.Riesgo || 'N/A';
-                
-                // Estado de fecha estimada
-                let fechaEstHTML = '-';
-                if (cond.FechaEstimadaReparacion) {
-                    const estadoFecha = verificarEstadoFecha(cond.FechaEstimadaReparacion, cond.FechaReparacion);
-                    fechaEstHTML = `
-                        <div class="date-badge ${estadoFecha.clase}" title="${estadoFecha.texto}">
-                            <i class="fas ${estadoFecha.icono}"></i>
-                            ${formatDate(cond.FechaEstimadaReparacion).split(',')[0]}
-                        </div>
-                    `;
-                }
-                
-                // Acciones
-                let acciones = '';
-                // Acciones
-let acciones = '';
-const otCode = cond.OT;
-
-if (estado === 'pendiente') {
-    acciones = `
-        <button class="action-btn btn-primary" onclick="cambiarEstado('${otCode}', 'en proceso')" title="Marcar como en proceso">
-            <i class="fas fa-play"></i> Proceso
-        </button>
-        <button class="action-btn btn-success" onclick="cambiarEstado('${otCode}', 'reparado')" title="Marcar como reparado">
-            <i class="fas fa-check"></i> Reparar
-        </button>
-    `;
-} else if (estado === 'en proceso') {
-    acciones = `
-        <button class="action-btn btn-success" onclick="cambiarEstado('${otCode}', 'reparado')" title="Marcar como reparado">
-            <i class="fas fa-check"></i> Reparar
-        </button>
-        <button class="action-btn btn-warning" onclick="cambiarEstado('${otCode}', 'pendiente')" title="Volver a pendiente">
-            <i class="fas fa-undo"></i> Pendiente
-        </button>
-    `;
-} else {
-    acciones = `
-        <button class="action-btn btn-warning" onclick="cambiarEstado('${otCode}', 'pendiente')" title="Volver a pendiente">
-            <i class="fas fa-undo"></i> Pendiente
-        </button>
-        ${cond.FotoCorreccionUrl ? `
-        <button class="action-btn btn-primary" onclick="mostrarModalFoto('${cond.FotoCorreccionUrl}', 'Foto de corrección ${otCode}')" title="Ver corrección">
-            <i class="fas fa-camera"></i> Corr.
-        </button>
-        ` : ''}
-    `;
-}  
-                
-                return `
-                    <tr>
-                        <td><span class="ot-code"><i class="fas fa-hashtag"></i> ${otCode}</span></td>
-                        <td title="${cond.Descripcion}">${descCorta}</td>
-                        <td>${cond.Sector || 'N/A'}</td>
-                        <td>${tipoHTML}</td>
-                        <td>${riesgoBadge}</td>
-                        <td>${fechaEstHTML}</td>
-                        <td class="photo-cell">${fotoHTML}</td>
-                        <td>${formatDate(cond.Fecha)}</td>
-                        <td>${tiempoHTML}</td>
-                        <td>${cond.ReportadoPor || 'Anónimo'}</td>
-                        <td>${estadoBadge}</td>
-                        <td class="actions">${acciones}</td>
-                    </tr>
-                `;
-            }).join('');
+    const tbody = document.querySelector('#history-table tbody');
+    if (!tbody) return;
+    
+    let condicionesFiltradas = [...unsafeConditions];
+    
+    if (filtro !== 'all') {
+        condicionesFiltradas = unsafeConditions.filter(c => (c.Estado || 'pendiente') === filtro);
+    }
+    
+    // Filtrar por sector si hay selección
+    const filterSector = document.getElementById('filter-sector').value;
+    if (filterSector) {
+        condicionesFiltradas = condicionesFiltradas.filter(c => c.Sector === filterSector);
+    }
+    
+    condicionesFiltradas.sort((a, b) => new Date(b.Fecha || b.ultimaModificacion) - new Date(a.Fecha || a.ultimaModificacion));
+    
+    if (condicionesFiltradas.length === 0) {
+        tbody.innerHTML = `
+            <tr>
+                <td colspan="12" style="text-align: center; padding: 50px; color: #7f8c8d;">
+                    <i class="fas fa-search" style="font-size: 48px; margin-bottom: 15px; color: #dc2c3c;"></i>
+                    <p>No hay reportes ${filtro !== 'all' ? `con estado "${filtro}"` : 'registrados'}</p>
+                    <p style="font-size: 12px; margin-top: 5px;">Intenta con otro filtro o crea un nuevo reporte</p>
+                </td>
+            </tr>
+        `;
+        return;
+    }
+    
+    tbody.innerHTML = condicionesFiltradas.map(cond => {
+        const otCode = cond.OT || 'SIN-OT';
+        const descCorta = cond.Descripcion.length > 60 ? cond.Descripcion.substring(0, 60) + '...' : cond.Descripcion;
+        const estado = cond.Estado || 'pendiente';
+        
+        let estadoBadge = '';
+        if (estado === 'pendiente') estadoBadge = '<span class="status-badge status-pendiente">Pendiente</span>';
+        else if (estado === 'en proceso') estadoBadge = '<span class="status-badge status-en-proceso">En Proceso</span>';
+        else estadoBadge = '<span class="status-badge status-reparado">Reparado</span>';
+        
+        // Tiempo de reparación
+        let tiempoHTML = '';
+        if (estado === 'reparado' && cond.Fecha && cond.FechaReparacion) {
+            const tiempo = calcularTiempoReparacion(cond.Fecha, cond.FechaReparacion);
+            tiempoHTML = `<span class="tiempo-reparacion ${tiempo.clase}">
+                <i class="fas fa-clock"></i> ${tiempo.texto}
+            </span>`;
+        } else if (estado === 'en proceso' && cond.Fecha) {
+            const tiempo = calcularTiempoReparacion(cond.Fecha, new Date());
+            tiempoHTML = `<span style="color: #3498db"><i class="fas fa-hourglass-half"></i> ${tiempo.texto}</span>`;
+        } else {
+            tiempoHTML = '<span style="color: #95a5a6"><i class="fas fa-minus"></i> -</span>';
         }
+        
+        // Foto
+        let fotoHTML = '<span class="no-photo">-</span>';
+        if (cond.FotoUrl) {
+            fotoHTML = `
+                <img src="${cond.FotoUrl}" 
+                     class="table-photo" 
+                     alt="Foto"
+                     onclick="mostrarModalFoto('${cond.FotoUrl}', 'Reporte ${otCode}')"
+                     title="Ver foto del reporte">
+            `;
+        }
+        
+        // Tipo de riesgo (especial para Físico)
+        let tipoHTML = cond.Categoria || 'N/A';
+        if (cond.Categoria === 'Físico') {
+            tipoHTML = `<span class="tipo-fisico">${cond.Categoria}</span>`;
+        }
+        
+        // Badge de riesgo
+        let riesgoClass = '';
+        if (cond.Riesgo === 'Crítico') riesgoClass = 'risk-critico';
+        else if (cond.Riesgo === 'Alto') riesgoClass = 'risk-alto';
+        else if (cond.Riesgo === 'Medio') riesgoClass = 'risk-medio';
+        else if (cond.Riesgo === 'Bajo') riesgoClass = 'risk-bajo';
+        
+        const riesgoBadge = riesgoClass ? 
+            `<span class="risk-badge ${riesgoClass}">${cond.Riesgo}</span>` :
+            cond.Riesgo || 'N/A';
+        
+        // Estado de fecha estimada
+        let fechaEstHTML = '-';
+        if (cond.FechaEstimadaReparacion) {
+            const estadoFecha = verificarEstadoFecha(cond.FechaEstimadaReparacion, cond.FechaReparacion);
+            fechaEstHTML = `
+                <div class="date-badge ${estadoFecha.clase}" title="${estadoFecha.texto}">
+                    <i class="fas ${estadoFecha.icono}"></i>
+                    ${formatDate(cond.FechaEstimadaReparacion).split(',')[0]}
+                </div>
+            `;
+        }
+        
+        // ACCIONES - usando un nombre diferente (accionesHTML) para evitar conflicto
+        let accionesHTML = '';
+        if (otCode) {
+            if (estado === 'pendiente') {
+                accionesHTML = `
+                    <button class="action-btn btn-primary" onclick="cambiarEstado('${otCode}', 'en proceso')" title="Marcar como en proceso">
+                        <i class="fas fa-play"></i> Proceso
+                    </button>
+                    <button class="action-btn btn-success" onclick="cambiarEstado('${otCode}', 'reparado')" title="Marcar como reparado">
+                        <i class="fas fa-check"></i> Reparar
+                    </button>
+                `;
+            } else if (estado === 'en proceso') {
+                accionesHTML = `
+                    <button class="action-btn btn-success" onclick="cambiarEstado('${otCode}', 'reparado')" title="Marcar como reparado">
+                        <i class="fas fa-check"></i> Reparar
+                    </button>
+                    <button class="action-btn btn-warning" onclick="cambiarEstado('${otCode}', 'pendiente')" title="Volver a pendiente">
+                        <i class="fas fa-undo"></i> Pendiente
+                    </button>
+                `;
+            } else {
+                accionesHTML = `
+                    <button class="action-btn btn-warning" onclick="cambiarEstado('${otCode}', 'pendiente')" title="Volver a pendiente">
+                        <i class="fas fa-undo"></i> Pendiente
+                    </button>
+                    ${cond.FotoCorreccionUrl ? `
+                    <button class="action-btn btn-primary" onclick="mostrarModalFoto('${cond.FotoCorreccionUrl}', 'Foto de corrección ${otCode}')" title="Ver corrección">
+                        <i class="fas fa-camera"></i> Corr.
+                    </button>
+                    ` : ''}
+                `;
+            }
+        }
+        
+        return `
+            <tr>
+                <td><span class="ot-code"><i class="fas fa-hashtag"></i> ${otCode}</span></td>
+                <td title="${cond.Descripcion}">${descCorta}</td>
+                <td>${cond.Sector || 'N/A'}</td>
+                <td>${tipoHTML}</td>
+                <td>${riesgoBadge}</td>
+                <td>${fechaEstHTML}</td>
+                <td class="photo-cell">${fotoHTML}</td>
+                <td>${formatDate(cond.Fecha)}</td>
+                <td>${tiempoHTML}</td>
+                <td>${cond.ReportadoPor || 'Anónimo'}</td>
+                <td>${estadoBadge}</td>
+                <td class="actions">${accionesHTML}</td>
+            </tr>
+        `;
+    }).join('');
+}
         
         async function guardarNuevoReporte(event) {
             event.preventDefault();
@@ -2868,34 +2866,21 @@ if (otExistente) {
         }
         
       async function cambiarEstado(otCode, nuevoEstado) {
-    console.log('Intentando cambiar estado:', { otCode, nuevoEstado });
+    console.log('=== INICIANDO CAMBIO DE ESTADO ===');
+    console.log('OT:', otCode, 'Nuevo estado:', nuevoEstado);
     
-    // Buscar por OT (código único)
+    // Buscar por OT
     const condicion = unsafeConditions.find(c => c.OT === otCode);
     
     if (!condicion) {
         alert(`❌ Reporte con OT "${otCode}" no encontrado`);
-        console.log('Reportes disponibles:', unsafeConditions.map(c => ({ 
-            OT: c.OT,
-            Estado: c.Estado,
-            Descripcion: c.Descripcion
-        })));
+        console.log('Reportes disponibles:', unsafeConditions.map(c => c.OT));
         return;
     }
     
-    console.log('Reporte encontrado:', condicion);
+    console.log('✅ Reporte encontrado:', condicion);
     
-    // Verificar fecha estimada si se va a marcar como reparado
-    if (nuevoEstado === 'reparado' && condicion.FechaEstimadaReparacion) {
-        const fechaEst = new Date(condicion.FechaEstimadaReparacion);
-        const hoy = new Date();
-        
-        if (hoy > fechaEst) {
-            const confirmacion = confirm('⚠️ La fecha estimada de reparación ya pasó.\n\n¿Desea marcar como reparado igualmente?');
-            if (!confirmacion) return;
-        }
-    }
-    
+    // Preguntar por foto de corrección si es reparado
     let fotoCorreccionUrl = null;
     if (nuevoEstado === 'reparado') {
         const confirmacion = confirm('¿Marcar como reparado?\n\n¿Desea agregar una foto de la corrección realizada?');
@@ -2906,7 +2891,7 @@ if (otExistente) {
     
     const nuevosDatos = { 
         status: nuevoEstado,
-        fechaReparacion: nuevoEstado === 'reparado' ? new Date().toISOString() : undefined,
+        fechaReparacion: nuevoEstado === 'reparado' ? new Date().toISOString() : null,
         fotoCorreccionUrl: fotoCorreccionUrl
     };
     
@@ -2915,7 +2900,7 @@ if (otExistente) {
         nuevosDatos.repairedBy = reparador && reparador.trim() ? reparador.trim() : 'Técnico';
     }
     
-    // Actualizar en Supabase usando el ID real
+    // Actualizar en Supabase
     const resultado = await actualizarEstadoEnSupabase(condicion.ID, nuevosDatos);
     
     // Actualizar localmente
@@ -2931,14 +2916,13 @@ if (otExistente) {
         condicion.FotoCorreccionUrl = fotoCorreccionUrl;
     }
     
-    // Actualizar toda la interfaz
-    unsafeConditions = await cargarCondicionesDesdeSupabase();
+    // Actualizar interfaz
     actualizarEstadisticas();
     actualizarTablaReciente();
     actualizarTablaHistorial(currentFilter);
     crearGraficoEvolucion();
     
-    alert(resultado.offline ? '✅ Estado actualizado (modo offline)' : '✅ Estado actualizado en Supabase');
+    alert(resultado.offline ? '✅ Estado actualizado (modo offline)' : '✅ Estado actualizado');
 }
         
         function mostrarEjemplo() {
