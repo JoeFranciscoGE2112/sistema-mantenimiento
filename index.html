@@ -1108,16 +1108,13 @@
                                     <i class="fas fa-map-marker-alt"></i> Ubicación y Clasificación
                                 </h3>
                                 
-                                <div class="form-group">
-                                    <label for="sector" class="required">Sector/Área *</label>
-                                    <select class="form-control" id="sector" required>
-                                        <option value="">Seleccione</option>
-                                        <option value="Zona 1">Zona 1 - Producción</option>
-                                        <option value="Zona 2">Zona 2 - Almacén</option>
-                                        <option value="Zona 3">Zona 3 - Oficinas</option>
-                                        <option value="Zona 4">Zona 4 - Laboratorio</option>
-                                        <option value="Zona 5">Zona 5 - Mantenimiento</option>
-                                    </select>
+                               <div class="form-group">
+                                <label for="sector" class="required">Sector/Área *</label>
+                                <select class="form-control" id="sector" required>
+                                <option value="">Seleccione</option>
+                                    <option value="Aceites">Aceites</option>
+                                    <option value="Jabonería-Confitería">Jabonería-Confitería</option>
+                                        </select>
                                 </div>
                                 
                                 <div class="form-group">
@@ -1206,11 +1203,8 @@
                             <div style="display: flex; gap: 10px; flex-wrap: wrap;">
                                 <select class="form-control" id="filter-sector" style="width: 150px;">
                                     <option value="">Todos los sectores</option>
-                                    <option value="Zona 1">Zona 1</option>
-                                    <option value="Zona 2">Zona 2</option>
-                                    <option value="Zona 3">Zona 3</option>
-                                    <option value="Zona 4">Zona 4</option>
-                                    <option value="Zona 5">Zona 5</option>
+                                    <option value="Aceites">Aceites</option>
+                                    <option value="Jabonería-Confitería">Jabonería-Confitería</option>
                                 </select>
                                 <input type="text" class="form-control" id="search-input" placeholder="Buscar por OT, descripción..." style="width: 200px;">
                                 <button class="btn btn-primary" onclick="exportarHistorial()" title="Exportar a CSV">
@@ -1381,9 +1375,9 @@
         </div>
         
         <footer style="text-align: center; margin-top: 30px; padding: 20px; color: #7f8c8d; border-top: 1px solid #eee; background-color: rgba(220, 44, 60, 0.05);">
-            <p><strong>Sistema de Condiciones Inseguras Danec S.A.</strong> &copy; 2024 | Versión 5.0 | Colores corporativos: #dc2c3c</p>
-            <p style="font-size: 12px; margin-top: 5px;">Sectores: Zona 1 a Zona 5 | Nueva función: Código OT y fechas estimadas</p>
-        </footer>
+    <p><strong>Sistema de Condiciones Inseguras Danec S.A.</strong> &copy; 2024 | Versión 5.0 | Colores corporativos: #dc2c3c</p>
+    <p style="font-size: 12px; margin-top: 5px;">Sectores: Aceites y Jabonería-Confitería | Nueva función: Código OT y fechas estimadas</p>
+</footer>
     </div>
 
     <script>
@@ -1420,7 +1414,7 @@
                 'en proceso': '#3498db',
                 'reparado': '#27ae60'
             },
-            sector: ['#dc2c3c', '#2c3e50', '#f39c12', '#3498db', '#9b59b6'],
+            sector: ['#dc2c3c', '#2c3e50'],
             tipo: {
                 'Físico': '#9b59b6',
                 'Estructural': '#dc2c3c',
@@ -2801,11 +2795,11 @@
                 return;
             }
             
-            // Validar que solo sea Zona 1 a Zona 5
-            const zonasValidas = ['Zona 1', 'Zona 2', 'Zona 3', 'Zona 4', 'Zona 5'];
-            if (!zonasValidas.includes(reporte.sector)) {
-                alert('❌ Solo se permiten los sectores: Zona 1 a Zona 5');
-                return;
+           // Validar que solo sea Aceites o Jabonería-Confitería
+            const zonasValidas = ['Aceites', 'Jabonería-Confitería'];
+                if (!zonasValidas.includes(reporte.sector)) {
+                alert('❌ Solo se permiten los sectores: Aceites o Jabonería-Confitería');
+            return;
             }
             
             if (!reporte.otCode || !reporte.reportedBy || !reporte.description || !reporte.sector || 
@@ -2852,71 +2846,86 @@
             }
         }
         
-        async function cambiarEstado(id, nuevoEstado) {
-            const condicion = unsafeConditions.find(c => c.ID === id);
-            if (!condicion) {
-                alert('Reporte no encontrado');
-                return;
-            }
-            
-            // Verificar fecha estimada si se va a marcar como reparado
-            if (nuevoEstado === 'reparado' && condicion.FechaEstimadaReparacion) {
-                const fechaEst = new Date(condicion.FechaEstimadaReparacion);
-                const hoy = new Date();
-                
-                if (hoy > fechaEst) {
-                    const confirmacion = confirm('⚠️ La fecha estimada de reparación ya pasó.\n\n¿Desea marcar como reparado igualmente?');
-                    if (!confirmacion) return;
-                }
-            }
-            
-            let fotoCorreccionUrl = null;
-            if (nuevoEstado === 'reparado') {
-                const confirmacion = confirm('¿Marcar como reparado?\n\n¿Desea agregar una foto de la corrección realizada?');
-                if (confirmacion) {
-                    fotoCorreccionUrl = await uploadCorrectionPhoto(id);
-                }
-            }
-            
-            const nuevosDatos = { 
-                status: nuevoEstado,
-                fechaReparacion: nuevoEstado === 'reparado' ? new Date().toISOString() : undefined,
-                fotoCorreccionUrl: fotoCorreccionUrl
-            };
-            
-            if (nuevoEstado === 'reparado') {
-                const reparador = prompt('Ingrese su nombre (quién realiza la reparación):');
-                nuevosDatos.repairedBy = reparador && reparador.trim() ? reparador.trim() : 'Técnico';
-            }
-            
-            const resultado = await actualizarEstadoEnSupabase(id, nuevosDatos);
-            
-            // Actualizar localmente
-            condicion.Estado = nuevoEstado;
-            condicion.ultimaModificacion = obtenerTimestamp();
-            
-            if (nuevosDatos.repairedBy) {
-                condicion.ReparadoPor = nuevosDatos.repairedBy;
-                condicion.FechaReparacion = nuevosDatos.fechaReparacion;
-            }
-            
-            if (fotoCorreccionUrl) {
-                condicion.FotoCorreccionUrl = fotoCorreccionUrl;
-            }
-            
-            actualizarEstadisticas();
-            actualizarTablaReciente();
-            actualizarTablaHistorial(currentFilter);
-            crearGraficoEvolucion();
-            
-            alert(resultado.offline ? '✅ Estado actualizado (modo offline)' : '✅ Estado actualizado en Supabase');
+        async function cambiarEstado(idSecuencial, nuevoEstado) {
+    console.log('Intentando cambiar estado:', { idSecuencial, nuevoEstado });
+    
+    // Buscar por ID_secuencial en lugar de ID
+    const condicion = unsafeConditions.find(c => c.ID_secuencial == idSecuencial);
+    
+    if (!condicion) {
+        alert(`❌ Reporte con ID #${idSecuencial} no encontrado`);
+        console.log('Reportes disponibles:', unsafeConditions.map(c => ({ 
+            ID: c.ID, 
+            ID_secuencial: c.ID_secuencial,
+            OT: c.OT,
+            Estado: c.Estado 
+        })));
+        return;
+    }
+    
+    console.log('Reporte encontrado:', condicion);
+    
+    // Verificar fecha estimada si se va a marcar como reparado
+    if (nuevoEstado === 'reparado' && condicion.FechaEstimadaReparacion) {
+        const fechaEst = new Date(condicion.FechaEstimadaReparacion);
+        const hoy = new Date();
+        
+        if (hoy > fechaEst) {
+            const confirmacion = confirm('⚠️ La fecha estimada de reparación ya pasó.\n\n¿Desea marcar como reparado igualmente?');
+            if (!confirmacion) return;
         }
+    }
+    
+    let fotoCorreccionUrl = null;
+    if (nuevoEstado === 'reparado') {
+        const confirmacion = confirm('¿Marcar como reparado?\n\n¿Desea agregar una foto de la corrección realizada?');
+        if (confirmacion) {
+            fotoCorreccionUrl = await uploadCorrectionPhoto(condicion.ID);
+        }
+    }
+    
+    const nuevosDatos = { 
+        status: nuevoEstado,
+        fechaReparacion: nuevoEstado === 'reparado' ? new Date().toISOString() : undefined,
+        fotoCorreccionUrl: fotoCorreccionUrl
+    };
+    
+    if (nuevoEstado === 'reparado') {
+        const reparador = prompt('Ingrese su nombre (quién realiza la reparación):');
+        nuevosDatos.repairedBy = reparador && reparador.trim() ? reparador.trim() : 'Técnico';
+    }
+    
+    // Actualizar en Supabase usando el ID real (no el secuencial)
+    const resultado = await actualizarEstadoEnSupabase(condicion.ID, nuevosDatos);
+    
+    // Actualizar localmente
+    condicion.Estado = nuevoEstado;
+    condicion.ultimaModificacion = obtenerTimestamp();
+    
+    if (nuevosDatos.repairedBy) {
+        condicion.ReparadoPor = nuevosDatos.repairedBy;
+        condicion.FechaReparacion = nuevosDatos.fechaReparacion;
+    }
+    
+    if (fotoCorreccionUrl) {
+        condicion.FotoCorreccionUrl = fotoCorreccionUrl;
+    }
+    
+    // Actualizar toda la interfaz
+    unsafeConditions = await cargarCondicionesDesdeSupabase();
+    actualizarEstadisticas();
+    actualizarTablaReciente();
+    actualizarTablaHistorial(currentFilter);
+    crearGraficoEvolucion();
+    
+    alert(resultado.offline ? '✅ Estado actualizado (modo offline)' : '✅ Estado actualizado en Supabase');
+}
         
         function mostrarEjemplo() {
             document.getElementById('ot-code').value = 'OT-2024-001';
             document.getElementById('reporter-name').value = 'Juan Pérez Rodríguez';
             document.getElementById('description').value = 'Piso resbaladizo por aceite derramado en zona de máquinas. El área no está señalizada y representa un riesgo de caída para el personal.';
-            document.getElementById('sector').value = 'Zona 1';
+            document.getElementById('sector').value = 'Aceites';
             document.getElementById('ubicacion').value = 'Zona 1 - Prensa hidráulica, Estación 3, Lado derecho';
             document.getElementById('category').value = 'Físico';
             document.getElementById('risk-level').value = 'Alto';
