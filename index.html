@@ -1090,35 +1090,32 @@
                                               placeholder="Describa detalladamente la condición insegura..." required></textarea>
                                 </div>
                                 
-                            <!-- SUBIDA DE FOTO MEJORADA PARA MÓVIL - VERSIÓN CORREGIDA -->
+                            <!-- SUBIDA DE FOTO SIMPLIFICADA PARA MÓVIL -->
 <div class="form-group">
-    <label for="photo-upload">Foto de la condición (opcional):</label>
+    <label for="foto-simple">Foto (opcional):</label>
     
-    <!-- Botones para móvil -->
-    <div style="display: flex; gap: 10px; margin-bottom: 15px; flex-wrap: wrap;">
-        <button type="button" class="btn btn-primary" onclick="abrirGaleria()" style="flex: 1;">
-            <i class="fas fa-images"></i> Galería
-        </button>
-        <button type="button" class="btn btn-success" onclick="abrirCamara()" style="flex: 1;">
-            <i class="fas fa-camera"></i> Cámara
-        </button>
+    <div style="text-align: center;">
+        <input type="file" 
+               id="foto-simple" 
+               accept="image/*" 
+               capture="environment"
+               onchange="manejarFotoSimple(this)"
+               style="
+                   width: 100%;
+                   padding: 20px;
+                   border: 3px dashed #dc2c3c;
+                   border-radius: 10px;
+                   background: #f9f9f9;
+                   font-size: 16px;
+                   cursor: pointer;
+               ">
+        
+        <p style="font-size: 12px; color: #7f8c8d; margin-top: 8px;">
+            <i class="fas fa-info-circle"></i> Toca para tomar foto o elegir de galería
+        </p>
     </div>
     
-    <!-- Área de drop/click -->
-    <div class="photo-upload-container" id="photo-drop-area" onclick="abrirSelectorFoto()">
-        <i class="fas fa-camera" style="font-size: 48px; color: var(--primary); margin-bottom: 10px;"></i>
-        <p><strong>Toca para seleccionar foto</strong></p>
-        <p style="font-size: 12px; color: #7f8c8d;">Formatos: JPG, PNG, WEBP, HEIC • Máximo 5MB</p>
-    </div>
-    
-    <!-- Inputs ocultos para foto - CONECTADOS A LA FUNCIÓN -->
-    <input type="file" id="photo-input" accept="image/*" style="display: none;" 
-           onchange="handlePhotoUpload(this.files[0])">
-    <input type="file" id="camera-input" accept="image/*" capture="environment" style="display: none;"
-           onchange="handlePhotoUpload(this.files[0])">
-    
-    <!-- Vista previa -->
-    <div id="photo-preview"></div>
+    <div id="preview-foto-simple"></div>
 </div>
                             
                             <!-- SECCIÓN 3: UBICACIÓN Y RIESGO -->
@@ -1410,7 +1407,7 @@
         let sectorChart = null;
         let timeChart = null;
         let evolutionChart = null;
-        let selectedPhoto = null;
+        let fotoSeleccionada = null;
         
         // Configuración por defecto CON CREDENCIALES FIJAS
         let CONFIG = {
@@ -1676,135 +1673,110 @@ localStorage.setItem('supabase_key', CONFIG.supabaseKey);
         }
         
         // ==============================================
-        // MANEJO DE FOTOS MEJORADO
-        // ==============================================
-        function handlePhotoUpload(file) {
-            if (!file) return;
-            
-            // Validar tamaño (5MB máximo)
-            if (file.size > 5 * 1024 * 1024) {
-                alert('La foto es demasiado grande. Máximo 5MB.');
-                resetPhoto();
-                return;
-            }
-            
-            // Validar tipo
-            if (!file.type.match('image/jpeg') && !file.type.match('image/png')) {
-                alert('Formato no válido. Solo JPG y PNG.');
-                resetPhoto();
-                return;
-            }
-            
-            selectedPhoto = file;
-            
-            // Mostrar preview
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                const previewContainer = document.getElementById('photo-preview');
-                previewContainer.innerHTML = `
-                    <div style="text-align: center; margin-top: 15px;">
-                        <img src="${e.target.result}" class="preview-image" alt="Preview">
-                        <br>
-                        <button type="button" class="remove-photo-btn" onclick="resetPhoto()">
-                            <i class="fas fa-times"></i> Quitar foto
-                        </button>
-                        <p style="font-size: 12px; color: #7f8c8d; margin-top: 5px;">
-                            ${file.name} (${(file.size / 1024).toFixed(1)} KB)
-                        </p>
-                    </div>
-                `;
-            };
-            reader.readAsDataURL(file);
+// FUNCIONES DE FOTOS SIMPLIFICADAS
+// ==============================================
+
+function manejarFotoSimple(input) {
+    console.log('📸 Foto seleccionada');
+    
+    if (!input.files || !input.files[0]) {
+        console.log('No se seleccionó archivo');
+        return;
+    }
+    
+    const file = input.files[0];
+    
+    // Validaciones básicas
+    if (!file.type.startsWith('image/')) {
+        alert('❌ Por favor selecciona una imagen (JPG, PNG, etc.)');
+        input.value = '';
+        return;
+    }
+    
+    // Limitar a 2MB para free tier
+    const MAX_SIZE = 2 * 1024 * 1024; // 2MB
+    if (file.size > MAX_SIZE) {
+        const sizeMB = (file.size / (1024 * 1024)).toFixed(2);
+        alert(`⚠️ La imagen es muy grande (${sizeMB} MB). Máximo: 2MB`);
+        input.value = '';
+        return;
+    }
+    
+    // Guardar referencia
+    fotoSeleccionada = file;
+    
+    // Mostrar preview
+    mostrarPreviewSimple(file);
+}
+
+function mostrarPreviewSimple(file) {
+    const reader = new FileReader();
+    
+    reader.onload = function(e) {
+        const previewDiv = document.getElementById('preview-foto-simple');
+        if (!previewDiv) return;
+        
+        const tamañoKB = (file.size / 1024).toFixed(1);
+        
+        previewDiv.innerHTML = `
+            <div style="margin-top: 15px; padding: 15px; background: rgba(220, 44, 60, 0.05); border-radius: 10px; text-align: center;">
+                <h4 style="color: #dc2c3c; margin-bottom: 10px;">
+                    <i class="fas fa-check-circle"></i> Foto lista
+                </h4>
+                
+                <img src="${e.target.result}" 
+                     style="max-width: 100%; max-height: 200px; border-radius: 8px; border: 3px solid white;"
+                     alt="Vista previa">
+                
+                <div style="margin-top: 15px;">
+                    <button type="button" onclick="eliminarFotoSimple()" 
+                            style="padding: 10px 20px; background: #dc2c3c; color: white; border: none; border-radius: 6px; font-weight: bold;">
+                        <i class="fas fa-trash"></i> Eliminar
+                    </button>
+                </div>
+                
+                <div style="margin-top: 10px; font-size: 12px; color: #666;">
+                    ${file.name} • ${tamañoKB} KB
+                </div>
+            </div>
+        `;
+    };
+    
+    reader.readAsDataURL(file);
+}
+
+function eliminarFotoSimple() {
+    fotoSeleccionada = null;
+    document.getElementById('foto-simple').value = '';
+    document.getElementById('preview-foto-simple').innerHTML = '';
+}
+
+async function subirFotoASupabase(conditionId) {
+    if (!fotoSeleccionada || !supabaseClient) {
+        return null;
+    }
+    
+    try {
+        console.log('Subiendo foto...');
+        
+        const fileName = `foto_${conditionId}_${Date.now()}.jpg`;
+        
+        const { data, error } = await supabaseClient.storage
+            .from('safety_photos')
+            .upload(fileName, fotoSeleccionada);
+        
+        if (error) {
+            console.warn('No se pudo subir la foto:', error.message);
+            return null;
         }
         
-        function resetPhoto() {
-            selectedPhoto = null;
-            document.getElementById('photo-input').value = '';
-            document.getElementById('photo-preview').innerHTML = '';
-        }
+        return `${CONFIG.supabaseUrl}/storage/v1/object/public/safety_photos/${fileName}`;
         
-        async function uploadPhotoToSupabase(conditionId) {
-            if (!selectedPhoto || !supabaseClient) return null;
-            
-            try {
-                const fileName = `cond_${conditionId}_${Date.now()}.${selectedPhoto.name.split('.').pop()}`;
-                
-                const { data, error } = await supabaseClient.storage
-                    .from('safety_photos')
-                    .upload(fileName, selectedPhoto, {
-                        cacheControl: '3600',
-                        upsert: false
-                    });
-                
-                if (error) throw error;
-                
-                return `${CONFIG.supabaseUrl}/storage/v1/object/public/safety_photos/${fileName}`;
-                
-            } catch (error) {
-                console.error('Error subiendo foto:', error);
-                return null;
-            }
-        }
-        
-        async function uploadCorrectionPhoto(conditionId) {
-            return new Promise((resolve) => {
-                const input = document.createElement('input');
-                input.type = 'file';
-                input.accept = 'image/*';
-                input.style.display = 'none';
-                
-                input.onchange = async function(e) {
-                    const file = e.target.files[0];
-                    if (!file) {
-                        resolve(null);
-                        return;
-                    }
-                    
-                    if (file.size > 5 * 1024 * 1024) {
-                        alert('La foto es demasiado grande. Máximo 5MB.');
-                        resolve(null);
-                        return;
-                    }
-                    
-                    try {
-                        const fileName = `corr_${conditionId}_${Date.now()}.${file.name.split('.').pop()}`;
-                        
-                        const { data, error } = await supabaseClient.storage
-                            .from('safety_photos')
-                            .upload(fileName, file, {
-                                cacheControl: '3600',
-                                upsert: false
-                            });
-                        
-                        if (error) throw error;
-                        
-                        resolve(`${CONFIG.supabaseUrl}/storage/v1/object/public/safety_photos/${fileName}`);
-                        
-                    } catch (error) {
-                        console.error('Error subiendo foto de corrección:', error);
-                        resolve(null);
-                    }
-                };
-                
-                document.body.appendChild(input);
-                input.click();
-                setTimeout(() => document.body.removeChild(input), 100);
-            });
-        }
-        
-        function mostrarModalFoto(url, descripcion = '') {
-            const modal = document.getElementById('photoModal');
-            const modalImg = document.getElementById('modalPhoto');
-            const caption = document.getElementById('modalCaption');
-            
-            modalImg.src = url;
-            caption.textContent = descripcion;
-            modal.style.display = 'flex';
-        }
-        
-        function cerrarModalFoto() {
-            document.getElementById('photoModal').style.display = 'none';
-        }
+    } catch (error) {
+        console.error('Error subiendo foto:', error);
+        return null;
+    }
+}
         
         // ==============================================
         // CONFIGURACIÓN SUPABASE
@@ -2007,17 +1979,19 @@ localStorage.setItem('supabase_key', CONFIG.supabaseKey);
                 if (error) throw error;
                 
                 // Subir foto si hay
-                let fotoUrl = null;
-                if (selectedPhoto) {
-                    fotoUrl = await uploadPhotoToSupabase(data.id);
-                    if (fotoUrl) {
-                        await supabaseClient
-                            .from('condiciones_inseguras')
-                            .update({ foto_url: fotoUrl })
-                            .eq('id', data.id);
-                    }
-                }
-                
+               // Subir foto si existe
+let fotoUrl = null;
+if (fotoSeleccionada) {
+    fotoUrl = await subirFotoASupabase(data.id);
+    
+    if (fotoUrl) {
+        // Actualizar con la URL de la foto
+        await supabaseClient
+            .from('condiciones_inseguras')
+            .update({ foto_url: fotoUrl })
+            .eq('id', data.id);
+    }
+}
                 showLoading(false);
                 updateStatusIndicator('connected', 'Reporte guardado ✓');
                 
@@ -2087,14 +2061,15 @@ localStorage.setItem('supabase_key', CONFIG.supabaseKey);
             const nuevoId = condiciones.length + 1;
             
             // Convertir foto a base64 para almacenamiento local
-            let fotoBase64 = null;
-            if (selectedPhoto) {
-                const reader = new FileReader();
-                reader.readAsDataURL(selectedPhoto);
-                reader.onload = function() {
-                    fotoBase64 = reader.result;
-                };
-            }
+            
+let fotoBase64 = null;
+if (fotoSeleccionada) {
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        fotoBase64 = e.target.result;
+    };
+    reader.readAsDataURL(fotoSeleccionada);
+}
             
             const nuevoReporte = {
                 ID: nuevoId,
@@ -3419,16 +3394,10 @@ function mostrarPreviewFoto(file) {
 
 // FUNCIÓN PARA RESETEAR FOTO
 function resetPhoto() {
-    console.log('Reseteando foto...');
-    selectedPhoto = null;
-    document.getElementById('photo-input').value = '';
-    document.getElementById('camera-input').value = '';
-    
-    const previewContainer = document.getElementById('photo-preview');
-    if (previewContainer) {
-        previewContainer.innerHTML = '';
-        console.log('Preview limpiado');
-    }
+    fotoSeleccionada = null;
+    document.getElementById('foto-simple').value = '';
+    const previewDiv = document.getElementById('preview-foto-simple');
+    if (previewDiv) previewDiv.innerHTML = '';
 }
 // Ejecutar al cargar
 setTimeout(buscarVariablesDuplicadas, 2000);
@@ -3748,15 +3717,7 @@ setTimeout(buscarVariablesDuplicadas, 2000);
                 crearGraficoAnalisis(this.value);
             });
             
-            // Drag & drop para foto
-            const dropArea = document.getElementById('photo-drop-area');
-            const fileInput = document.getElementById('photo-input');
-            
-            dropArea.addEventListener('click', () => fileInput.click());
-            
-            ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
-                dropArea.addEventListener(eventName, preventDefaults, false);
-            });
+        
             
             function preventDefaults(e) {
                 e.preventDefault();
@@ -3813,6 +3774,9 @@ setTimeout(buscarVariablesDuplicadas, 2000);
         window.backupLocal = backupLocal;
         window.generarReportePDF = generarReportePDF;
         window.abrirManualSupabase = abrirManualSupabase;
+        window.manejarFotoSimple = manejarFotoSimple;
+        window.eliminarFotoSimple = eliminarFotoSimple;
+   
     </script>
 </body>
 </html>
