@@ -887,6 +887,80 @@
             color: var(--safe);
             border: 1px solid rgba(39, 174, 96, 0.3);
         }
+
+        /* ===== MEJORAS PARA MÓVIL ===== */
+        @media (max-width: 768px) {
+            .action-btn {
+                padding: 12px 16px !important;
+                font-size: 14px !important;
+                min-height: 44px;
+                min-width: 44px;
+            }
+            
+            .btn {
+                padding: 14px 20px !important;
+                font-size: 16px !important;
+                min-height: 48px;
+            }
+            
+            .table-photo {
+                width: 70px !important;
+                height: 70px !important;
+            }
+            
+            .form-control {
+                font-size: 16px !important;
+                padding: 14px !important;
+            }
+            
+            .actions {
+                gap: 12px !important;
+            }
+            
+            .photo-upload-container {
+                padding: 20px !important;
+                min-height: 120px;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+            }
+            
+            .photo-upload-container i {
+                font-size: 36px !important;
+                margin-bottom: 8px !important;
+            }
+            
+            .photo-upload-container p {
+                font-size: 14px !important;
+                margin: 5px 0 !important;
+                text-align: center;
+            }
+            
+            .preview-image {
+                max-width: 100% !important;
+                max-height: 200px !important;
+            }
+            
+            .remove-photo-btn {
+                padding: 10px 20px !important;
+                font-size: 14px !important;
+                width: 100%;
+                max-width: 200px;
+            }
+        }
+
+        /* Mejoras de touch para móvil */
+        .action-btn, .btn, .table-photo {
+            touch-action: manipulation;
+            -webkit-tap-highlight-color: rgba(0,0,0,0.1);
+            user-select: none;
+        }
+
+        /* Evitar zoom en inputs en iOS */
+        input, select, textarea {
+            font-size: 16px !important;
+        }
     </style>
 </head>
 <body>
@@ -973,13 +1047,13 @@
                     </p>
                     <div style="margin-top: 15px; padding: 15px; background-color: rgba(220, 44, 60, 0.05); border-radius: 6px;">
                         <p style="font-size: 12px; color: #7f8c8d; display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
-                            <i class="fas fa-tag" style="color: var(--blue);"></i> <strong>Nuevo:</strong> Código OT para identificación
+                            <i class="fas fa-map-marker-alt" style="color: #dc2c3c;"></i> <strong>Zonas:</strong> Aceites y Jabonería-Confitería
                         </p>
                         <p style="font-size: 12px; color: #7f8c8d; display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
-                            <i class="fas fa-calendar-alt" style="color: var(--accent);"></i> <strong>Nuevo:</strong> Fecha estimada de reparación
+                            <i class="fas fa-tag" style="color: var(--blue);"></i> <strong>Nuevo:</strong> Código OT para identificación
                         </p>
                         <p style="font-size: 12px; color: #7f8c8d; display: flex; align-items: center; gap: 8px;">
-                            <i class="fas fa-clock" style="color: var(--safe);"></i> <strong>Nuevo:</strong> Cálculo de tiempo de reparación
+                            <i class="fas fa-calendar-alt" style="color: var(--accent);"></i> <strong>Nuevo:</strong> Fecha estimada de reparación
                         </p>
                     </div>
                 </div>
@@ -1061,15 +1135,14 @@
                                 </h3>
                                 
                                 <div class="form-group">
-    <label for="ot-code" class="required">Código OT *</label>
-    <input type="text" class="form-control" id="ot-code" 
-           placeholder="Ej: 00001, 12345 (5 dígitos)" 
-           required
-           pattern="^\d{5}$"
-           title="Ingrese un código OT de 5 dígitos numéricos"
-           maxlength="5">
-    <small style="color: #7f8c8d; font-size: 12px;">Código único de 5 dígitos (ej: 00001)</small>
-</div>
+                                    <label for="ot-code" class="required">Código OT *</label>
+                                    <input type="text" class="form-control" id="ot-code" 
+                                           placeholder="Ej: 00001, 12345 (5 dígitos)" required
+                                           pattern="^\d{5}$"
+                                           title="Ingrese un código OT de 5 dígitos numéricos"
+                                           maxlength="5">
+                                    <small style="color: #7f8c8d; font-size: 12px;">Código único de 5 dígitos (ej: 00001)</small>
+                                </div>
                                 
                                 <div class="form-group">
                                     <label for="reporter-name" class="required">Reportado por *</label>
@@ -1090,33 +1163,34 @@
                                               placeholder="Describa detalladamente la condición insegura..." required></textarea>
                                 </div>
                                 
-                            <!-- SUBIDA DE FOTO SIMPLIFICADA PARA MÓVIL -->
-<div class="form-group">
-    <label for="foto-simple">Foto (opcional):</label>
-    
-    <div style="text-align: center;">
-        <input type="file" 
-               id="foto-simple" 
-               accept="image/*" 
-               capture="environment"
-               onchange="manejarFotoSimple(this)"
-               style="
-                   width: 100%;
-                   padding: 20px;
-                   border: 3px dashed #dc2c3c;
-                   border-radius: 10px;
-                   background: #f9f9f9;
-                   font-size: 16px;
-                   cursor: pointer;
-               ">
-        
-        <p style="font-size: 12px; color: #7f8c8d; margin-top: 8px;">
-            <i class="fas fa-info-circle"></i> Toca para tomar foto o elegir de galería
-        </p>
-    </div>
-    
-    <div id="preview-foto-simple"></div>
-</div>
+                                <!-- SUBIDA DE FOTO SIMPLIFICADA PARA MÓVIL -->
+                                <div class="form-group">
+                                    <label for="foto-simple">Foto (opcional):</label>
+                                    
+                                    <div style="text-align: center;">
+                                        <input type="file" 
+                                               id="foto-simple" 
+                                               accept="image/*" 
+                                               capture="environment"
+                                               onchange="manejarFotoSimple(this)"
+                                               style="
+                                                   width: 100%;
+                                                   padding: 20px;
+                                                   border: 3px dashed #dc2c3c;
+                                                   border-radius: 10px;
+                                                   background: #f9f9f9;
+                                                   font-size: 16px;
+                                                   cursor: pointer;
+                                               ">
+                                        
+                                        <p style="font-size: 12px; color: #7f8c8d; margin-top: 8px;">
+                                            <i class="fas fa-info-circle"></i> Toca para tomar foto o elegir de galería
+                                        </p>
+                                    </div>
+                                    
+                                    <div id="preview-foto-simple"></div>
+                                </div>
+                            </div>
                             
                             <!-- SECCIÓN 3: UBICACIÓN Y RIESGO -->
                             <div style="background-color: rgba(39, 174, 96, 0.05); padding: 15px; border-radius: 6px; margin-bottom: 20px;">
@@ -1124,13 +1198,13 @@
                                     <i class="fas fa-map-marker-alt"></i> Ubicación y Clasificación
                                 </h3>
                                 
-                               <div class="form-group">
-                                <label for="sector" class="required">Sector/Área *</label>
-                                <select class="form-control" id="sector" required>
-                                <option value="">Seleccione</option>
-                                    <option value="Aceites">Aceites</option>
-                                    <option value="Jabonería-Confitería">Jabonería-Confitería</option>
-                                        </select>
+                                <div class="form-group">
+                                    <label for="sector" class="required">Sector/Área *</label>
+                                    <select class="form-control" id="sector" required>
+                                        <option value="">Seleccione</option>
+                                        <option value="Aceites">Aceites</option>
+                                        <option value="Jabonería-Confitería">Jabonería-Confitería</option>
+                                    </select>
                                 </div>
                                 
                                 <div class="form-group">
@@ -1189,7 +1263,7 @@
                                 <button type="submit" class="btn btn-primary">
                                     <i class="fas fa-save"></i> Guardar Reporte
                                 </button>
-                                <button type="reset" class="btn" style="background-color: #95a5a6; color: white;" onclick="resetPhoto()">
+                                <button type="reset" class="btn" style="background-color: #95a5a6; color: white;" onclick="eliminarFotoSimple()">
                                     <i class="fas fa-undo"></i> Limpiar Formulario
                                 </button>
                                 <button type="button" class="btn btn-warning" onclick="mostrarEjemplo()">
@@ -1215,6 +1289,9 @@
                                 <button class="btn btn-primary" id="filter-pending">Pendientes</button>
                                 <button class="btn btn-info" id="filter-process">En Proceso</button>
                                 <button class="btn btn-success" id="filter-repaired">Reparados</button>
+                                <button class="btn btn-warning" onclick="diagnosticarProblemas()">
+                                    <i class="fas fa-stethoscope"></i> Diagnosticar
+                                </button>
                             </div>
                             <div style="display: flex; gap: 10px; flex-wrap: wrap;">
                                 <select class="form-control" id="filter-sector" style="width: 150px;">
@@ -1391,9 +1468,9 @@
         </div>
         
         <footer style="text-align: center; margin-top: 30px; padding: 20px; color: #7f8c8d; border-top: 1px solid #eee; background-color: rgba(220, 44, 60, 0.05);">
-    <p><strong>Sistema de Condiciones Inseguras Danec S.A.</strong> &copy; 2024 | Versión 5.0 | Colores corporativos: #dc2c3c</p>
-    <p style="font-size: 12px; margin-top: 5px;">Sectores: Aceites y Jabonería-Confitería | Nueva función: Código OT y fechas estimadas</p>
-</footer>
+            <p><strong>Sistema de Condiciones Inseguras Danec S.A.</strong> &copy; 2024 | Versión 5.0 | Colores corporativos: #dc2c3c</p>
+            <p style="font-size: 12px; margin-top: 5px;">Sectores: Aceites y Jabonería-Confitería | Código OT de 5 dígitos</p>
+        </footer>
     </div>
 
     <script>
@@ -1409,18 +1486,23 @@
         let evolutionChart = null;
         let fotoSeleccionada = null;
         
-        // Configuración por defecto CON CREDENCIALES FIJAS
-        let CONFIG = {
-    // REEMPLAZA ESTOS VALORES CON TUS CREDENCIALES REALES
-        supabaseUrl: 'https://poaqbdzvqdqdxvchwjwc.supabase.co',  // ← TU URL AQUÍ
-        supabaseKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBvYXFiZHp2cWRxZHh2Y2h3andjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njg5OTczNDEsImV4cCI6MjA4NDU3MzM0MX0.LQw5ytCns_xl_Z-wAEeIbNvz1wgpFoiABd5ie1fgmIk',  // ← TU API KEY AQUÍ
-        lastSync: localStorage.getItem('last_sync') || 'Nunca',
-        offlineMode: localStorage.getItem('offline_mode') === 'true' || false
+        // ⭐⭐ CONFIGURA TUS CREDENCIALES AQUÍ ⭐⭐
+        const MIS_CREDENCIALES = {
+            URL: 'https://poaqbdzvqdqdxvchwjwc.supabase.co',  // ← TU URL DE SUPABASE
+            API_KEY: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBvYXFiZHp2cWRxZHh2Y2h3andjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzUwNDM0MDcsImV4cCI6MjA1MDYxOTQwN30.UeJm_TXb1wX_Zy9K4OCDQjN8G2AQu8Tg44ir0ufWnjQ'  // ← TU API KEY
         };
-
-// También guardar en localStorage para persistencia
-localStorage.setItem('supabase_url', CONFIG.supabaseUrl);
-localStorage.setItem('supabase_key', CONFIG.supabaseKey);
+        
+        // Configuración por defecto
+        let CONFIG = {
+            supabaseUrl: MIS_CREDENCIALES.URL,
+            supabaseKey: MIS_CREDENCIALES.API_KEY,
+            lastSync: localStorage.getItem('last_sync') || 'Nunca',
+            offlineMode: localStorage.getItem('offline_mode') === 'true' || false
+        };
+        
+        // Guardar en localStorage también
+        localStorage.setItem('supabase_url', CONFIG.supabaseUrl);
+        localStorage.setItem('supabase_key', CONFIG.supabaseKey);
         
         // Colores Danec para gráficos
         const CHART_COLORS = {
@@ -1435,7 +1517,7 @@ localStorage.setItem('supabase_key', CONFIG.supabaseKey);
                 'en proceso': '#3498db',
                 'reparado': '#27ae60'
             },
-            sector: ['#dc2c3c', '#2c3e50'],
+            sector: ['#dc2c3c', '#2c3e50'], // Solo 2 colores para las 2 zonas
             tipo: {
                 'Físico': '#9b59b6',
                 'Estructural': '#dc2c3c',
@@ -1500,32 +1582,32 @@ localStorage.setItem('supabase_key', CONFIG.supabaseKey);
         }
         
         function generarCodigoOT() {
-    // Obtener el próximo número disponible
-    const numerosUsados = unsafeConditions
-        .filter(c => c.OT && c.OT.match(/^\d{5}$/))
-        .map(c => parseInt(c.OT))
-        .filter(n => !isNaN(n));
-    
-    let siguienteNumero = 1;
-    if (numerosUsados.length > 0) {
-        const maxNumero = Math.max(...numerosUsados);
-        siguienteNumero = maxNumero + 1;
-    }
-    
-    // Formatear a 5 dígitos con ceros a la izquierda
-    const otCode = String(siguienteNumero).padStart(5, '0');
-    document.getElementById('ot-code').value = otCode;
-    
-    // Mostrar feedback
-    const otField = document.getElementById('ot-code');
-    otField.style.borderColor = '#27ae60';
-    otField.style.boxShadow = '0 0 0 3px rgba(39, 174, 96, 0.2)';
-    
-    setTimeout(() => {
-        otField.style.borderColor = '';
-        otField.style.boxShadow = '';
-    }, 1500);
-}
+            // Obtener el próximo número disponible
+            const numerosUsados = unsafeConditions
+                .filter(c => c.OT && c.OT.match(/^\d{5}$/))
+                .map(c => parseInt(c.OT))
+                .filter(n => !isNaN(n));
+            
+            let siguienteNumero = 1;
+            if (numerosUsados.length > 0) {
+                const maxNumero = Math.max(...numerosUsados);
+                siguienteNumero = maxNumero + 1;
+            }
+            
+            // Formatear a 5 dígitos con ceros a la izquierda
+            const otCode = String(siguienteNumero).padStart(5, '0');
+            document.getElementById('ot-code').value = otCode;
+            
+            // Mostrar feedback
+            const otField = document.getElementById('ot-code');
+            otField.style.borderColor = '#27ae60';
+            otField.style.boxShadow = '0 0 0 3px rgba(39, 174, 96, 0.2)';
+            
+            setTimeout(() => {
+                otField.style.borderColor = '';
+                otField.style.boxShadow = '';
+            }, 1500);
+        }
         
         function calcularTiempoReparacion(fechaInicio, fechaFin) {
             if (!fechaInicio || !fechaFin) {
@@ -1673,610 +1755,906 @@ localStorage.setItem('supabase_key', CONFIG.supabaseKey);
         }
         
         // ==============================================
-// FUNCIONES DE FOTOS SIMPLIFICADAS
-// ==============================================
-
-function manejarFotoSimple(input) {
-    console.log('📸 Foto seleccionada');
-    
-    if (!input.files || !input.files[0]) {
-        console.log('No se seleccionó archivo');
-        return;
-    }
-    
-    const file = input.files[0];
-    
-    // Validaciones básicas
-    if (!file.type.startsWith('image/')) {
-        alert('❌ Por favor selecciona una imagen (JPG, PNG, etc.)');
-        input.value = '';
-        return;
-    }
-    
-    // Limitar a 2MB para free tier
-    const MAX_SIZE = 2 * 1024 * 1024; // 2MB
-    if (file.size > MAX_SIZE) {
-        const sizeMB = (file.size / (1024 * 1024)).toFixed(2);
-        alert(`⚠️ La imagen es muy grande (${sizeMB} MB). Máximo: 2MB`);
-        input.value = '';
-        return;
-    }
-    
-    // Guardar referencia
-    fotoSeleccionada = file;
-    
-    // Mostrar preview
-    mostrarPreviewSimple(file);
-}
-
-function mostrarPreviewSimple(file) {
-    const reader = new FileReader();
-    
-    reader.onload = function(e) {
-        const previewDiv = document.getElementById('preview-foto-simple');
-        if (!previewDiv) return;
-        
-        const tamañoKB = (file.size / 1024).toFixed(1);
-        
-        previewDiv.innerHTML = `
-            <div style="margin-top: 15px; padding: 15px; background: rgba(220, 44, 60, 0.05); border-radius: 10px; text-align: center;">
-                <h4 style="color: #dc2c3c; margin-bottom: 10px;">
-                    <i class="fas fa-check-circle"></i> Foto lista
-                </h4>
-                
-                <img src="${e.target.result}" 
-                     style="max-width: 100%; max-height: 200px; border-radius: 8px; border: 3px solid white;"
-                     alt="Vista previa">
-                
-                <div style="margin-top: 15px;">
-                    <button type="button" onclick="eliminarFotoSimple()" 
-                            style="padding: 10px 20px; background: #dc2c3c; color: white; border: none; border-radius: 6px; font-weight: bold;">
-                        <i class="fas fa-trash"></i> Eliminar
-                    </button>
-                </div>
-                
-                <div style="margin-top: 10px; font-size: 12px; color: #666;">
-                    ${file.name} • ${tamañoKB} KB
-                </div>
-            </div>
-        `;
-    };
-    
-    reader.readAsDataURL(file);
-}
-
-function eliminarFotoSimple() {
-    fotoSeleccionada = null;
-    document.getElementById('foto-simple').value = '';
-    document.getElementById('preview-foto-simple').innerHTML = '';
-}
-
-async function subirFotoASupabase(conditionId) {
-    if (!fotoSeleccionada || !supabaseClient) {
-        return null;
-    }
-    
-    try {
-        console.log('Subiendo foto...');
-        
-        const fileName = `foto_${conditionId}_${Date.now()}.jpg`;
-        
-        const { data, error } = await supabaseClient.storage
-            .from('safety_photos')
-            .upload(fileName, fotoSeleccionada);
-        
-        if (error) {
-            console.warn('No se pudo subir la foto:', error.message);
-            return null;
-        }
-        
-        return `${CONFIG.supabaseUrl}/storage/v1/object/public/safety_photos/${fileName}`;
-        
-    } catch (error) {
-        console.error('Error subiendo foto:', error);
-        return null;
-    }
-}
-        
+        // FUNCIONES PARA FOTOS SIMPLIFICADAS
         // ==============================================
-        // CONFIGURACIÓN SUPABASE
-        // ==============================================
-        function mostrarConfigPanel() {
-    // Si ya hay credenciales configuradas, no mostrar panel
-    if (CONFIG.supabaseUrl && CONFIG.supabaseKey) {
-        alert('✅ Las credenciales ya están configuradas.\n\nURL: ' + CONFIG.supabaseUrl + '\n\nSi necesitas cambiarlas, edita el código.');
-        return;
-    }
-    
-    document.getElementById('supabase-config-panel').style.display = 'block';
-    document.getElementById('supabase-url').value = CONFIG.supabaseUrl;
-    document.getElementById('supabase-key').value = CONFIG.supabaseKey;
-}
         
-        function guardarConfigSupabase() {
-            const url = document.getElementById('supabase-url').value.trim();
-            const key = document.getElementById('supabase-key').value.trim();
+        function manejarFotoSimple(input) {
+            console.log('📸 Foto seleccionada');
             
-            if (!url || !key) {
-                alert('❌ Ingresa la URL y API Key');
+            if (!input.files || !input.files[0]) {
+                console.log('No se seleccionó archivo');
                 return;
             }
             
-            CONFIG.supabaseUrl = url;
-            CONFIG.supabaseKey = key;
+            const file = input.files[0];
             
-            localStorage.setItem('supabase_url', url);
-            localStorage.setItem('supabase_key', key);
+            // Validaciones básicas
+            if (!file.type.startsWith('image/')) {
+                alert('❌ Por favor selecciona una imagen (JPG, PNG, etc.)');
+                input.value = '';
+                return;
+            }
             
-            alert('✅ Configuración guardada. Conectando...');
-            inicializarSupabase();
+            // Limitar a 2MB para free tier
+            const MAX_SIZE = 2 * 1024 * 1024; // 2MB
+            if (file.size > MAX_SIZE) {
+                const sizeMB = (file.size / (1024 * 1024)).toFixed(2);
+                alert(`⚠️ La imagen es muy grande (${sizeMB} MB). Máximo: 2MB`);
+                input.value = '';
+                return;
+            }
+            
+            // Guardar referencia
+            fotoSeleccionada = file;
+            
+            // Mostrar preview
+            mostrarPreviewSimple(file);
+        }
+        
+        function mostrarPreviewSimple(file) {
+            const reader = new FileReader();
+            
+            reader.onload = function(e) {
+                const previewDiv = document.getElementById('preview-foto-simple');
+                if (!previewDiv) return;
+                
+                const tamañoKB = (file.size / 1024).toFixed(1);
+                
+                previewDiv.innerHTML = `
+                    <div style="margin-top: 15px; padding: 15px; background: rgba(220, 44, 60, 0.05); border-radius: 10px; text-align: center;">
+                        <h4 style="color: #dc2c3c; margin-bottom: 10px;">
+                            <i class="fas fa-check-circle"></i> Foto lista
+                        </h4>
+                        
+                        <img src="${e.target.result}" 
+                             style="max-width: 100%; max-height: 200px; border-radius: 8px; border: 3px solid white;"
+                             alt="Vista previa">
+                        
+                        <div style="margin-top: 15px;">
+                            <button type="button" onclick="eliminarFotoSimple()" 
+                                    style="padding: 10px 20px; background: #dc2c3c; color: white; border: none; border-radius: 6px; font-weight: bold;">
+                                <i class="fas fa-trash"></i> Eliminar
+                                                    <div style="margin-top: 10px; font-size: 12px; color: #666;">
+                                <i class="fas fa-info-circle"></i> Tamaño: ${tamañoKB} KB
+                            </div>
+                        </div>
+                    </div>
+                `;
+            };
+            
+            reader.readAsDataURL(file);
         }
 
-        function inicializarSupabase() {
-    // Ya no mostrar panel de configuración si hay credenciales fijas
-    if (!CONFIG.supabaseUrl || !CONFIG.supabaseKey) {
-        console.error('❌ Credenciales de Supabase no configuradas');
-        updateStatusIndicator('error', 'Credenciales faltantes');
-        return false;
-    }
-    
-    try {
-        console.log('🔗 Conectando a Supabase con URL:', CONFIG.supabaseUrl);
-        supabaseClient = supabase.createClient(CONFIG.supabaseUrl, CONFIG.supabaseKey);
-        probarConexionSupabase();
-        return true;
-    } catch (error) {
-        console.error('❌ Error creando cliente Supabase:', error);
-        updateStatusIndicator('error', 'Error de configuración');
-        return false;
-    }
-}
-        
-        
-        async function probarConexionSupabase() {
-            if (!supabaseClient) return false;
+        function eliminarFotoSimple() {
+            fotoSeleccionada = null;
+            const input = document.getElementById('foto-simple');
+            if (input) input.value = '';
             
-            showLoading(true, 'Probando conexión con Supabase...');
+            const previewDiv = document.getElementById('preview-foto-simple');
+            if (previewDiv) previewDiv.innerHTML = '';
+        }
+
+        // ==============================================
+        // FUNCIONES DE GESTIÓN DE FOTOS
+        // ==============================================
+        async function subirFotoSupabase(file, otCode) {
+            if (!supabaseClient) return null;
             
             try {
-                // Probar conexión a la tabla
-                const { data, error } = await supabaseClient
-                    .from('condiciones_inseguras')
-                    .select('count', { count: 'exact', head: true });
+                const fileName = `condicion_${otCode}_${Date.now()}.jpg`;
                 
-                if (error) throw error;
-                
-                // Crear bucket si no existe
-                try {
-                    await supabaseClient.storage.createBucket('safety_photos', {
-                        public: true,
-                        allowedMimeTypes: ['image/jpeg', 'image/png'],
-                        fileSizeLimit: 5242880 // 5MB
+                const { data, error } = await supabaseClient.storage
+                    .from('condiciones_imagenes')
+                    .upload(fileName, file, {
+                        cacheControl: '3600',
+                        upsert: false
                     });
-                } catch (e) {
-                    // El bucket ya existe
-                }
-                
-                updateStatusIndicator('connected', 'Conectado ✓');
-                CONFIG.offlineMode = false;
-                localStorage.setItem('offline_mode', 'false');
-                
-                document.getElementById('connection-status').innerHTML = 
-                    '<span style="color: #27ae60;"><i class="fas fa-check-circle"></i> Conectado a Supabase</span>';
-                
-                showLoading(false);
-                return true;
-                
-            } catch (error) {
-                console.error('Error de conexión:', error);
-                
-                if (error.message.includes('permission') || error.message.includes('JWT')) {
-                    updateStatusIndicator('error', 'Error de permisos');
-                    alert('❌ Error de permisos. Verifica la API Key y políticas RLS.');
-                } else if (error.message.includes('network')) {
-                    updateStatusIndicator('disconnected', 'Sin conexión');
-                    CONFIG.offlineMode = true;
-                    localStorage.setItem('offline_mode', 'true');
-                } else {
-                    updateStatusIndicator('error', 'Error de conexión');
-                }
-                
-                showLoading(false);
-                return false;
-            }
-        }
-        
-        // ==============================================
-        // CRUD OPERATIONS
-        // ==============================================
-        async function cargarCondicionesDesdeSupabase() {
-            if (!supabaseClient || CONFIG.offlineMode) {
-                return cargarDesdeLocalStorage();
-            }
-            
-            showLoading(true, 'Cargando datos desde Supabase...');
-            
-            try {
-                const { data, error } = await supabaseClient
-                    .from('condiciones_inseguras')
-                    .select('*')
-                    .order('fecha', { ascending: false });
-                
+
                 if (error) throw error;
                 
-                CONFIG.lastSync = new Date().toLocaleString();
-                localStorage.setItem('last_sync', CONFIG.lastSync);
-                
-                showLoading(false);
-                
-                return data.map(item => ({
-                    ID: item.id,
-                    OT: item.ot_code,
-                    ID_secuencial: item.id_secuencial,
-                    Fecha: item.fecha,
-                    ReportadoPor: item.reportado_por,
-                    Descripcion: item.descripcion,
-                    Sector: item.sector,
-                    Ubicacion: item.ubicacion,
-                    Categoria: item.categoria,
-                    Riesgo: item.riesgo,
-                    Estado: item.estado,
-                    ReparadoPor: item.reparado_por,
-                    FechaReparacion: item.fecha_reparacion,
-                    FechaEstimadaReparacion: item.fecha_estimada,
-                    Observaciones: item.observaciones,
-                    FotoUrl: item.foto_url,
-                    FotoCorreccionUrl: item.foto_correccion_url,
-                    ultimaModificacion: item.ultima_modificacion
-                }));
+                // Obtener URL pública
+                const { data: { publicUrl } } = supabaseClient.storage
+                    .from('condiciones_imagenes')
+                    .getPublicUrl(fileName);
+                    
+                return publicUrl;
                 
             } catch (error) {
-                console.error('Error cargando:', error);
-                showLoading(false);
-                return cargarDesdeLocalStorage();
+                console.error('Error subiendo foto:', error);
+                
+                // Si falla la subida, guardar como base64 localmente
+                return new Promise((resolve) => {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        resolve(e.target.result);
+                    };
+                    reader.readAsDataURL(file);
+                });
             }
         }
-        
-        async function guardarCondicionEnSupabase(reporte) {
-            if (!supabaseClient || CONFIG.offlineMode) {
-                return guardarEnLocalStorage(reporte);
-            }
+
+        function verFoto(url, caption = '') {
+            if (!url) return;
             
-            showLoading(true, 'Guardando reporte en Supabase...');
+            const modal = document.getElementById('photoModal');
+            const modalImg = document.getElementById('modalPhoto');
+            const modalCaption = document.getElementById('modalCaption');
             
-            try {
-                // Obtener próximo ID
-                const { data: lastId } = await supabaseClient
-                    .from('condiciones_inseguras')
-                    .select('id_secuencial')
-                    .order('id_secuencial', { ascending: false })
-                    .limit(1);
-                
-                const idSecuencial = lastId && lastId[0] ? lastId[0].id_secuencial + 1 : 1;
-                
-                const nuevaCondicion = {
-                    ot_code: reporte.otCode,
-                    reportado_por: reporte.reportedBy,
-                    descripcion: reporte.description,
-                    sector: reporte.sector,
-                    ubicacion: reporte.location,
-                    categoria: reporte.category,
-                    riesgo: reporte.riskLevel,
-                    fecha_estimada: reporte.fechaEstimada,
-                    observaciones: reporte.observaciones,
-                    estado: 'pendiente',
-                    fecha: new Date().toISOString(),
-                    id_secuencial: idSecuencial,
-                    ultima_modificacion: obtenerTimestamp()
-                };
-                
-                const { data, error } = await supabaseClient
-                    .from('condiciones_inseguras')
-                    .insert([nuevaCondicion])
-                    .select()
-                    .single();
-                
-                if (error) throw error;
-                
-                // Subir foto si hay
-               // Subir foto si existe
-let fotoUrl = null;
-if (fotoSeleccionada) {
-    fotoUrl = await subirFotoASupabase(data.id);
-    
-    if (fotoUrl) {
-        // Actualizar con la URL de la foto
-        await supabaseClient
-            .from('condiciones_inseguras')
-            .update({ foto_url: fotoUrl })
-            .eq('id', data.id);
-    }
-}
-                showLoading(false);
-                updateStatusIndicator('connected', 'Reporte guardado ✓');
-                
-                // Resetear foto
-                resetPhoto();
-                
-                return {
-                    success: true,
-                    id: idSecuencial,
-                    ot: reporte.otCode,
-                    supabaseId: data.id,
-                    fotoUrl: fotoUrl
-                };
-                
-            } catch (error) {
-                console.error('Error guardando:', error);
-                showLoading(false);
-                return guardarEnLocalStorage(reporte);
-            }
-        }
-        
-        async function actualizarEstadoEnSupabase(id, nuevosDatos) {
-            if (!supabaseClient || CONFIG.offlineMode) {
-                return { success: false, offline: true };
-            }
+            modalImg.src = url;
+            modalCaption.textContent = caption || 'Foto de condición insegura';
+            modal.style.display = 'flex';
             
-            try {
-                const datosActualizar = {
-                    estado: nuevosDatos.status,
-                    ultima_modificacion: obtenerTimestamp()
-                };
-                
-                if (nuevosDatos.repairedBy) {
-                    datosActualizar.reparado_por = nuevosDatos.repairedBy;
-                    datosActualizar.fecha_reparacion = new Date().toISOString();
-                }
-                
-                if (nuevosDatos.fotoCorreccionUrl) {
-                    datosActualizar.foto_correccion_url = nuevosDatos.fotoCorreccionUrl;
-                }
-                
-                const { error } = await supabaseClient
-                    .from('condiciones_inseguras')
-                    .update(datosActualizar)
-                    .eq('id', id);
-                
-                if (error) throw error;
-                
-                return { success: true };
-                
-            } catch (error) {
-                console.error('Error actualizando:', error);
-                return { success: false, offline: true };
-            }
-        }
-        
-        // ==============================================
-        // LOCALSTORAGE (OFFLINE)
-        // ==============================================
-        function cargarDesdeLocalStorage() {
-            const datos = localStorage.getItem('condiciones_pendientes');
-            return datos ? JSON.parse(datos) : [];
-        }
-        
-        function guardarEnLocalStorage(reporte) {
-            const condiciones = cargarDesdeLocalStorage();
-            const nuevoId = condiciones.length + 1;
-            
-            // Convertir foto a base64 para almacenamiento local
-            
-let fotoBase64 = null;
-if (fotoSeleccionada) {
-    const reader = new FileReader();
-    reader.onload = function(e) {
-        fotoBase64 = e.target.result;
-    };
-    reader.readAsDataURL(fotoSeleccionada);
-}
-            
-            const nuevoReporte = {
-                ID: nuevoId,
-                OT: reporte.otCode,
-                ID_secuencial: nuevoId,
-                Fecha: new Date().toISOString(),
-                ReportadoPor: reporte.reportedBy,
-                Descripcion: reporte.description,
-                Sector: reporte.sector,
-                Ubicacion: reporte.location,
-                Categoria: reporte.category,
-                Riesgo: reporte.riskLevel,
-                FechaEstimadaReparacion: reporte.fechaEstimada,
-                Observaciones: reporte.observaciones,
-                Estado: "pendiente",
-                ReparadoPor: "",
-                FechaReparacion: null,
-                FotoUrl: fotoBase64,
-                FotoCorreccionUrl: null,
-                local: true,
-                pendienteSincronizacion: true,
-                ultimaModificacion: obtenerTimestamp()
-            };
-            
-            condiciones.unshift(nuevoReporte);
-            localStorage.setItem('condiciones_pendientes', JSON.stringify(condiciones));
-            
-            resetPhoto();
-            
-            return {
-                success: true,
-                id: nuevoId,
-                ot: reporte.otCode,
-                offline: true
+            // Cerrar al hacer clic fuera de la imagen
+            modal.onclick = function(e) {
+                if (e.target === modal) cerrarModalFoto();
             };
         }
-        
+
+        function cerrarModalFoto() {
+            document.getElementById('photoModal').style.display = 'none';
+        }
+
         // ==============================================
-        // GRÁFICOS
+        // FUNCIONES DE NAVEGACIÓN
         // ==============================================
-        function crearGraficoEvolucion() {
+        function cambiarPagina(pagina) {
+            // Ocultar todas las páginas
+            document.querySelectorAll('.page').forEach(p => {
+                p.style.display = 'none';
+                p.classList.remove('active');
+            });
+            
+            // Mostrar página seleccionada
+            const pageElement = document.getElementById(`${pagina}-page`);
+            if (pageElement) {
+                pageElement.style.display = 'block';
+                pageElement.classList.add('active');
+            }
+            
+            // Actualizar navegación activa
+            document.querySelectorAll('.nav-menu a').forEach(a => {
+                a.classList.remove('active');
+                if (a.getAttribute('data-page') === pagina) {
+                    a.classList.add('active');
+                }
+            });
+            
+            // Cargar datos según la página
+            switch(pagina) {
+                case 'dashboard':
+                    cargarDashboard();
+                    break;
+                case 'historial':
+                    cargarHistorial();
+                    break;
+                case 'analisis':
+                    cargarAnalisis();
+                    break;
+                case 'config':
+                    cargarConfiguracion();
+                    break;
+            }
+        }
+
+        // ==============================================
+        // FUNCIONES PARA DASHBOARD
+        // ==============================================
+        async function cargarDashboard() {
+            try {
+                // Actualizar estadísticas
+                actualizarEstadisticas();
+                
+                // Cargar actividades recientes
+                await cargarActividadesRecientes();
+                
+                // Actualizar gráfico de evolución
+                actualizarGraficoEvolucion();
+                
+            } catch (error) {
+                console.error('Error cargando dashboard:', error);
+            }
+        }
+
+        function actualizarEstadisticas() {
+            const total = unsafeConditions.length;
+            const pendientes = unsafeConditions.filter(c => c.Estado === 'pendiente').length;
+            const enProceso = unsafeConditions.filter(c => c.Estado === 'en proceso').length;
+            const reparados = unsafeConditions.filter(c => c.Estado === 'reparado').length;
+            const tiempoPromedio = calcularTiempoPromedioReparacion();
+            
+            document.getElementById('total-count').textContent = total;
+            document.getElementById('pending-count').textContent = pendientes;
+            document.getElementById('process-count').textContent = enProceso;
+            document.getElementById('repaired-count').textContent = reparados;
+            document.getElementById('avg-time').textContent = tiempoPromedio;
+        }
+
+        async function cargarActividadesRecientes() {
+            const tbody = document.querySelector('#recent-table tbody');
+            if (!tbody) return;
+            
+            // Ordenar por fecha más reciente
+            const recientes = [...unsafeConditions]
+                .sort((a, b) => new Date(b.Fecha) - new Date(a.Fecha))
+                .slice(0, 5);
+            
+            tbody.innerHTML = '';
+            
+            recientes.forEach(condicion => {
+                const tiempo = condicion.Estado === 'reparado' ? 
+                    calcularTiempoReparacion(condicion.Fecha, condicion.FechaReparacion) : 
+                    { texto: 'En proceso', clase: 'tiempo-medio' };
+                
+                const estadoFecha = verificarEstadoFecha(condicion.FechaEstimadaReparacion, condicion.FechaReparacion);
+                
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td><span class="ot-code">${condicion.OT || 'Sin OT'}</span></td>
+                    <td style="max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${condicion.Descripcion}">
+                        ${condicion.Descripcion?.substring(0, 50)}${condicion.Descripcion?.length > 50 ? '...' : ''}
+                    </td>
+                    <td>${condicion.Sector}</td>
+                    <td>${condicion.Tipo === 'Físico' ? '<span class="tipo-fisico">' + condicion.Tipo + '</span>' : condicion.Tipo}</td>
+                    <td>
+                        <span class="date-badge ${estadoFecha.clase}">
+                            <i class="fas ${estadoFecha.icono}"></i>
+                            ${formatDate(condicion.FechaEstimadaReparacion) || 'Sin fecha'}
+                        </span>
+                    </td>
+                    <td><span class="tiempo-reparacion ${tiempo.clase}">${tiempo.texto}</span></td>
+                    <td><span class="status-badge status-${condicion.Estado?.replace(' ', '-')}">${condicion.Estado}</span></td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function actualizarGraficoEvolucion() {
             const ctx = document.getElementById('evolution-chart');
             if (!ctx) return;
             
-            if (evolutionChart) evolutionChart.destroy();
-            
-            // Agrupar por mes últimos 6 meses
-            const ultimos6Meses = [];
-            const hoy = new Date();
-            
-            for (let i = 5; i >= 0; i--) {
-                const fecha = new Date(hoy.getFullYear(), hoy.getMonth() - i, 1);
-                const mes = `${fecha.getFullYear()}-${String(fecha.getMonth() + 1).padStart(2, '0')}`;
-                ultimos6Meses.push(mes);
+            if (evolutionChart) {
+                evolutionChart.destroy();
             }
             
-            const datosPorMes = {};
-            unsafeConditions.forEach(cond => {
-                if (cond.Fecha) {
-                    const fecha = new Date(cond.Fecha);
-                    const mes = `${fecha.getFullYear()}-${String(fecha.getMonth() + 1).padStart(2, '0')}`;
-                    if (ultimos6Meses.includes(mes)) {
-                        datosPorMes[mes] = (datosPorMes[mes] || 0) + 1;
+            // Agrupar por mes
+            const ultimos6Meses = [];
+            const hoy = new Date();
+            for (let i = 5; i >= 0; i--) {
+                const fecha = new Date(hoy.getFullYear(), hoy.getMonth() - i, 1);
+                ultimos6Meses.push({
+                    mes: fecha.toLocaleDateString('es-ES', { month: 'short', year: '2-digit' }),
+                    fechaObj: fecha
+                });
+            }
+            
+            // Contar reportes por mes
+            const datos = ultimos6Meses.map(mes => {
+                const reportesMes = unsafeConditions.filter(c => {
+                    try {
+                        const fechaReporte = new Date(c.Fecha);
+                        return fechaReporte.getFullYear() === mes.fechaObj.getFullYear() && 
+                               fechaReporte.getMonth() === mes.fechaObj.getMonth();
+                    } catch {
+                        return false;
                     }
-                }
+                });
+                return reportesMes.length;
             });
-            
-            const labels = ultimos6Meses.map(mes => {
-                const [año, mesNum] = mes.split('-');
-                const meses = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
-                return `${meses[parseInt(mesNum) - 1]} ${año}`;
-            });
-            
-            const values = ultimos6Meses.map(mes => datosPorMes[mes] || 0);
             
             evolutionChart = new Chart(ctx, {
                 type: 'line',
                 data: {
-                    labels: labels,
+                    labels: ultimos6Meses.map(m => m.mes),
                     datasets: [{
-                        label: 'Reportes',
-                        data: values,
+                        label: 'Reportes por mes',
+                        data: datos,
                         borderColor: '#dc2c3c',
                         backgroundColor: 'rgba(220, 44, 60, 0.1)',
+                        borderWidth: 3,
                         fill: true,
                         tension: 0.4,
-                        borderWidth: 3,
                         pointBackgroundColor: '#dc2c3c',
-                        pointBorderColor: '#fff',
-                        pointBorderWidth: 2,
-                        pointRadius: 6
+                        pointRadius: 6,
+                        pointHoverRadius: 8
                     }]
                 },
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
                     plugins: {
-                        legend: { display: false },
-                        title: {
+                        legend: {
                             display: true,
-                            text: 'Evolución de Reportes Mensuales',
-                            color: '#dc2c3c',
-                            font: { size: 14, weight: 'bold' }
+                            position: 'top',
+                            labels: {
+                                color: '#2c3e50',
+                                font: {
+                                    size: 12,
+                                    family: "'Segoe UI', sans-serif"
+                                }
+                            }
+                        },
+                        tooltip: {
+                            mode: 'index',
+                            intersect: false,
+                            backgroundColor: 'rgba(0, 0, 0, 0.7)',
+                            titleColor: '#fff',
+                            bodyColor: '#fff'
                         }
                     },
                     scales: {
                         y: {
                             beginAtZero: true,
-                            ticks: { stepSize: 1 },
-                            grid: { color: 'rgba(0, 0, 0, 0.1)' },
+                            grid: {
+                                color: 'rgba(0, 0, 0, 0.05)'
+                            },
+                            ticks: {
+                                color: '#7f8c8d',
+                                stepSize: 1
+                            },
                             title: {
                                 display: true,
                                 text: 'Cantidad de Reportes',
-                                color: '#7f8c8d'
+                                color: '#2c3e50',
+                                font: {
+                                    size: 12,
+                                    weight: 'bold'
+                                }
                             }
                         },
                         x: {
-                            grid: { color: 'rgba(0, 0, 0, 0.05)' },
-                            title: {
-                                display: true,
-                                text: 'Meses',
-                                color: '#7f8c8d'
+                            grid: {
+                                color: 'rgba(0, 0, 0, 0.05)'
+                            },
+                            ticks: {
+                                color: '#2c3e50',
+                                maxRotation: 45
                             }
                         }
                     }
                 }
             });
         }
-        
-        function crearGraficoAnalisis(tipo = 'risk') {
+
+        // ==============================================
+        // FUNCIONES PARA REGISTRO
+        // ==============================================
+        async function manejarRegistro(event) {
+            event.preventDefault();
+            
+            const form = event.target;
+            
+            // Validar código OT (5 dígitos numéricos)
+            const otInput = document.getElementById('ot-code');
+            const otRegex = /^\d{5}$/;
+            if (!otRegex.test(otInput.value)) {
+                alert('❌ El código OT debe ser un número de 5 dígitos (ej: 00001)');
+                otInput.focus();
+                otInput.style.borderColor = '#dc2c3c';
+                otInput.style.boxShadow = '0 0 0 3px rgba(220, 44, 60, 0.2)';
+                return;
+            }
+            
+            // Verificar si el código OT ya existe
+            const otExistente = unsafeConditions.find(c => c.OT === otInput.value);
+            if (otExistente) {
+                if (!confirm(`⚠️ El código OT ${otInput.value} ya existe. ¿Desea actualizar el reporte existente?`)) {
+                    return;
+                }
+            }
+            
+            showLoading(true, 'Guardando reporte...');
+            
+            try {
+                // Subir foto si existe
+                let fotoUrl = null;
+                if (fotoSeleccionada) {
+                    fotoUrl = await subirFotoSupabase(fotoSeleccionada, otInput.value);
+                }
+                
+                // Crear objeto de condición
+                const nuevaCondicion = {
+                    OT: otInput.value,
+                    ReportadoPor: document.getElementById('reporter-name').value,
+                    Descripcion: document.getElementById('description').value,
+                    Sector: document.getElementById('sector').value,
+                    Ubicacion: document.getElementById('ubicacion').value,
+                    Tipo: document.getElementById('category').value,
+                    NivelRiesgo: document.getElementById('risk-level').value,
+                    FechaEstimadaReparacion: document.getElementById('fecha-estimada').value,
+                    Observaciones: document.getElementById('observaciones').value || '',
+                    Foto: fotoUrl,
+                    Fecha: obtenerTimestamp(),
+                    Estado: 'pendiente',
+                    FechaReparacion: null,
+                    TipoReparacion: null,
+                    CostoEstimado: null
+                };
+                
+                // Guardar en Supabase
+                if (supabaseClient) {
+                    const { error } = await supabaseClient
+                        .from('condiciones_inseguras')
+                        .upsert([nuevaCondicion], { onConflict: 'OT' });
+                    
+                    if (error) throw error;
+                } else {
+                    // Guardar localmente si no hay conexión
+                    guardarLocalmente(nuevaCondicion);
+                }
+                
+                // Actualizar datos locales
+                if (otExistente) {
+                    const index = unsafeConditions.findIndex(c => c.OT === otInput.value);
+                    unsafeConditions[index] = nuevaCondicion;
+                } else {
+                    unsafeConditions.push(nuevaCondicion);
+                }
+                
+                // Guardar localmente
+                guardarDatosLocales();
+                
+                // Mostrar éxito
+                alert('✅ Reporte guardado exitosamente!');
+                
+                // Limpiar formulario
+                form.reset();
+                eliminarFotoSimple();
+                
+                // Volver al dashboard
+                cambiarPagina('dashboard');
+                
+            } catch (error) {
+                console.error('Error guardando reporte:', error);
+                alert('❌ Error al guardar el reporte. Verifica la conexión y los datos.');
+            } finally {
+                showLoading(false);
+            }
+        }
+
+        function mostrarEjemplo() {
+            document.getElementById('ot-code').value = '00123';
+            document.getElementById('reporter-name').value = 'Juan Pérez';
+            document.getElementById('description').value = 'Fuga de aceite en válvula principal de línea 3. Posible riesgo de resbalones y contaminación. Se requiere atención inmediata.';
+            document.getElementById('sector').value = 'Aceites';
+            document.getElementById('ubicacion').value = 'Zona 2 - Línea 3, Válvula V-203';
+            document.getElementById('category').value = 'Físico';
+            document.getElementById('risk-level').value = 'Alto';
+            
+            // Fecha de mañana
+            const mañana = new Date();
+            mañana.setDate(mañana.getDate() + 1);
+            document.getElementById('fecha-estimada').value = mañana.toISOString().split('T')[0];
+            
+            document.getElementById('observaciones').value = 'Prioridad alta. Solicito revisión del equipo de mantenimiento.';
+            
+            // Mostrar mensaje
+            alert('📝 Ejemplo cargado. Revisa los datos y modifica según sea necesario.');
+        }
+
+        // ==============================================
+        // FUNCIONES PARA HISTORIAL
+        // ==============================================
+        function cargarHistorial() {
+            const tbody = document.querySelector('#history-table tbody');
+            if (!tbody) return;
+            
+            tbody.innerHTML = '';
+            
+            // Filtrar según filtro actual
+            let condicionesFiltradas = [...unsafeConditions];
+            
+            if (currentFilter === 'pending') {
+                condicionesFiltradas = condicionesFiltradas.filter(c => c.Estado === 'pendiente');
+            } else if (currentFilter === 'process') {
+                condicionesFiltradas = condicionesFiltradas.filter(c => c.Estado === 'en proceso');
+            } else if (currentFilter === 'repaired') {
+                condicionesFiltradas = condicionesFiltradas.filter(c => c.Estado === 'reparado');
+            }
+            
+            // Aplicar filtro de sector
+            const sectorFiltro = document.getElementById('filter-sector').value;
+            if (sectorFiltro) {
+                condicionesFiltradas = condicionesFiltradas.filter(c => c.Sector === sectorFiltro);
+            }
+            
+            // Aplicar búsqueda
+            const busqueda = document.getElementById('search-input').value.toLowerCase();
+            if (busqueda) {
+                condicionesFiltradas = condicionesFiltradas.filter(c => 
+                    (c.OT && c.OT.toLowerCase().includes(busqueda)) ||
+                    (c.Descripcion && c.Descripcion.toLowerCase().includes(busqueda)) ||
+                    (c.ReportadoPor && c.ReportadoPor.toLowerCase().includes(busqueda))
+                );
+            }
+            
+            // Ordenar por fecha (más recientes primero)
+            condicionesFiltradas.sort((a, b) => new Date(b.Fecha) - new Date(a.Fecha));
+            
+            // Mostrar en tabla
+            condicionesFiltradas.forEach(condicion => {
+                const tiempo = condicion.Estado === 'reparado' ? 
+                    calcularTiempoReparacion(condicion.Fecha, condicion.FechaReparacion) : 
+                    { texto: 'En proceso', clase: 'tiempo-medio' };
+                
+                const estadoFecha = verificarEstadoFecha(condicion.FechaEstimadaReparacion, condicion.FechaReparacion);
+                
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td><span class="ot-code"><i class="fas fa-hashtag"></i>${condicion.OT}</span></td>
+                    <td style="max-width: 150px;" title="${condicion.Descripcion}">${condicion.Descripcion?.substring(0, 60)}${condicion.Descripcion?.length > 60 ? '...' : ''}</td>
+                    <td>${condicion.Sector}</td>
+                    <td>${condicion.Tipo === 'Físico' ? '<span class="tipo-fisico">' + condicion.Tipo + '</span>' : condicion.Tipo}</td>
+                    <td><span class="risk-badge risk-${condicion.NivelRiesgo?.toLowerCase()}">${condicion.NivelRiesgo}</span></td>
+                    <td>
+                        <span class="date-badge ${estadoFecha.clase}">
+                            <i class="fas ${estadoFecha.icono}"></i>
+                            ${condicion.FechaEstimadaReparacion ? formatDate(condicion.FechaEstimadaReparacion).split(' ')[0] : 'Sin fecha'}
+                        </span>
+                    </td>
+                    <td class="photo-cell">
+                        ${condicion.Foto ? 
+                            `<img src="${condicion.Foto}" class="table-photo" onclick="verFoto('${condicion.Foto}', 'OT: ${condicion.OT} - ${condicion.Descripcion?.substring(0, 50)}...')">` : 
+                            '<span class="no-photo">Sin foto</span>'}
+                    </td>
+                    <td>${formatDate(condicion.Fecha)}</td>
+                    <td><span class="tiempo-reparacion ${tiempo.clase}">${tiempo.texto}</span></td>
+                    <td>${condicion.ReportadoPor}</td>
+                    <td><span class="status-badge status-${condicion.Estado?.replace(' ', '-')}">${condicion.Estado}</span></td>
+                    <td>
+                        <div class="actions">
+                            <button class="action-btn btn-primary" onclick="editarReporte('${condicion.OT}')" title="Editar">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="action-btn btn-success" onclick="marcarEnProceso('${condicion.OT}')" title="En Proceso">
+                                <i class="fas fa-play"></i>
+                            </button>
+                            <button class="action-btn btn-danger" onclick="marcarReparado('${condicion.OT}')" title="Reparado">
+                                <i class="fas fa-check"></i>
+                            </button>
+                        </div>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        async function marcarEnProceso(ot) {
+            if (!confirm('¿Marcar este reporte como "En Proceso"?')) return;
+            
+            try {
+                const condicion = unsafeConditions.find(c => c.OT === ot);
+                if (!condicion) return;
+                
+                condicion.Estado = 'en proceso';
+                condicion.TipoReparacion = 'En proceso';
+                
+                // Actualizar en Supabase
+                if (supabaseClient) {
+                    const { error } = await supabaseClient
+                        .from('condiciones_inseguras')
+                        .update({ 
+                            Estado: 'en proceso',
+                            TipoReparacion: 'En proceso'
+                        })
+                        .eq('OT', ot);
+                    
+                    if (error) throw error;
+                }
+                
+                // Actualizar localmente
+                guardarDatosLocales();
+                
+                // Recargar historial
+                cargarHistorial();
+                actualizarEstadisticas();
+                
+                alert('✅ Reporte marcado como "En Proceso"');
+                
+            } catch (error) {
+                console.error('Error actualizando estado:', error);
+                alert('❌ Error al actualizar estado');
+            }
+        }
+
+        async function marcarReparado(ot) {
+            const tipoReparacion = prompt('Ingrese el tipo de reparación realizada:', 'Mantenimiento preventivo');
+            if (!tipoReparacion) return;
+            
+            const costo = prompt('Ingrese el costo estimado (opcional):', '0');
+            
+            try {
+                const condicion = unsafeConditions.find(c => c.OT === ot);
+                if (!condicion) return;
+                
+                condicion.Estado = 'reparado';
+                condicion.FechaReparacion = obtenerTimestamp();
+                condicion.TipoReparacion = tipoReparacion;
+                condicion.CostoEstimado = costo || 0;
+                
+                // Actualizar en Supabase
+                if (supabaseClient) {
+                    const { error } = await supabaseClient
+                        .from('condiciones_inseguras')
+                        .update({ 
+                            Estado: 'reparado',
+                            FechaReparacion: condicion.FechaReparacion,
+                            TipoReparacion: tipoReparacion,
+                            CostoEstimado: costo || 0
+                        })
+                        .eq('OT', ot);
+                    
+                    if (error) throw error;
+                }
+                
+                // Actualizar localmente
+                guardarDatosLocales();
+                
+                // Recargar historial
+                cargarHistorial();
+                actualizarEstadisticas();
+                
+                alert('✅ Reporte marcado como "Reparado"');
+                
+            } catch (error) {
+                console.error('Error actualizando estado:', error);
+                alert('❌ Error al actualizar estado');
+            }
+        }
+
+        function editarReporte(ot) {
+            const condicion = unsafeConditions.find(c => c.OT === ot);
+            if (!condicion) return;
+            
+            // Llenar formulario con datos existentes
+            document.getElementById('ot-code').value = condicion.OT;
+            document.getElementById('reporter-name').value = condicion.ReportadoPor;
+            document.getElementById('description').value = condicion.Descripcion;
+            document.getElementById('sector').value = condicion.Sector;
+            document.getElementById('ubicacion').value = condicion.Ubicacion;
+            document.getElementById('category').value = condicion.Tipo;
+            document.getElementById('risk-level').value = condicion.NivelRiesgo;
+            document.getElementById('fecha-estimada').value = condicion.FechaEstimadaReparacion ? 
+                condicion.FechaEstimadaReparacion.split('T')[0] : '';
+            document.getElementById('observaciones').value = condicion.Observaciones || '';
+            
+            // Si tiene foto, mostrar preview
+            if (condicion.Foto) {
+                const previewDiv = document.getElementById('preview-foto-simple');
+                if (previewDiv) {
+                    previewDiv.innerHTML = `
+                        <div style="margin-top: 15px; padding: 15px; background: rgba(220, 44, 60, 0.05); border-radius: 10px; text-align: center;">
+                            <h4 style="color: #dc2c3c; margin-bottom: 10px;">
+                                <i class="fas fa-camera"></i> Foto existente
+                            </h4>
+                            <img src="${condicion.Foto}" 
+                                 style="max-width: 100%; max-height: 200px; border-radius: 8px; border: 3px solid white;"
+                                 alt="Foto existente">
+                            <p style="margin-top: 10px; font-size: 12px; color: #666;">
+                                <i class="fas fa-info-circle"></i> Esta foto se mantendrá si no subes una nueva
+                            </p>
+                        </div>
+                    `;
+                }
+                fotoSeleccionada = null; // No tenemos el archivo original, solo la URL
+            }
+            
+            // Ir a la página de registro
+            cambiarPagina('registro');
+            
+            // Desplazar al inicio del formulario
+            window.scrollTo(0, 0);
+        }
+
+        function diagnosticarProblemas() {
+            const hoy = new Date();
+            
+            // Reportes pendientes vencidos
+            const pendientesVencidos = unsafeConditions.filter(c => {
+                if (c.Estado !== 'pendiente') return false;
+                if (!c.FechaEstimadaReparacion) return false;
+                
+                const fechaEst = new Date(c.FechaEstimadaReparacion);
+                return fechaEst < hoy;
+            });
+            
+            // Reportes con fechas estimadas cercanas (2 días)
+            const proximosVencer = unsafeConditions.filter(c => {
+                if (c.Estado !== 'pendiente') return false;
+                if (!c.FechaEstimadaReparacion) return false;
+                
+                const fechaEst = new Date(c.FechaEstimadaReparacion);
+                const diffDias = Math.ceil((fechaEst - hoy) / (1000 * 60 * 60 * 24));
+                return diffDias <= 2 && diffDias >= 0;
+            });
+            
+            // Reportes sin fecha estimada
+            const sinFecha = unsafeConditions.filter(c => {
+                return !c.FechaEstimadaReparacion && c.Estado === 'pendiente';
+            });
+            
+            // Reportes críticos no atendidos
+            const criticosNoAtendidos = unsafeConditions.filter(c => {
+                return c.NivelRiesgo === 'Crítico' && c.Estado === 'pendiente';
+            });
+            
+            // Crear mensaje de diagnóstico
+            let mensaje = `🔍 DIAGNÓSTICO DEL SISTEMA 🔍\n\n`;
+            
+            if (pendientesVencidos.length > 0) {
+                mensaje += `❌ REPORTES VENCIDOS: ${pendientesVencidos.length}\n`;
+                pendientesVencidos.slice(0, 3).forEach(c => {
+                    mensaje += `   • OT ${c.OT}: ${c.Descripcion.substring(0, 50)}...\n`;
+                });
+                mensaje += '\n';
+            }
+            
+            if (criticosNoAtendidos.length > 0) {
+                mensaje += `⚠️ RIESGOS CRÍTICOS PENDIENTES: ${criticosNoAtendidos.length}\n`;
+                criticosNoAtendidos.forEach(c => {
+                    mensaje += `   • OT ${c.OT}: ${c.Descripcion.substring(0, 50)}...\n`;
+                });
+                mensaje += '\n';
+            }
+            
+            if (proximosVencer.length > 0) {
+                mensaje += `⏰ POR VENCER (≤2 días): ${proximosVencer.length}\n`;
+                mensaje += '\n';
+            }
+            
+            if (sinFecha.length > 0) {
+                mensaje += `📅 SIN FECHA ESTIMADA: ${sinFecha.length}\n`;
+                mensaje += '\n';
+            }
+            
+            if (pendientesVencidos.length === 0 && criticosNoAtendidos.length === 0) {
+                mensaje += '✅ No hay problemas críticos detectados. El sistema funciona correctamente.\n\n';
+            }
+            
+            mensaje += `📊 RESUMEN:\n`;
+            mensaje += `• Total reportes: ${unsafeConditions.length}\n`;
+            mensaje += `• Pendientes: ${unsafeConditions.filter(c => c.Estado === 'pendiente').length}\n`;
+            mensaje += `• Cumplimiento fechas: ${calcularCumplimientoFechas()}%\n`;
+            mensaje += `• Tiempo promedio reparación: ${calcularTiempoPromedioReparacion()}\n`;
+            
+            alert(mensaje);
+        }
+
+        function exportarHistorial() {
+            const datos = unsafeConditions.map(c => ({
+                OT: c.OT,
+                Descripcion: c.Descripcion,
+                Sector: c.Sector,
+                Ubicacion: c.Ubicacion,
+                Tipo: c.Tipo,
+                NivelRiesgo: c.NivelRiesgo,
+                ReportadoPor: c.ReportadoPor,
+                FechaReporte: formatDate(c.Fecha),
+                FechaEstimadaReparacion: c.FechaEstimadaReparacion ? formatDate(c.FechaEstimadaReparacion) : '',
+                FechaReparacion: c.FechaReparacion ? formatDate(c.FechaReparacion) : '',
+                Estado: c.Estado,
+                TipoReparacion: c.TipoReparacion || '',
+                CostoEstimado: c.CostoEstimado || '',
+                Observaciones: c.Observaciones || '',
+                Foto: c.Foto ? 'Sí' : 'No'
+            }));
+            
+            // Convertir a CSV
+            const cabeceras = Object.keys(datos[0] || {});
+            const filas = datos.map(fila => 
+                cabeceras.map(header => 
+                    `"${(fila[header] || '').toString().replace(/"/g, '""')}"`
+                ).join(',')
+            );
+            
+            const csvContent = [cabeceras.join(','), ...filas].join('\n');
+            
+            // Descargar archivo
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            const url = URL.createObjectURL(blob);
+            
+            link.setAttribute('href', url);
+            link.setAttribute('download', `condiciones_inseguras_${new Date().toISOString().slice(0,10)}.csv`);
+            link.style.visibility = 'hidden';
+            
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            
+            alert(`✅ Historial exportado: ${datos.length} registros`);
+        }
+
+        // ==============================================
+        // FUNCIONES PARA ANÁLISIS
+        // ==============================================
+        function cargarAnalisis() {
+            actualizarGraficoPrincipal();
+            actualizarGraficoSector();
+            actualizarGraficoTiempo();
+            actualizarKPIs();
+        }
+
+        function actualizarGraficoPrincipal() {
+            const tipo = document.getElementById('analysis-type').value;
             const ctx = document.getElementById('data-chart');
-            if (!ctx) return;
             
-            if (dataChart) dataChart.destroy();
+            if (dataChart) {
+                dataChart.destroy();
+            }
             
-            let datos = {};
             let titulo = '';
+            let labels = [];
+            let datos = [];
+            let colores = [];
             
             switch(tipo) {
                 case 'risk':
-                    datos = unsafeConditions.reduce((acc, cond) => {
-                        const riesgo = cond.Riesgo || 'sin definir';
-                        acc[riesgo] = (acc[riesgo] || 0) + 1;
-                        return acc;
-                    }, {});
-                    titulo = 'Distribución por Nivel de Riesgo';
+                    titulo = 'Reportes por Nivel de Riesgo';
+                    labels = ['Crítico', 'Alto', 'Medio', 'Bajo'];
+                    datos = labels.map(nivel => 
+                        unsafeConditions.filter(c => c.NivelRiesgo === nivel).length
+                    );
+                    colores = labels.map(nivel => CHART_COLORS.riesgo[nivel]);
                     break;
-                case 'sector':
-                    datos = unsafeConditions.reduce((acc, cond) => {
-                        const sector = cond.Sector || 'sin sector';
-                        acc[sector] = (acc[sector] || 0) + 1;
-                        return acc;
-                    }, {});
-                    titulo = 'Distribución por Sector';
-                    break;
-                case 'category':
-                    datos = unsafeConditions.reduce((acc, cond) => {
-                        const categoria = cond.Categoria || 'sin categoría';
-                        acc[categoria] = (acc[categoria] || 0) + 1;
-                        return acc;
-                    }, {});
-                    titulo = 'Distribución por Tipo de Riesgo';
-                    break;
-                case 'status':
-                    datos = unsafeConditions.reduce((acc, cond) => {
-                        const estado = cond.Estado || 'pendiente';
-                        acc[estado] = (acc[estado] || 0) + 1;
-                        return acc;
-                    }, {});
-                    titulo = 'Distribución por Estado';
-                    break;
-                case 'time':
-                    // Agrupar por rangos de tiempo de reparación
-                    datos = {
-                        '< 24h': 0,
-                        '1-3 días': 0,
-                        '3-7 días': 0,
-                        '> 7 días': 0
-                    };
                     
-                    unsafeConditions.forEach(cond => {
-                        if (cond.Estado === 'reparado' && cond.Fecha && cond.FechaReparacion) {
-                            const tiempo = calcularTiempoReparacion(cond.Fecha, cond.FechaReparacion);
-                            if (tiempo.horas < 24) datos['< 24h']++;
-                            else if (tiempo.dias < 3) datos['1-3 días']++;
-                            else if (tiempo.dias < 7) datos['3-7 días']++;
-                            else datos['> 7 días']++;
-                        }
-                    });
-                    titulo = 'Tiempos de Reparación';
+                case 'sector':
+                    titulo = 'Reportes por Sector';
+                    labels = ['Aceites', 'Jabonería-Confitería'];
+                    datos = labels.map(sector => 
+                        unsafeConditions.filter(c => c.Sector === sector).length
+                    );
+                    colores = CHART_COLORS.sector;
                     break;
-            }
-            
-            const labels = Object.keys(datos);
-            const values = Object.values(datos);
-            
-            let backgroundColor = [];
-            if (tipo === 'risk') {
-                backgroundColor = labels.map(label => CHART_COLORS.riesgo[label] || '#95a5a6');
-            } else if (tipo === 'status') {
-                backgroundColor = labels.map(label => CHART_COLORS.estado[label] || '#95a5a6');
-            } else if (tipo === 'category') {
-                backgroundColor = labels.map(label => CHART_COLORS.tipo[label] || '#95a5a6');
-            } else if (tipo === 'time') {
-                backgroundColor = CHART_COLORS.tiempo;
-            } else {
-                backgroundColor = CHART_COLORS.sector;
+                    
+                case 'category':
+                    titulo = 'Reportes por Tipo';
+                    const tiposUnicos = [...new Set(unsafeConditions.map(c => c.Tipo))];
+                    labels = tiposUnicos;
+                    datos = tiposUnicos.map(tipoCat => 
+                        unsafeConditions.filter(c => c.Tipo === tipoCat).length
+                    );
+                    colores = tiposUnicos.map(tipoCat => 
+                        CHART_COLORS.tipo[tipoCat] || '#3498db'
+                    );
+                    break;
+                    
+                case 'status':
+                    titulo = 'Reportes por Estado';
+                    labels = ['Pendiente', 'En Proceso', 'Reparado'];
+                    datos = [
+                        unsafeConditions.filter(c => c.Estado === 'pendiente').length,
+                        unsafeConditions.filter(c => c.Estado === 'en proceso').length,
+                        unsafeConditions.filter(c => c.Estado === 'reparado').length
+                    ];
+                    colores = [CHART_COLORS.estado['pendiente'], CHART_COLORS.estado['en proceso'], CHART_COLORS.estado['reparado']];
+                    break;
+                    
+                case 'time':
+                    titulo = 'Tiempos de Reparación';
+                    // Crear rangos de tiempo
+                    labels = ['< 24h', '1-3 días', '3-7 días', '> 7 días'];
+                    const reparados = unsafeConditions.filter(c => c.Estado === 'reparado' && c.Fecha && c.FechaReparacion);
+                    
+                    datos = [
+                        reparados.filter(c => {
+                            const tiempo = calcularTiempoReparacion(c.Fecha, c.FechaReparacion);
+                            return tiempo.horas <= 24;
+                        }).length,
+                        reparados.filter(c => {
+                            const tiempo = calcularTiempoReparacion(c.Fecha, c.FechaReparacion);
+                            return tiempo.horas > 24 && tiempo.horas <= 72;
+                        }).length,
+                        reparados.filter(c => {
+                            const tiempo = calcularTiempoReparacion(c.Fecha, c.FechaReparacion);
+                            return tiempo.horas > 72 && tiempo.horas <= 168;
+                        }).length,
+                        reparados.filter(c => {
+                            const tiempo = calcularTiempoReparacion(c.Fecha, c.FechaReparacion);
+                            return tiempo.horas > 168;
+                        }).length
+                    ];
+                    colores = CHART_COLORS.tiempo;
+                    break;
             }
             
             dataChart = new Chart(ctx, {
@@ -2284,10 +2662,10 @@ if (fotoSeleccionada) {
                 data: {
                     labels: labels,
                     datasets: [{
-                        label: 'Cantidad',
-                        data: values,
-                        backgroundColor: backgroundColor,
-                        borderColor: backgroundColor.map(color => color.replace('0.2', '1')),
+                        label: titulo,
+                        data: datos,
+                        backgroundColor: colores,
+                        borderColor: colores.map(c => c.replace('0.8', '1')),
                         borderWidth: 1
                     }]
                 },
@@ -2295,1488 +2673,662 @@ if (fotoSeleccionada) {
                     responsive: true,
                     maintainAspectRatio: false,
                     plugins: {
-                        legend: { display: false },
+                        legend: {
+                            display: false
+                        },
                         title: {
                             display: true,
                             text: titulo,
-                            color: '#dc2c3c',
-                            font: { size: 16, weight: 'bold' }
+                            color: '#2c3e50',
+                            font: {
+                                size: 16,
+                                weight: 'bold'
+                            },
+                            padding: {
+                                top: 10,
+                                bottom: 30
+                            }
+                        },
+                        tooltip: {
+                            backgroundColor: 'rgba(0, 0, 0, 0.7)',
+                            titleColor: '#fff',
+                            bodyColor: '#fff'
                         }
                     },
                     scales: {
                         y: {
                             beginAtZero: true,
-                            ticks: { stepSize: 1 },
-                            grid: { color: 'rgba(0, 0, 0, 0.1)' },
-                            title: {
-                                display: true,
-                                text: 'Cantidad',
-                                color: '#7f8c8d'
+                            grid: {
+                                color: 'rgba(0, 0, 0, 0.05)'
+                            },
+                            ticks: {
+                                color: '#7f8c8d',
+                                stepSize: 1
                             }
                         },
                         x: {
-                            grid: { color: 'rgba(0, 0, 0, 0.05)' },
-                            title: {
-                                display: true,
-                                text: tipo === 'risk' ? 'Nivel de Riesgo' : 
-                                      tipo === 'sector' ? 'Sector' :
-                                      tipo === 'category' ? 'Tipo' :
-                                      tipo === 'status' ? 'Estado' : 'Tiempo',
-                                color: '#7f8c8d'
+                            grid: {
+                                display: false
+                            },
+                            ticks: {
+                                color: '#2c3e50'
                             }
                         }
                     }
                 }
             });
         }
-        
-        function crearGraficoSector() {
+
+        function actualizarGraficoSector() {
             const ctx = document.getElementById('sector-chart');
             if (!ctx) return;
             
-            if (sectorChart) sectorChart.destroy();
+            if (sectorChart) {
+                sectorChart.destroy();
+            }
             
-            const datos = unsafeConditions.reduce((acc, cond) => {
-                const sector = cond.Sector || 'sin sector';
-                acc[sector] = (acc[sector] || 0) + 1;
-                return acc;
-            }, {});
-            
-            const labels = Object.keys(datos);
-            const values = Object.values(datos);
-            
-            // Colores para sectores
-            const colors = labels.map((label, index) => 
-                CHART_COLORS.sector[index % CHART_COLORS.sector.length]
+            const sectores = ['Aceites', 'Jabonería-Confitería'];
+            const datos = sectores.map(sector => 
+                unsafeConditions.filter(c => c.Sector === sector).length
             );
             
             sectorChart = new Chart(ctx, {
                 type: 'doughnut',
                 data: {
-                    labels: labels,
+                    labels: sectores,
                     datasets: [{
-                        data: values,
-                        backgroundColor: colors,
-                        borderColor: colors.map(color => color.replace('0.8', '1')),
-                        borderWidth: 2
+                        data: datos,
+                        backgroundColor: CHART_COLORS.sector,
+                        borderWidth: 2,
+                        borderColor: 'white'
                     }]
                 },
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
                     plugins: {
-                        legend: { 
-                            position: 'right',
+                        legend: {
+                            position: 'bottom',
                             labels: {
+                                color: '#2c3e50',
                                 padding: 20,
-                                usePointStyle: true,
-                                pointStyle: 'circle'
+                                font: {
+                                    size: 12
+                                }
                             }
                         },
-                        title: {
-                            display: true,
-                            text: 'Reportes por Sector',
-                            color: '#dc2c3c',
-                            font: { size: 14, weight: 'bold' }
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    const label = context.label || '';
+                                    const value = context.raw || 0;
+                                    const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                    const percentage = total > 0 ? Math.round((value / total) * 100) : 0;
+                                    return `${label}: ${value} (${percentage}%)`;
+                                }
+                            }
                         }
                     }
                 }
             });
         }
-        
-        function crearGraficoTiempos() {
+
+        function actualizarGraficoTiempo() {
             const ctx = document.getElementById('time-chart');
             if (!ctx) return;
             
-            if (timeChart) timeChart.destroy();
-            
-            // Obtener tiempos de reparación para reportes reparados
-            const tiemposReparacion = [];
-            unsafeConditions.forEach(cond => {
-                if (cond.Estado === 'reparado' && cond.Fecha && cond.FechaReparacion) {
-                    const tiempo = calcularTiempoReparacion(cond.Fecha, cond.FechaReparacion);
-                    if (tiempo.horas > 0) {
-                        tiemposReparacion.push(tiempo.horas);
-                    }
-                }
-            });
-            
-            if (tiemposReparacion.length === 0) {
-                // Mostrar mensaje si no hay datos
-                ctx.parentElement.innerHTML = `
-                    <div style="display: flex; align-items: center; justify-content: center; height: 100%; color: #7f8c8d;">
-                        <div style="text-align: center;">
-                            <i class="fas fa-clock" style="font-size: 48px; margin-bottom: 15px; color: #dc2c3c;"></i>
-                            <p>No hay datos de tiempos de reparación</p>
-                            <p style="font-size: 12px; margin-top: 5px;">Los reportes reparados aparecerán aquí</p>
-                        </div>
-                    </div>
-                `;
-                return;
+            if (timeChart) {
+                timeChart.destroy();
             }
             
-            // Crear histograma de tiempos
-            const maxTiempo = Math.max(...tiemposReparacion);
-            const intervalos = 5;
-            const paso = Math.ceil(maxTiempo / intervalos);
+            // Crear rangos de tiempo para reparaciones
+            const reparados = unsafeConditions.filter(c => c.Estado === 'reparado' && c.Fecha && c.FechaReparacion);
+            const rangos = ['< 24h', '1-3 días', '3-7 días', '> 7 días'];
             
-            const labels = [];
-            const data = [];
-            
-            for (let i = 0; i < intervalos; i++) {
-                const min = i * paso;
-                const max = (i + 1) * paso;
-                const label = i === intervalos - 1 
-                    ? `>${min}h` 
-                    : `${min}-${max}h`;
-                
-                labels.push(label);
-                data.push(tiemposReparacion.filter(t => t >= min && (i === intervalos - 1 ? true : t < max)).length);
-            }
+            const datos = [
+                reparados.filter(c => {
+                    const tiempo = calcularTiempoReparacion(c.Fecha, c.FechaReparacion);
+                    return tiempo.horas <= 24;
+                }).length,
+                reparados.filter(c => {
+                    const tiempo = calcularTiempoReparacion(c.Fecha, c.FechaReparacion);
+                    return tiempo.horas > 24 && tiempo.horas <= 72;
+                }).length,
+                reparados.filter(c => {
+                    const tiempo = calcularTiempoReparacion(c.Fecha, c.FechaReparacion);
+                    return tiempo.horas > 72 && tiempo.horas <= 168;
+                }).length,
+                reparados.filter(c => {
+                    const tiempo = calcularTiempoReparacion(c.Fecha, c.FechaReparacion);
+                    return tiempo.horas > 168;
+                }).length
+            ];
             
             timeChart = new Chart(ctx, {
-                type: 'bar',
+                type: 'pie',
                 data: {
-                    labels: labels,
+                    labels: rangos,
                     datasets: [{
-                        label: 'Cantidad de reportes',
-                        data: data,
-                        backgroundColor: '#dc2c3c',
-                        borderColor: '#b71540',
-                        borderWidth: 1
+                        data: datos,
+                        backgroundColor: CHART_COLORS.tiempo,
+                        borderWidth: 2,
+                        borderColor: 'white'
                     }]
                 },
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
                     plugins: {
-                        legend: { display: false },
-                        title: {
-                            display: true,
-                            text: 'Distribución de Tiempos de Reparación',
-                            color: '#dc2c3c',
-                            font: { size: 14, weight: 'bold' }
-                        }
-                    },
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            ticks: { stepSize: 1 },
-                            grid: { color: 'rgba(0, 0, 0, 0.1)' },
-                            title: {
-                                display: true,
-                                text: 'Cantidad',
-                                color: '#7f8c8d'
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                color: '#2c3e50',
+                                padding: 20,
+                                font: {
+                                    size: 11
+                                }
                             }
                         },
-                        x: {
-                            grid: { color: 'rgba(0, 0, 0, 0.05)' },
-                            title: {
-                                display: true,
-                                text: 'Horas de Reparación',
-                                color: '#7f8c8d'
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    const label = context.label || '';
+                                    const value = context.raw || 0;
+                                    const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                    const percentage = total > 0 ? Math.round((value / total) * 100) : 0;
+                                    return `${label}: ${value} reporte${value !== 1 ? 's' : ''} (${percentage}%)`;
+                                }
                             }
                         }
                     }
                 }
             });
         }
-        
-        // ==============================================
-        // INTERFAZ PRINCIPAL
-        // ==============================================
-        async function inicializarSistema() {
-    console.log('=== INICIALIZANDO SISTEMA ===');
-    showLoading(true, 'Inicializando sistema Danec v5.0...');
-    
-    try {
-        // 1. Establecer fecha mínima para input date
-        const hoy = new Date();
-        const manana = new Date(hoy);
-        manana.setDate(manana.getDate() + 1);
-        const fechaInput = document.getElementById('fecha-estimada');
-        if (fechaInput) {
-            fechaInput.min = manana.toISOString().split('T')[0];
+
+        function actualizarKPIs() {
+            document.getElementById('kpi-tiempo-promedio').textContent = calcularTiempoPromedioReparacion();
+            document.getElementById('kpi-cumplimiento').textContent = `${calcularCumplimientoFechas()}%`;
             
-            // Establecer fecha por defecto (7 días después)
-            const fechaDefault = new Date(hoy);
-            fechaDefault.setDate(fechaDefault.getDate() + 7);
-            fechaInput.value = fechaDefault.toISOString().split('T')[0];
-        }
-        
-        // 2. Inicializar Supabase
-        console.log('Inicializando Supabase...');
-        const supabaseInicializado = inicializarSupabase();
-        
-        if (!supabaseInicializado) {
-            console.warn('Supabase no inicializado, usando modo offline');
-        }
-        
-        // 3. Cargar datos con reintentos
-        console.log('Cargando condiciones...');
-        let intentos = 0;
-        let datosCargados = false;
-        
-        while (intentos < 3 && !datosCargados) {
-            try {
-                unsafeConditions = await cargarCondicionesDesdeSupabase();
-                datosCargados = true;
-                console.log(`✅ Datos cargados en intento ${intentos + 1}:`, unsafeConditions.length, 'registros');
-            } catch (error) {
-                intentos++;
-                console.error(`Intento ${intentos} fallado:`, error);
-                if (intentos === 3) {
-                    // Último intento: cargar desde localStorage
-                    unsafeConditions = cargarDesdeLocalStorage();
-                    console.log('Cargando desde localStorage:', unsafeConditions.length, 'registros');
-                }
-            }
-        }
-        
-        // 4. Actualizar interfaces
-        console.log('Actualizando interfaces...');
-        actualizarEstadisticas();
-        actualizarTablaReciente();
-        actualizarTablaHistorial();
-        crearGraficoEvolucion();
-        actualizarUIConfiguracion();
-        
-        // 5. Configurar listeners para fotos
-        console.log('Configurando listeners de fotos...');
-        configurarListenersFotos();
-        
-        showLoading(false);
-        console.log('=== SISTEMA INICIALIZADO CORRECTAMENTE ===');
-        
-        // Mostrar estado
-        setTimeout(() => {
-            if (unsafeConditions.length === 0) {
-                console.log('⚠️ Sistema cargado pero sin datos');
-            } else {
-                console.log('✅ Sistema listo con', unsafeConditions.length, 'reportes');
-            }
-        }, 1000);
-        
-    } catch (error) {
-        console.error('❌ ERROR CRÍTICO en inicialización:', error);
-        showLoading(false);
-        alert('Error al inicializar el sistema. Recarga la página.');
-        
-        // Intentar cargar datos locales como respaldo
-        unsafeConditions = cargarDesdeLocalStorage();
-        actualizarEstadisticas();
-        actualizarTablaReciente();
-    }
-}
-        
-        function actualizarEstadisticas() {
-            const total = unsafeConditions.length;
-            const pendientes = unsafeConditions.filter(c => c.Estado === 'pendiente').length;
-            const enProceso = unsafeConditions.filter(c => c.Estado === 'en proceso').length;
-            const reparados = unsafeConditions.filter(c => c.Estado === 'reparado').length;
-            const tiempoPromedio = calcularTiempoPromedioReparacion();
-            const cumplimiento = calcularCumplimientoFechas();
-            
-            document.getElementById('total-count').textContent = total;
-            document.getElementById('pending-count').textContent = pendientes;
-            document.getElementById('process-count').textContent = enProceso;
-            document.getElementById('repaired-count').textContent = reparados;
-            document.getElementById('avg-time').textContent = tiempoPromedio;
-            
-            // Actualizar KPIs
-            document.getElementById('kpi-tiempo-promedio').textContent = tiempoPromedio;
-            document.getElementById('kpi-cumplimiento').textContent = `${cumplimiento}%`;
-            
-            // Reportes este mes
+            // Reportes del mes actual
             const hoy = new Date();
-            const mesActual = `${hoy.getFullYear()}-${String(hoy.getMonth() + 1).padStart(2, '0')}`;
-            const reportesEsteMes = unsafeConditions.filter(c => {
-                if (!c.Fecha) return false;
-                const fecha = new Date(c.Fecha);
-                const mes = `${fecha.getFullYear()}-${String(fecha.getMonth() + 1).padStart(2, '0')}`;
-                return mes === mesActual;
+            const reportesMes = unsafeConditions.filter(c => {
+                try {
+                    const fechaReporte = new Date(c.Fecha);
+                    return fechaReporte.getFullYear() === hoy.getFullYear() && 
+                           fechaReporte.getMonth() === hoy.getMonth();
+                } catch {
+                    return false;
+                }
             }).length;
-            document.getElementById('kpi-reportes-mes').textContent = reportesEsteMes;
-            
-            if (document.getElementById('total-db-count')) {
-                document.getElementById('total-db-count').textContent = total;
-            }
-            
-            if (document.getElementById('reports-with-photos')) {
-                const conFotos = unsafeConditions.filter(c => c.FotoUrl).length;
-                document.getElementById('reports-with-photos').textContent = conFotos;
-            }
-            
-            if (document.getElementById('avg-repair-time')) {
-                document.getElementById('avg-repair-time').textContent = tiempoPromedio;
-            }
-            
-            if (document.getElementById('cumplimiento-fechas')) {
-                document.getElementById('cumplimiento-fechas').textContent = `${cumplimiento}%`;
-            }
+            document.getElementById('kpi-reportes-mes').textContent = reportesMes;
         }
-        
-        function actualizarTablaReciente() {
-            const tbody = document.querySelector('#recent-table tbody');
-            if (!tbody) return;
-            
-            const recientes = [...unsafeConditions]
-                .sort((a, b) => new Date(b.ultimaModificacion || b.Fecha) - new Date(a.ultimaModificacion || a.Fecha))
-                .slice(0, 8);
-            
-            if (recientes.length === 0) {
-                tbody.innerHTML = `
-                    <tr>
-                        <td colspan="7" style="text-align: center; padding: 40px; color: #7f8c8d;">
-                            <i class="fas fa-inbox" style="font-size: 48px; margin-bottom: 15px; color: #dc2c3c;"></i>
-                            <p>No hay reportes registrados</p>
-                            <p style="font-size: 12px; margin-top: 5px;">Crea tu primer reporte en "Nuevo Reporte"</p>
-                        </td>
-                    </tr>
-                `;
-                return;
-            }
-            
-            tbody.innerHTML = recientes.map(cond => {
-                const otCode = cond.OT || 'SIN-OT';
-                const descCorta = cond.Descripcion.length > 50 ? cond.Descripcion.substring(0, 50) + '...' : cond.Descripcion;
-                const estado = cond.Estado || 'pendiente';
-                
-                let estadoBadge = '';
-                if (estado === 'pendiente') estadoBadge = '<span class="status-badge status-pendiente">Pendiente</span>';
-                else if (estado === 'en proceso') estadoBadge = '<span class="status-badge status-en-proceso">En Proceso</span>';
-                else estadoBadge = '<span class="status-badge status-reparado">Reparado</span>';
-                
-                // Tipo de riesgo (especial para Físico)
-                let tipoHTML = cond.Categoria || 'N/A';
-                if (cond.Categoria === 'Físico') {
-                    tipoHTML = `<span class="tipo-fisico">${cond.Categoria}</span>`;
-                }
-                
-                // Tiempo de reparación
-                let tiempoHTML = '';
-                if (estado === 'reparado' && cond.Fecha && cond.FechaReparacion) {
-                    const tiempo = calcularTiempoReparacion(cond.Fecha, cond.FechaReparacion);
-                    tiempoHTML = `<span class="tiempo-reparacion ${tiempo.clase}"><i class="fas fa-clock"></i> ${tiempo.texto}</span>`;
-                } else if (estado === 'en proceso' && cond.Fecha) {
-                    const tiempo = calcularTiempoReparacion(cond.Fecha, new Date());
-                    tiempoHTML = `<span style="color: #3498db"><i class="fas fa-hourglass-half"></i> ${tiempo.texto}</span>`;
-                } else {
-                    tiempoHTML = '<span style="color: #95a5a6"><i class="fas fa-minus"></i> -</span>';
-                }
-                
-                // Estado de fecha estimada
-                let fechaEstHTML = '-';
-                if (cond.FechaEstimadaReparacion) {
-                    const estadoFecha = verificarEstadoFecha(cond.FechaEstimadaReparacion, cond.FechaReparacion);
-                    fechaEstHTML = `
-                        <div class="date-badge ${estadoFecha.clase}" title="${estadoFecha.texto}">
-                            <i class="fas ${estadoFecha.icono}"></i>
-                            ${formatDate(cond.FechaEstimadaReparacion).split(',')[0]}
-                        </div>
-                    `;
-                }
-                
-                return `
-                    <tr>
-                        <td><span class="ot-code"><i class="fas fa-hashtag"></i> ${otCode}</span></td>
-                        <td title="${cond.Descripcion}">${descCorta}</td>
-                        <td>${cond.Sector || 'N/A'}</td>
-                        <td>${tipoHTML}</td>
-                        <td>${fechaEstHTML}</td>
-                        <td>${tiempoHTML}</td>
-                        <td>${estadoBadge}</td>
-                    </tr>
-                `;
-            }).join('');
-        }
-        
-        function actualizarTablaHistorial(filtro = 'all') {
-    const tbody = document.querySelector('#history-table tbody');
-    if (!tbody) return;
-    
-    let condicionesFiltradas = [...unsafeConditions];
-    
-    if (filtro !== 'all') {
-        condicionesFiltradas = unsafeConditions.filter(c => (c.Estado || 'pendiente') === filtro);
-    }
-    
-    // Filtrar por sector si hay selección
-    const filterSector = document.getElementById('filter-sector').value;
-    if (filterSector) {
-        condicionesFiltradas = condicionesFiltradas.filter(c => c.Sector === filterSector);
-    }
-    
-    condicionesFiltradas.sort((a, b) => new Date(b.Fecha || b.ultimaModificacion) - new Date(a.Fecha || a.ultimaModificacion));
-    
-    if (condicionesFiltradas.length === 0) {
-        tbody.innerHTML = `
-            <tr>
-                <td colspan="12" style="text-align: center; padding: 50px; color: #7f8c8d;">
-                    <i class="fas fa-search" style="font-size: 48px; margin-bottom: 15px; color: #dc2c3c;"></i>
-                    <p>No hay reportes ${filtro !== 'all' ? `con estado "${filtro}"` : 'registrados'}</p>
-                    <p style="font-size: 12px; margin-top: 5px;">Intenta con otro filtro o crea un nuevo reporte</p>
-                </td>
-            </tr>
-        `;
-        return;
-    }
-    
-    tbody.innerHTML = condicionesFiltradas.map(cond => {
-        const otCode = cond.OT || 'SIN-OT';
-        const descCorta = cond.Descripcion.length > 60 ? cond.Descripcion.substring(0, 60) + '...' : cond.Descripcion;
-        const estado = cond.Estado || 'pendiente';
-        
-        let estadoBadge = '';
-        if (estado === 'pendiente') estadoBadge = '<span class="status-badge status-pendiente">Pendiente</span>';
-        else if (estado === 'en proceso') estadoBadge = '<span class="status-badge status-en-proceso">En Proceso</span>';
-        else estadoBadge = '<span class="status-badge status-reparado">Reparado</span>';
-        
-        // Tiempo de reparación
-        let tiempoHTML = '';
-        if (estado === 'reparado' && cond.Fecha && cond.FechaReparacion) {
-            const tiempo = calcularTiempoReparacion(cond.Fecha, cond.FechaReparacion);
-            tiempoHTML = `<span class="tiempo-reparacion ${tiempo.clase}">
-                <i class="fas fa-clock"></i> ${tiempo.texto}
-            </span>`;
-        } else if (estado === 'en proceso' && cond.Fecha) {
-            const tiempo = calcularTiempoReparacion(cond.Fecha, new Date());
-            tiempoHTML = `<span style="color: #3498db"><i class="fas fa-hourglass-half"></i> ${tiempo.texto}</span>`;
-        } else {
-            tiempoHTML = '<span style="color: #95a5a6"><i class="fas fa-minus"></i> -</span>';
-        }
-        
-        // Foto
-        let fotoHTML = '<span class="no-photo">-</span>';
-        if (cond.FotoUrl) {
-            fotoHTML = `
-                <img src="${cond.FotoUrl}" 
-                     class="table-photo" 
-                     alt="Foto"
-                     onclick="mostrarModalFoto('${cond.FotoUrl}', 'Reporte ${otCode}')"
-                     title="Ver foto del reporte">
-            `;
-        }
-        
-        // Tipo de riesgo (especial para Físico)
-        let tipoHTML = cond.Categoria || 'N/A';
-        if (cond.Categoria === 'Físico') {
-            tipoHTML = `<span class="tipo-fisico">${cond.Categoria}</span>`;
-        }
-        
-        // Badge de riesgo
-        let riesgoClass = '';
-        if (cond.Riesgo === 'Crítico') riesgoClass = 'risk-critico';
-        else if (cond.Riesgo === 'Alto') riesgoClass = 'risk-alto';
-        else if (cond.Riesgo === 'Medio') riesgoClass = 'risk-medio';
-        else if (cond.Riesgo === 'Bajo') riesgoClass = 'risk-bajo';
-        
-        const riesgoBadge = riesgoClass ? 
-            `<span class="risk-badge ${riesgoClass}">${cond.Riesgo}</span>` :
-            cond.Riesgo || 'N/A';
-        
-        // Estado de fecha estimada
-        let fechaEstHTML = '-';
-        if (cond.FechaEstimadaReparacion) {
-            const estadoFecha = verificarEstadoFecha(cond.FechaEstimadaReparacion, cond.FechaReparacion);
-            fechaEstHTML = `
-                <div class="date-badge ${estadoFecha.clase}" title="${estadoFecha.texto}">
-                    <i class="fas ${estadoFecha.icono}"></i>
-                    ${formatDate(cond.FechaEstimadaReparacion).split(',')[0]}
-                </div>
-            `;
-        }
-        
-        // ACCIONES - usando un nombre diferente (accionesHTML) para evitar conflicto
-        let accionesHTML = '';
-        if (otCode) {
-            if (estado === 'pendiente') {
-                accionesHTML = `
-                    <button class="action-btn btn-primary" onclick="cambiarEstado('${otCode}', 'en proceso')" title="Marcar como en proceso">
-                        <i class="fas fa-play"></i> Proceso
-                    </button>
-                    <button class="action-btn btn-success" onclick="cambiarEstado('${otCode}', 'reparado')" title="Marcar como reparado">
-                        <i class="fas fa-check"></i> Reparar
-                    </button>
-                `;
-            } else if (estado === 'en proceso') {
-                accionesHTML = `
-                    <button class="action-btn btn-success" onclick="cambiarEstado('${otCode}', 'reparado')" title="Marcar como reparado">
-                        <i class="fas fa-check"></i> Reparar
-                    </button>
-                    <button class="action-btn btn-warning" onclick="cambiarEstado('${otCode}', 'pendiente')" title="Volver a pendiente">
-                        <i class="fas fa-undo"></i> Pendiente
-                    </button>
-                `;
-            } else {
-                accionesHTML = `
-                    <button class="action-btn btn-warning" onclick="cambiarEstado('${otCode}', 'pendiente')" title="Volver a pendiente">
-                        <i class="fas fa-undo"></i> Pendiente
-                    </button>
-                    ${cond.FotoCorreccionUrl ? `
-                    <button class="action-btn btn-primary" onclick="mostrarModalFoto('${cond.FotoCorreccionUrl}', 'Foto de corrección ${otCode}')" title="Ver corrección">
-                        <i class="fas fa-camera"></i> Corr.
-                    </button>
-                    ` : ''}
-                `;
-            }
-        }
-        
-        return `
-            <tr>
-                <td><span class="ot-code"><i class="fas fa-hashtag"></i> ${otCode}</span></td>
-                <td title="${cond.Descripcion}">${descCorta}</td>
-                <td>${cond.Sector || 'N/A'}</td>
-                <td>${tipoHTML}</td>
-                <td>${riesgoBadge}</td>
-                <td>${fechaEstHTML}</td>
-                <td class="photo-cell">${fotoHTML}</td>
-                <td>${formatDate(cond.Fecha)}</td>
-                <td>${tiempoHTML}</td>
-                <td>${cond.ReportadoPor || 'Anónimo'}</td>
-                <td>${estadoBadge}</td>
-                <td class="actions">${accionesHTML}</td>
-            </tr>
-        `;
-    }).join('');
-}
-        
-       async function guardarNuevoReporte(event) {
-    event.preventDefault();
-    
-    // Obtener valores del formulario
-    const otCodeValue = document.getElementById('ot-code').value.trim();
-    const reporterName = document.getElementById('reporter-name').value.trim();
-    const description = document.getElementById('description').value.trim();
-    const sector = document.getElementById('sector').value;
-    const location = document.getElementById('ubicacion').value.trim();
-    const category = document.getElementById('category').value;
-    const riskLevel = document.getElementById('risk-level').value;
-    const fechaEstimada = document.getElementById('fecha-estimada').value;
-    const observaciones = document.getElementById('observaciones').value.trim();
-    
-    // Crear objeto reporte
-    const reporte = {
-        otCode: otCodeValue,
-        reportedBy: reporterName,
-        description: description,
-        sector: sector,
-        location: location,
-        category: category,
-        riskLevel: riskLevel,
-        fechaEstimada: fechaEstimada,
-        observaciones: observaciones
-    };
-    
-    // Validar formato de OT (5 dígitos numéricos)
-    if (!/^\d{5}$/.test(reporte.otCode)) {
-        alert('❌ Código OT inválido. Debe ser exactamente 5 dígitos numéricos (ej: 00001).');
-        return;
-    }
-    
-    // Validar que OT no esté duplicado (usando nombre único)
-    const otDuplicadoEnSistema = unsafeConditions.find(condicion => condicion.OT === reporte.otCode);
-    if (otDuplicadoEnSistema) {
-        alert(`❌ Ya existe un reporte con OT ${reporte.otCode}. Use un código diferente.`);
-        return;
-    }
-    
-    // Validar que solo sea Aceites o Jabonería-Confitería
-    const zonasPermitidas = ['Aceites', 'Jabonería-Confitería'];
-    if (!zonasPermitidas.includes(reporte.sector)) {
-        alert('❌ Solo se permiten los sectores: Aceites o Jabonería-Confitería');
-        return;
-    }
-    
-    // Validar campos obligatorios
-    if (!reporte.otCode || !reporte.reportedBy || !reporte.description || !reporte.sector || 
-        !reporte.location || !reporte.category || !reporte.riskLevel || !reporte.fechaEstimada) {
-        alert('❌ Complete todos los campos obligatorios (*)');
-        return;
-    }
-    
-    // Guardar reporte
-    const resultado = await guardarCondicionEnSupabase(reporte);
-    
-    if (resultado.success) {
-        // Recargar datos
-        unsafeConditions = await cargarCondicionesDesdeSupabase();
-        
-        if (resultado.offline) {
-            alert('⚠️ Modo offline. Reporte guardado localmente.');
-        } else {
-            alert(`✅ Reporte guardado exitosamente\nOT: ${resultado.ot}\nID: #${resultado.id}`);
-        }
-        
-        // Limpiar formulario
-        document.getElementById('report-form').reset();
-        resetPhoto();
-        
-        // Restablecer fecha por defecto
-        const hoy = new Date();
-        const fechaPorDefecto = new Date(hoy);
-        fechaPorDefecto.setDate(fechaPorDefecto.getDate() + 7);
-        document.getElementById('fecha-estimada').value = fechaPorDefecto.toISOString().split('T')[0];
-        
-        // Actualizar interfaz
-        actualizarEstadisticas();
-        actualizarTablaReciente();
-        actualizarTablaHistorial(currentFilter);
-        crearGraficoEvolucion();
-        
-        // Ir al dashboard
-        document.querySelector('.nav-menu a[data-page="dashboard"]').click();
-    } else {
-        alert('❌ Error guardando el reporte');
-    }
-}
-        
-      async function cambiarEstado(otCode, nuevoEstado) {
-    console.log('=== INICIANDO CAMBIO DE ESTADO ===');
-    console.log('OT:', otCode, 'Nuevo estado:', nuevoEstado);
-    
-    // Buscar por OT
-    const condicion = unsafeConditions.find(c => c.OT === otCode);
-    
-    if (!condicion) {
-        alert(`❌ Reporte con OT "${otCode}" no encontrado`);
-        console.log('Reportes disponibles:', unsafeConditions.map(c => c.OT));
-        return;
-    }
-    
-    console.log('✅ Reporte encontrado:', condicion);
-    
-    // Preguntar por foto de corrección si es reparado
-    let fotoCorreccionUrl = null;
-    if (nuevoEstado === 'reparado') {
-        const confirmacion = confirm('¿Marcar como reparado?\n\n¿Desea agregar una foto de la corrección realizada?');
-        if (confirmacion) {
-            fotoCorreccionUrl = await uploadCorrectionPhoto(condicion.ID);
-        }
-    }
-    
-    const nuevosDatos = { 
-        status: nuevoEstado,
-        fechaReparacion: nuevoEstado === 'reparado' ? new Date().toISOString() : null,
-        fotoCorreccionUrl: fotoCorreccionUrl
-    };
-    
-    if (nuevoEstado === 'reparado') {
-        const reparador = prompt('Ingrese su nombre (quién realiza la reparación):');
-        nuevosDatos.repairedBy = reparador && reparador.trim() ? reparador.trim() : 'Técnico';
-    }
-    
-    // Actualizar en Supabase
-    const resultado = await actualizarEstadoEnSupabase(condicion.ID, nuevosDatos);
-    
-    // Actualizar localmente
-    condicion.Estado = nuevoEstado;
-    condicion.ultimaModificacion = obtenerTimestamp();
-    
-    if (nuevosDatos.repairedBy) {
-        condicion.ReparadoPor = nuevosDatos.repairedBy;
-        condicion.FechaReparacion = nuevosDatos.fechaReparacion;
-    }
-    
-    if (fotoCorreccionUrl) {
-        condicion.FotoCorreccionUrl = fotoCorreccionUrl;
-    }
-    
-    // Actualizar interfaz
-    actualizarEstadisticas();
-    actualizarTablaReciente();
-    actualizarTablaHistorial(currentFilter);
-    crearGraficoEvolucion();
-    
-    alert(resultado.offline ? '✅ Estado actualizado (modo offline)' : '✅ Estado actualizado');
-}
-        function mostrarEjemplo() {
-    // Generar un OT de ejemplo
-    const otNumerosUsados = unsafeConditions
-        .filter(cond => cond.OT && /^\d{5}$/.test(cond.OT))
-        .map(cond => parseInt(cond.OT))
-        .filter(num => !isNaN(num));
-    
-    let numeroEjemplo = 10001;
-    if (otNumerosUsados.length > 0) {
-        numeroEjemplo = Math.max(...otNumerosUsados) + 100;
-    }
-    
-    // Llenar formulario con datos de ejemplo
-    document.getElementById('ot-code').value = String(numeroEjemplo).padStart(5, '0');
-    document.getElementById('reporter-name').value = 'Juan Pérez Rodríguez';
-    document.getElementById('description').value = 'Piso resbaladizo por aceite derramado en zona de máquinas. El área no está señalizada y representa un riesgo de caída para el personal.';
-    document.getElementById('sector').value = 'Aceites';
-    document.getElementById('ubicacion').value = 'Área de producción, Línea 3, Lado derecho';
-    document.getElementById('category').value = 'Físico';
-    document.getElementById('risk-level').value = 'Alto';
-    
-    // Fecha 5 días después
-    const fechaEjemplo = new Date();
-    fechaEjemplo.setDate(fechaEjemplo.getDate() + 5);
-    document.getElementById('fecha-estimada').value = fechaEjemplo.toISOString().split('T')[0];
-    
-    document.getElementById('observaciones').value = 'Requiere limpieza inmediata y señalización con conos. Prioridad alta por ser zona de paso frecuente.';
-}
-        
-        
-        function forzarActualizacion() {
-            unsafeConditions = [...unsafeConditions].sort((a, b) => 
-                new Date(b.ultimaModificacion || b.Fecha) - new Date(a.ultimaModificacion || a.Fecha)
-            );
-            
-            actualizarTablaReciente();
-            actualizarEstadisticas();
-            
-            const status = document.getElementById('status-indicator');
-            status.innerHTML = '<i class="fas fa-check-circle"></i> <span>Actualizado ✓</span>';
-            status.style.backgroundColor = '#27ae60';
-            
-            setTimeout(() => {
-                updateStatusIndicator('connected', 'Conectado ✓');
-            }, 2000);
-        }
-        
+
         function actualizarAnalisis() {
-            const tipo = document.getElementById('analysis-type').value;
-            crearGraficoAnalisis(tipo);
-            crearGraficoSector();
-            crearGraficoTiempos();
+            actualizarGraficoPrincipal();
+            actualizarGraficoSector();
+            actualizarGraficoTiempo();
+            actualizarKPIs();
         }
-        
-        function exportarHistorial() {
-    const csv = unsafeConditions.map(cond => {
-        // Calcular tiempo de reparación si está reparado
-        let tiempoReparacion = '';
-        if (cond.Estado === 'reparado' && cond.Fecha && cond.FechaReparacion) {
-            const tiempo = calcularTiempoReparacion(cond.Fecha, cond.FechaReparacion);
-            tiempoReparacion = tiempo.texto;
-        }
-        
-        // Estado de fecha estimada
-        let estadoFecha = '';
-        if (cond.FechaEstimadaReparacion) {
-            const estado = verificarEstadoFecha(cond.FechaEstimadaReparacion, cond.FechaReparacion);
-            estadoFecha = estado.texto;
-        }
-        
-        return [
-            cond.OT || '',
-            `"${cond.Descripcion || ''}"`,
-            cond.Sector || '',
-            cond.Categoria || '',
-            cond.Riesgo || '',
-            cond.FechaEstimadaReparacion || '',
-            estadoFecha,
-            cond.Fecha || '',
-            tiempoReparacion,
-            cond.Estado || '',
-            cond.ReportadoPor || '',
-            cond.ReparadoPor || '',
-            cond.FotoUrl ? 'Sí' : 'No',
-            cond.ID_secuencial || ''
-        ].join(',');
-    }).join('\n');
-    
-    const headers = 'OT,Descripción,Sector,Tipo,Riesgo,Fecha Estimada,Estado Fecha,Fecha Reporte,Tiempo Reparación,Estado,Reportado por,Reparado por,Tiene Foto,ID Secuencial\n';
-    const blob = new Blob([headers + csv], { type: 'text/csv;charset=utf-8;' });
-    const link = document.createElement('a');
-    const url = URL.createObjectURL(blob);
-    link.setAttribute('href', url);
-    link.setAttribute('download', `condiciones_danec_${new Date().toISOString().split('T')[0]}.csv`);
-    link.click();
-}
-        
-        function actualizarUIConfiguracion() {
-            document.getElementById('current-url').value = CONFIG.supabaseUrl || 'No configurado';
-            document.getElementById('current-key').value = CONFIG.supabaseKey ? 
-                CONFIG.supabaseKey.substring(0, 20) + '...' : 'No configurado';
-            document.getElementById('last-sync').textContent = CONFIG.lastSync;
-            document.getElementById('current-mode').textContent = 
-                CONFIG.offlineMode ? 'Modo Offline' : 'Modo Online (Supabase)';
-        }
-        
-        function probarConexion() {
-            probarConexionSupabase().then(success => {
-                if (success) {
-                    alert('✅ Conexión exitosa con Supabase');
-                } else {
-                    alert('❌ Error de conexión. Verifica las credenciales.');
-                }
-                actualizarUIConfiguracion();
-            });
-        }
-        
-        function limpiarDatos() {
-            if (confirm('⚠️ ¿Eliminar todos los datos locales?\n\nEsto no afecta la base de datos de Supabase, solo los datos almacenados en este navegador.')) {
-                localStorage.removeItem('condiciones_pendientes');
-                alert('✅ Datos locales eliminados');
-                location.reload();
-            }
-        }
-        
-        function resetConfig() {
-            if (confirm('¿Restablecer configuración de Supabase?')) {
-                localStorage.removeItem('supabase_url');
-                localStorage.removeItem('supabase_key');
-                localStorage.removeItem('offline_mode');
-                localStorage.removeItem('last_sync');
-                alert('✅ Configuración restablecida');
-                location.reload();
-            }
-        }
-        
-        function backupLocal() {
-            const datos = localStorage.getItem('condiciones_pendientes');
-            if (!datos) {
-                alert('No hay datos locales para respaldar');
-                return;
-            }
-            
-            const blob = new Blob([datos], { type: 'application/json' });
-            const link = document.createElement('a');
-            const url = URL.createObjectURL(blob);
-            link.setAttribute('href', url);
-            link.setAttribute('download', `backup_danec_${new Date().toISOString().split('T')[0]}.json`);
-            link.click();
-            alert('✅ Backup descargado');
-        }
-        
+
         function generarReportePDF() {
-            alert('🚧 Función en desarrollo. Por ahora, use la opción "Exportar" para CSV.');
+            alert('🚀 Función de generación de PDF en desarrollo\n\nPor ahora, usa la función de Exportar en Historial para obtener los datos en CSV.');
+            // En una implementación completa, aquí se generaría un PDF con jsPDF
         }
-        // Detector de variables duplicadas
-function buscarVariablesDuplicadas() {
-    console.log('=== BUSCANDO VARIABLES DUPLICADAS ===');
-    
-    const palabrasClave = [
-        'otExistente', 'acciones', 'tiempo', 'estadoBadge', 
-        'fotoHTML', 'riesgoBadge', 'tipoHTML'
-    ];
-    
-    palabrasClave.forEach(palabra => {
-        const regex = new RegExp(`(let|const|var)\\s+${palabra}\\s*=`, 'g');
-        const matches = document.body.innerHTML.match(regex);
-        
-        if (matches && matches.length > 1) {
-            console.warn(`⚠️ VARIABLE DUPLICADA: "${palabra}" aparece ${matches.length} veces`);
-        }
-    });
-    
-    console.log('=== BÚSQUEDA COMPLETADA ===');
-}
-// ==============================================
-// FUNCIÓN DE DIAGNÓSTICO PARA PROBLEMAS
-// ==============================================
-
-function diagnosticarProblemas() {
-    console.log('=== DIAGNÓSTICO DEL SISTEMA ===');
-    
-    // 1. Verificar datos cargados
-    console.log('1. Datos cargados:', {
-        totalReportes: unsafeConditions.length,
-        datos: unsafeConditions.length > 0 ? unsafeConditions.slice(0, 3) : 'VACÍO'
-    });
-    
-    // 2. Verificar conexión Supabase
-    console.log('2. Conexión Supabase:', {
-        tieneCliente: !!supabaseClient,
-        url: CONFIG.supabaseUrl,
-        modo: CONFIG.offlineMode ? 'OFFLINE' : 'ONLINE'
-    });
-    
-    // 3. Verificar elementos del DOM
-    console.log('3. Elementos DOM:', {
-        historialTbody: document.querySelector('#history-table tbody') ? 'EXISTE' : 'NO EXISTE',
-        analisisChart: document.getElementById('data-chart') ? 'EXISTE' : 'NO EXISTE',
-        dashboardStats: document.getElementById('total-count') ? 'EXISTE' : 'NO EXISTE'
-    });
-    
-    // 4. Verificar localStorage
-    console.log('4. localStorage:', {
-        condiciones: localStorage.getItem('condiciones_pendientes') ? 'TIENE DATOS' : 'VACÍO',
-        supabaseUrl: localStorage.getItem('supabase_url') ? 'CONFIGURADO' : 'NO CONFIGURADO'
-    });
-    
-    // 5. Intentar recargar datos
-    console.log('5. Intentando recargar datos...');
-    
-    // Forzar recarga de datos
-    cargarCondicionesDesdeSupabase().then(datos => {
-        console.log('Datos recargados:', datos.length, 'registros');
-        unsafeConditions = datos;
-        
-        // Actualizar interfaces
-        actualizarEstadisticas();
-        actualizarTablaReciente();
-        actualizarTablaHistorial(currentFilter);
-        
-        console.log('=== DIAGNÓSTICO COMPLETADO ===');
-        
-        // Mostrar alerta con resultados
-        const mensaje = `
-Diagnóstico completado:
-✅ Datos: ${datos.length} reportes
-✅ Conexión: ${supabaseClient ? 'ACTIVA' : 'INACTIVA'}
-✅ DOM: Elementos verificados
-
-La interfaz debería actualizarse ahora.
-        `;
-        
-        alert(mensaje);
-    }).catch(error => {
-        console.error('Error en diagnóstico:', error);
-        alert('❌ Error en diagnóstico: ' + error.message);
-    });
-}
 
         // ==============================================
-// FUNCIONES PARA FOTOS EN MÓVIL - VERSIÓN CORREGIDA
-// ==============================================
-
-function abrirGaleria() {
-    console.log('Abriendo galería...');
-    const input = document.getElementById('photo-input');
-    input.removeAttribute('capture'); // Remover para permitir galería
-    input.click();
-}
-
-function abrirCamara() {
-    console.log('Abriendo cámara...');
-    const input = document.getElementById('camera-input');
-    // Para cámara trasera
-    input.setAttribute('capture', 'environment');
-    input.click();
-}
-
-function abrirSelectorFoto() {
-    console.log('Abriendo selector de foto...');
-    // Detectar si es móvil
-    const esMovil = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-    
-    if (esMovil) {
-        // En móvil, mostrar opciones
-        const quiereCamara = confirm('¿Cómo quieres agregar la foto?\n\nOK = Usar Cámara\nCancelar = Elegir de Galería');
-        
-        if (quiereCamara) {
-            abrirCamara();
-        } else {
-            abrirGaleria();
+        // FUNCIONES PARA CONFIGURACIÓN
+        // ==============================================
+        function cargarConfiguracion() {
+            // Mostrar estado actual
+            document.getElementById('current-url').value = CONFIG.supabaseUrl || 'No configurada';
+            document.getElementById('current-key').value = CONFIG.supabaseKey ? 
+                CONFIG.supabaseKey.substring(0, 20) + '...' : 'No configurada';
+            
+            // Actualizar estado de conexión
+            const statusDiv = document.getElementById('connection-status');
+            if (supabaseClient) {
+                statusDiv.innerHTML = '<i class="fas fa-check-circle" style="color: #27ae60;"></i> Conectado a Supabase';
+                statusDiv.style.color = '#27ae60';
+            } else {
+                statusDiv.innerHTML = '<i class="fas fa-unlink" style="color: #e74c3c;"></i> Sin conexión a Supabase';
+                statusDiv.style.color = '#e74c3c';
+            }
+            
+            // Mostrar información del sistema
+            document.getElementById('total-db-count').textContent = unsafeConditions.length;
+            document.getElementById('reports-with-photos').textContent = unsafeConditions.filter(c => c.Foto).length;
+            document.getElementById('avg-repair-time').textContent = calcularTiempoPromedioReparacion();
+            document.getElementById('cumplimiento-fechas').textContent = `${calcularCumplimientoFechas()}%`;
+            document.getElementById('last-sync').textContent = CONFIG.lastSync;
+            document.getElementById('current-mode').textContent = CONFIG.offlineMode ? 'Modo Offline' : 'Modo Online';
         }
-    } else {
-        // En desktop, abrir selector normal
-        document.getElementById('photo-input').click();
-    }
-}
 
-// FUNCIÓN MEJORADA PARA MANEJAR FOTOS
-function handlePhotoUpload(file) {
-    console.log('handlePhotoUpload llamado con archivo:', file ? file.name : 'null');
-    
-    if (!file) {
-        console.log('No se seleccionó archivo');
-        return;
-    }
-    
-    console.log('Detalles del archivo:', {
-        nombre: file.name,
-        tipo: file.type,
-        tamaño: file.size + ' bytes (' + (file.size / 1024).toFixed(1) + ' KB)',
-        esImagen: file.type.startsWith('image/')
-    });
-    
-    // Validar que sea imagen
-    if (!file.type.startsWith('image/')) {
-        alert('❌ El archivo seleccionado no es una imagen válida');
-        resetPhoto();
-        return;
-    }
-    
-    // Validar tamaño (5MB máximo)
-    const maxSize = 5 * 1024 * 1024; // 5MB
-    if (file.size > maxSize) {
-        const sizeMB = (file.size / (1024 * 1024)).toFixed(2);
-        alert(`⚠️ La foto es demasiado grande (${sizeMB} MB).\n\nMáximo permitido: 5MB`);
-        resetPhoto();
-        return;
-    }
-    
-    // Validar tipos de archivo (más flexibilidad para móvil)
-    const tiposPermitidos = [
-        'image/jpeg', 
-        'image/jpg', 
-        'image/png', 
-        'image/webp', 
-        'image/heic', 
-        'image/heif',
-        'image/gif'
-    ];
-    
-    // Convertir a minúsculas para comparación
-    const fileType = file.type.toLowerCase();
-    
-    // Si el tipo no está en la lista, verificar si es imagen general
-    if (!tiposPermitidos.includes(fileType) && !fileType.startsWith('image/')) {
-        alert(`⚠️ Formato no compatible: ${file.type}\n\nFormatos permitidos: JPG, PNG, WEBP, HEIC`);
-        resetPhoto();
-        return;
-    }
-    
-    selectedPhoto = file;
-    console.log('Foto seleccionada y válida:', selectedPhoto.name);
-    
-    // Mostrar preview INMEDIATAMENTE
-    mostrarPreviewFoto(file);
-}
-
-// FUNCIÓN SEPARADA PARA MOSTRAR PREVIEW
-function mostrarPreviewFoto(file) {
-    const reader = new FileReader();
-    
-    reader.onloadstart = function() {
-        console.log('Comenzando a leer archivo para preview...');
-    };
-    
-    reader.onprogress = function(e) {
-        if (e.lengthComputable) {
-            const percent = (e.loaded / e.total) * 100;
-            console.log('Cargando preview: ' + percent.toFixed(1) + '%');
+        function mostrarConfigPanel() {
+            const panel = document.getElementById('supabase-config-panel');
+            if (panel.style.display === 'none') {
+                panel.style.display = 'block';
+                
+                // Pre-llenar con valores actuales si existen
+                document.getElementById('supabase-url').value = CONFIG.supabaseUrl || '';
+                document.getElementById('supabase-key').value = CONFIG.supabaseKey || '';
+            } else {
+                panel.style.display = 'none';
+            }
         }
-    };
-    
-    reader.onload = function(e) {
-        console.log('Preview cargado exitosamente');
-        
-        const previewContainer = document.getElementById('photo-preview');
-        if (!previewContainer) {
-            console.error('❌ No se encontró el contenedor photo-preview');
-            return;
-        }
-        
-        const tamañoKB = (file.size / 1024).toFixed(1);
-        const tamañoMB = (file.size / (1024 * 1024)).toFixed(2);
-        
-        previewContainer.innerHTML = `
-            <div style="text-align: center; margin-top: 15px; padding: 15px; 
-                       background-color: rgba(220, 44, 60, 0.05); border-radius: 8px;
-                       border: 2px solid rgba(220, 44, 60, 0.2);">
-                <h4 style="color: var(--primary); margin-bottom: 10px;">
-                    <i class="fas fa-check-circle"></i> Foto seleccionada
-                </h4>
-                <img src="${e.target.result}" 
-                     class="preview-image" 
-                     alt="Vista previa"
-                     style="max-width: 100%; max-height: 250px; border-radius: 8px; border: 2px solid #ddd;">
-                <br>
-                <button type="button" class="remove-photo-btn" onclick="resetPhoto()" style="margin-top: 15px;">
-                    <i class="fas fa-times"></i> Quitar foto
-                </button>
-                <div style="margin-top: 10px; font-size: 12px; color: #7f8c8d;">
-                    <div><i class="fas fa-file-image"></i> <strong>${file.name}</strong></div>
-                    <div><i class="fas fa-weight-hanging"></i> ${tamañoKB} KB (${tamañoMB} MB)</div>
-                    <div><i class="fas fa-expand-alt"></i> ${file.type.split('/')[1].toUpperCase()}</div>
-                </div>
-            </div>
-        `;
-        
-        // Forzar reflow para asegurar que se muestre
-        previewContainer.style.display = 'block';
-        console.log('✅ Preview mostrado correctamente');
-    };
-    
-    reader.onerror = function(error) {
-        console.error('❌ Error al leer archivo:', error);
-        alert('Error al cargar la foto. Intenta nuevamente.');
-    };
-    
-    reader.readAsDataURL(file);
-}
 
-// FUNCIÓN PARA RESETEAR FOTO
-function resetPhoto() {
-    fotoSeleccionada = null;
-    document.getElementById('foto-simple').value = '';
-    const previewDiv = document.getElementById('preview-foto-simple');
-    if (previewDiv) previewDiv.innerHTML = '';
-}
-// Ejecutar al cargar
-setTimeout(buscarVariablesDuplicadas, 2000);
-        
+        async function guardarConfigSupabase() {
+            const url = document.getElementById('supabase-url').value.trim();
+            const key = document.getElementById('supabase-key').value.trim();
+            
+            if (!url || !key) {
+                alert('❌ Por favor completa ambos campos');
+                return;
+            }
+            
+            showLoading(true, 'Probando conexión con Supabase...');
+            
+            try {
+                // Crear cliente temporal para probar
+                const tempClient = supabase.createClient(url, key);
+                
+                // Intentar una consulta simple
+                const { data, error } = await tempClient
+                    .from('condiciones_inseguras')
+                    .select('OT')
+                    .limit(1);
+                
+                if (error) throw error;
+                
+                // Guardar credenciales
+                CONFIG.supabaseUrl = url;
+                CONFIG.supabaseKey = key;
+                localStorage.setItem('supabase_url', url);
+                localStorage.setItem('supabase_key', key);
+                
+                // Recrear el cliente principal
+                supabaseClient = supabase.createClient(url, key);
+                
+                // Ocultar panel de configuración
+                document.getElementById('supabase-config-panel').style.display = 'none';
+                
+                // Actualizar UI
+                updateStatusIndicator('connected', 'Conectado a Supabase');
+                cargarConfiguracion();
+                
+                // Sincronizar datos
+                await sincronizarDatos();
+                
+                alert('✅ Conexión establecida exitosamente!');
+                
+            } catch (error) {
+                console.error('Error conectando a Supabase:', error);
+                alert(`❌ Error conectando a Supabase:\n${error.message}`);
+            } finally {
+                showLoading(false);
+            }
+        }
+
+        async function probarConexion() {
+            if (!supabaseClient) {
+                alert('❌ No hay cliente Supabase configurado');
+                return;
+            }
+            
+            showLoading(true, 'Probando conexión...');
+            
+            try {
+                const { data, error } = await supabaseClient
+                    .from('condiciones_inseguras')
+                    .select('count', { count: 'exact', head: true });
+                
+                if (error) throw error;
+                
+                alert(`✅ Conexión exitosa!\n\nPuedes acceder a la base de datos correctamente.`);
+                
+            } catch (error) {
+                console.error('Error probando conexión:', error);
+                alert(`❌ Error de conexión:\n${error.message}`);
+            } finally {
+                showLoading(false);
+            }
+        }
+
         function abrirManualSupabase() {
-            const manual = `
-            ==============================================
-            MANUAL COMPLETO: CONFIGURACIÓN SUPABASE
-            ==============================================
+            alert('📚 MANUAL DE CONFIGURACIÓN SUPABASE\n\n1. Ve a https://supabase.com y crea una cuenta\n2. Crea un nuevo proyecto\n3. En el dashboard, ve a Settings > API\n4. Copia la URL y la API Key (anon public)\n5. Pega esos valores en este sistema\n6. Crea la tabla "condiciones_inseguras" con las columnas necesarias\n\nEl sistema creará automáticamente el bucket para fotos.');
+        }
+
+        function limpiarDatos() {
+            if (!confirm('⚠️ ¿Estás seguro de eliminar todos los datos locales?\n\nEsto no afectará los datos en Supabase, solo los almacenados en este navegador.')) {
+                return;
+            }
             
-            1. CREAR CUENTA EN SUPABASE
-            ----------------------------
-            • Ve a https://supabase.com y crea una cuenta
-            • Haz clic en "New Project"
+            localStorage.removeItem('unsafe_conditions');
+            localStorage.removeItem('supabase_config');
+            unsafeConditions = [];
             
-            2. CONFIGURAR PROYECTO
-            ----------------------
-            • Nombre: danec-condiciones-inseguras
-            • Contraseña: (guárdala en un lugar seguro)
-            • Región: Selecciona la más cercana
-            • Haz clic en "Create new project"
+            alert('✅ Datos locales eliminados. Recarga la página.');
+            location.reload();
+        }
+
+        function resetConfig() {
+            if (!confirm('⚠️ ¿Restablecer toda la configuración?\n\nSe eliminarán las credenciales de Supabase y volverás al modo offline.')) {
+                return;
+            }
             
-            3. CREAR LA TABLA EN SQL EDITOR
-            --------------------------------
-            • Ve a SQL Editor en el menú izquierdo
-            • Haz clic en "New query"
-            • Copia y pega este SQL:
-            
-            -----------------------------------------------
-            CREATE TABLE condiciones_inseguras (
-                id BIGSERIAL PRIMARY KEY,
-                ot_code VARCHAR(50) NOT NULL UNIQUE,
-                id_secuencial INTEGER NOT NULL,
-                fecha TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-                reportado_por VARCHAR(100) NOT NULL,
-                descripcion TEXT NOT NULL,
-                sector VARCHAR(50) NOT NULL,
-                ubicacion VARCHAR(200) NOT NULL,
-                categoria VARCHAR(50) NOT NULL,
-                riesgo VARCHAR(50) NOT NULL,
-                estado VARCHAR(20) DEFAULT 'pendiente',
-                reparado_por VARCHAR(100),
-                fecha_reparacion TIMESTAMP WITH TIME ZONE,
-                fecha_estimada DATE,
-                observaciones TEXT,
-                foto_url TEXT,
-                foto_correccion_url TEXT,
-                ultima_modificacion TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-                created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
-            );
-            
-            -- Índices para mejor performance
-            CREATE INDEX idx_estado ON condiciones_inseguras(estado);
-            CREATE INDEX idx_sector ON condiciones_inseguras(sector);
-            CREATE INDEX idx_fecha ON condiciones_inseguras(fecha);
-            CREATE INDEX idx_ot_code ON condiciones_inseguras(ot_code);
-            -----------------------------------------------
-            
-            4. CONFIGURAR POLÍTICAS RLS (Row Level Security)
-            -------------------------------------------------
-            • Ve a Authentication > Policies
-            • Haz clic en "Enable RLS" en la tabla condiciones_inseguras
-            • Crea estas políticas:
-            
-            a) PARA LECTURA (SELECT):
-               • Nombre: "Allow public read access"
-               • USING: true
-               • Con CHECK: true
-            
-            b) PARA ESCRITURA (INSERT):
-               • Nombre: "Allow public insert"
-               • USING: true
-               • Con CHECK: true
-            
-            c) PARA ACTUALIZACIÓN (UPDATE):
-               • Nombre: "Allow public update"
-               • USING: true
-               • Con CHECK: true
-            
-            5. CONFIGURAR BUCKET DE ALMACENAMIENTO
-            ---------------------------------------
-            • Ve a Storage en el menú izquierdo
-            • Haz clic en "Create a new bucket"
-            • Nombre: safety_photos
-            • Marca "Public bucket"
-            • Haz clic en "Create bucket"
-            
-            6. CONFIGURAR POLÍTICAS DEL BUCKET
-            -----------------------------------
-            • En el bucket safety_photos, ve a "Policies"
-            • Crea estas políticas:
-            
-            a) PARA SUBIR ARCHIVOS:
-               • Nombre: "Allow upload"
-               • Operación: INSERT
-               • USING: true
-               • Con CHECK: true
-            
-            b) PARA LEER ARCHIVOS:
-               • Nombre: "Allow read"
-               • Operación: SELECT
-               • USING: true
-               • Con CHECK: true
-            
-            7. OBTENER CREDENCIALES
-            -----------------------
-            • Ve a Settings > API en el menú izquierdo
-            • Copia:
-               - URL: La que aparece en "Project URL"
-               - API Key: La que aparece en "anon public"
-            
-            8. CONFIGURAR EN LA APLICACIÓN
-            ------------------------------
-            • En la app, ve a "Configuración"
-            • Haz clic en "Cambiar Credenciales"
-            • Pega la URL y API Key
-            • Haz clic en "Conectar"
-            
-            9. VERIFICAR CONEXIÓN
-            ---------------------
-            • Haz clic en "Probar Conexión"
-            • Debería aparecer "Conectado ✓"
-            
-            ==============================================
-            ¡LISTO! Tu sistema está configurado.
-            ==============================================
-            `;
-            
-            // Crear modal con el manual
-            const modal = document.createElement('div');
-            modal.style.cssText = `
-                position: fixed;
-                top: 0;
-                left: 0;
-                width: 100%;
-                height: 100%;
-                background: rgba(0,0,0,0.9);
-                z-index: 4000;
-                display: flex;
-                justify-content: center;
-                align-items: center;
-                padding: 20px;
-            `;
-            
-            const content = document.createElement('div');
-            content.style.cssText = `
-                background: white;
-                padding: 30px;
-                border-radius: 10px;
-                max-width: 800px;
-                max-height: 80vh;
-                overflow-y: auto;
-                font-family: monospace;
-                font-size: 14px;
-                line-height: 1.6;
-                white-space: pre-wrap;
-                border: 3px solid #dc2c3c;
-            `;
-            
-            const closeBtn = document.createElement('button');
-            closeBtn.textContent = '✕ Cerrar';
-            closeBtn.style.cssText = `
-                position: absolute;
-                top: 20px;
-                right: 20px;
-                background: #dc2c3c;
-                color: white;
-                border: none;
-                padding: 10px 20px;
-                border-radius: 5px;
-                cursor: pointer;
-                font-weight: bold;
-            `;
-            
-            content.textContent = manual;
-            modal.appendChild(content);
-            modal.appendChild(closeBtn);
-            
-            closeBtn.onclick = () => document.body.removeChild(modal);
-            modal.onclick = (e) => {
-                if (e.target === modal) document.body.removeChild(modal);
+            localStorage.clear();
+            alert('✅ Configuración reiniciada. Recarga la página.');
+            location.reload();
+        }
+
+        function backupLocal() {
+            const datos = {
+                condiciones: unsafeConditions,
+                config: CONFIG,
+                timestamp: new Date().toISOString(),
+                version: 'Danec v5.0'
             };
             
-            document.body.appendChild(modal);
+            const blob = new Blob([JSON.stringify(datos, null, 2)], { type: 'application/json' });
+            const link = document.createElement('a');
+            const url = URL.createObjectURL(blob);
+            
+            link.setAttribute('href', url);
+            link.setAttribute('download', `backup_condiciones_${new Date().toISOString().slice(0,10)}.json`);
+            link.style.visibility = 'hidden';
+            
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            
+            alert(`✅ Backup creado: ${unsafeConditions.length} registros guardados`);
         }
 
-        function configurarListenersFotos() {
-    console.log('Configurando listeners de fotos...');
-    
-    const photoInput = document.getElementById('photo-input');
-    const cameraInput = document.getElementById('camera-input');
-    
-    if (photoInput) {
-        photoInput.addEventListener('change', function(e) {
-            console.log('photo-input cambiado');
-            if (e.target.files && e.target.files[0]) {
-                handlePhotoUpload(e.target.files[0]);
+        // ==============================================
+        // FUNCIONES DE SINCRONIZACIÓN
+        // ==============================================
+        async function sincronizarDatos() {
+            if (!supabaseClient) {
+                console.log('No hay cliente Supabase, modo offline');
+                CONFIG.offlineMode = true;
+                cargarDatosLocales();
+                updateStatusIndicator('disconnected', 'Modo Offline');
+                return;
             }
-        });
-    }
-    
-    if (cameraInput) {
-        cameraInput.addEventListener('change', function(e) {
-            console.log('camera-input cambiado');
-            if (e.target.files && e.target.files[0]) {
-                handlePhotoUpload(e.target.files[0]);
+            
+            showLoading(true, 'Sincronizando con Supabase...');
+            
+            try {
+                // 1. Descargar datos de Supabase
+                const { data: remoteData, error: fetchError } = await supabaseClient
+                    .from('condiciones_inseguras')
+                    .select('*')
+                    .order('Fecha', { ascending: false });
+                
+                if (fetchError) throw fetchError;
+                
+                // 2. Cargar datos locales
+                const localData = JSON.parse(localStorage.getItem('unsafe_conditions') || '[]');
+                
+                // 3. Combinar datos (prioridad a datos remotos)
+                const combinedData = [...remoteData || []];
+                
+                // 4. Encontrar diferencias y subir datos locales no sincronizados
+                if (localData.length > 0) {
+                    const localNotInRemote = localData.filter(local => {
+                        return !combinedData.some(remote => remote.OT === local.OT);
+                    });
+                    
+                    if (localNotInRemote.length > 0) {
+                        console.log(`Subiendo ${localNotInRemote.length} registros locales a Supabase`);
+                        
+                        for (const localRecord of localNotInRemote) {
+                            const { error: uploadError } = await supabaseClient
+                                .from('condiciones_inseguras')
+                                .upsert([localRecord]);
+                            
+                            if (uploadError) {
+                                console.error('Error subiendo registro local:', uploadError);
+                            }
+                        }
+                        
+                        // Volver a descargar después de subir
+                        const { data: updatedData, error: updatedError } = await supabaseClient
+                            .from('condiciones_inseguras')
+                            .select('*')
+                            .order('Fecha', { ascending: false });
+                        
+                        if (!updatedError) {
+                            combinedData.length = 0;
+                            combinedData.push(...updatedData);
+                        }
+                    }
+                }
+                
+                // 5. Actualizar datos locales
+                unsafeConditions = combinedData;
+                guardarDatosLocales();
+                
+                // 6. Actualizar timestamp de última sincronización
+                CONFIG.lastSync = new Date().toLocaleString('es-ES');
+                localStorage.setItem('last_sync', CONFIG.lastSync);
+                
+                // 7. Actualizar UI
+                updateStatusIndicator('connected', 'Sincronizado con Supabase');
+                CONFIG.offlineMode = false;
+                
+                console.log(`Sincronización completada: ${combinedData.length} registros`);
+                
+                // 8. Actualizar todas las vistas
+                actualizarEstadisticas();
+                if (document.getElementById('dashboard-page').classList.contains('active')) {
+                    cargarDashboard();
+                }
+                
+            } catch (error) {
+                console.error('Error en sincronización:', error);
+                
+                // Si falla la sincronización, usar datos locales
+                cargarDatosLocales();
+                updateStatusIndicator('error', 'Error de sincronización');
+                CONFIG.offlineMode = true;
+                
+                alert(`⚠️ Error sincronizando con Supabase. Usando datos locales.\n\n${error.message}`);
+            } finally {
+                showLoading(false);
             }
-        });
-    }
-    
-    // Configurar drag & drop solo en desktop
-    const dropArea = document.getElementById('photo-drop-area');
-    if (dropArea && !/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
-        console.log('Configurando drag & drop para desktop');
-        
-        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
-            dropArea.addEventListener(eventName, preventDefaults, false);
-        });
-        
-        function preventDefaults(e) {
-            e.preventDefault();
-            e.stopPropagation();
         }
-        
-        ['dragenter', 'dragover'].forEach(eventName => {
-            dropArea.addEventListener(eventName, () => {
-                dropArea.classList.add('dragging');
-            }, false);
-        });
-        
-        ['dragleave', 'drop'].forEach(eventName => {
-            dropArea.addEventListener(eventName, () => {
-                dropArea.classList.remove('dragging');
-            }, false);
-        });
-        
-        dropArea.addEventListener('drop', function(e) {
-            const dt = e.dataTransfer;
-            const file = dt.files[0];
-            if (file) {
-                handlePhotoUpload(file);
-            }
-        }, false);
-    }
-}
 
-        
-        
+        function guardarDatosLocales() {
+            try {
+                localStorage.setItem('unsafe_conditions', JSON.stringify(unsafeConditions));
+                localStorage.setItem('last_updated', new Date().toISOString());
+            } catch (error) {
+                console.error('Error guardando datos locales:', error);
+            }
+        }
+
+        function cargarDatosLocales() {
+            try {
+                const datosGuardados = localStorage.getItem('unsafe_conditions');
+                if (datosGuardados) {
+                    unsafeConditions = JSON.parse(datosGuardados);
+                    console.log(`Datos locales cargados: ${unsafeConditions.length} registros`);
+                } else {
+                    unsafeConditions = [];
+                    console.log('No hay datos locales guardados');
+                }
+            } catch (error) {
+                console.error('Error cargando datos locales:', error);
+                unsafeConditions = [];
+            }
+        }
+
+        function guardarLocalmente(condicion) {
+            unsafeConditions.push(condicion);
+            guardarDatosLocales();
+            console.log('Reporte guardado localmente:', condicion.OT);
+        }
+
+        function forzarActualizacion() {
+            showLoading(true, 'Actualizando datos...');
+            
+            setTimeout(() => {
+                if (supabaseClient) {
+                    sincronizarDatos();
+                } else {
+                    // Recargar datos locales
+                    actualizarEstadisticas();
+                    
+                    if (document.getElementById('dashboard-page').classList.contains('active')) {
+                        cargarActividadesRecientes();
+                        actualizarGraficoEvolucion();
+                    } else if (document.getElementById('historial-page').classList.contains('active')) {
+                        cargarHistorial();
+                    } else if (document.getElementById('analisis-page').classList.contains('active')) {
+                        cargarAnalisis();
+                    }
+                    
+                    showLoading(false);
+                    alert('✅ Datos actualizados desde almacenamiento local');
+                }
+            }, 500);
+        }
+
         // ==============================================
         // INICIALIZACIÓN
         // ==============================================
-        document.addEventListener('DOMContentLoaded', async function() {
-            await inicializarSistema();
+        async function inicializarApp() {
+            console.log('🚀 Inicializando Sistema de Condiciones Inseguras...');
             
-            // Formulario
-            document.getElementById('report-form').addEventListener('submit', guardarNuevoReporte);
+            // Mostrar loading inicial
+            showLoading(true, 'Iniciando sistema...');
             
-            // Navegación
-            document.querySelectorAll('.nav-menu a').forEach(link => {
-                link.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    const pageId = this.getAttribute('data-page');
-                    
-                    document.querySelectorAll('.nav-menu a').forEach(l => l.classList.remove('active'));
-                    this.classList.add('active');
-                    
-                    document.querySelectorAll('.page').forEach(page => page.style.display = 'none');
-                    document.getElementById(`${pageId}-page`).style.display = 'block';
-                    
-                    if (pageId === 'analisis') {
-                        setTimeout(actualizarAnalisis, 100);
-                    }
-                    
-                    if (pageId !== 'config') {
-                        document.getElementById('supabase-config-panel').style.display = 'none';
-                    }
-                });
-            });
-            
-            // Filtros
-            document.getElementById('filter-all').addEventListener('click', () => {
-                currentFilter = 'all';
-                actualizarTablaHistorial('all');
-            });
-            document.getElementById('filter-pending').addEventListener('click', () => {
-                currentFilter = 'pendiente';
-                actualizarTablaHistorial('pendiente');
-            });
-            document.getElementById('filter-process').addEventListener('click', () => {
-                currentFilter = 'en proceso';
-                actualizarTablaHistorial('en proceso');
-            });
-            document.getElementById('filter-repaired').addEventListener('click', () => {
-                currentFilter = 'reparado';
-                actualizarTablaHistorial('reparado');
-            });
-            
-            // Filtro por sector
-            document.getElementById('filter-sector').addEventListener('change', function() {
-                actualizarTablaHistorial(currentFilter);
-            });
-            
-            // Búsqueda
-            document.getElementById('search-input').addEventListener('input', function() {
-                const searchTerm = this.value.toLowerCase();
-                const tbody = document.querySelector('#history-table tbody');
-                if (!tbody) return;
+            try {
+                // Cargar configuración
+                const savedUrl = localStorage.getItem('supabase_url') || CONFIG.supabaseUrl;
+                const savedKey = localStorage.getItem('supabase_key') || CONFIG.supabaseKey;
                 
-                tbody.querySelectorAll('tr').forEach(row => {
-                    const text = row.textContent.toLowerCase();
-                    row.style.display = text.includes(searchTerm) ? '' : 'none';
+                if (savedUrl && savedKey) {
+                    CONFIG.supabaseUrl = savedUrl;
+                    CONFIG.supabaseKey = savedKey;
+                    
+                    // Crear cliente Supabase
+                    supabaseClient = supabase.createClient(savedUrl, savedKey);
+                    
+                    // Probar conexión
+                    updateStatusIndicator('connected', 'Conectando...');
+                    await sincronizarDatos();
+                } else {
+                    // Modo offline
+                    cargarDatosLocales();
+                    updateStatusIndicator('disconnected', 'Modo Offline - Configura Supabase');
+                    alert('⚠️ Bienvenido al Sistema de Condiciones Inseguras\n\nPara usar todas las funciones, configura Supabase en Configuración > Conexión Supabase.');
+                }
+                
+                // Configurar navegación
+                document.querySelectorAll('.nav-menu a').forEach(link => {
+                    link.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        const pagina = link.getAttribute('data-page');
+                        cambiarPagina(pagina);
+                    });
                 });
-            });
-            
-            // Análisis
-            document.getElementById('analysis-type').addEventListener('change', function() {
-                crearGraficoAnalisis(this.value);
-            });
-            
-        
-            
-            function preventDefaults(e) {
+                
+                // Configurar formulario
+                document.getElementById('report-form').addEventListener('submit', manejarRegistro);
+                
+                // Configurar filtros de historial
+                document.getElementById('filter-all').addEventListener('click', () => {
+                    currentFilter = 'all';
+                    cargarHistorial();
+                });
+                document.getElementById('filter-pending').addEventListener('click', () => {
+                    currentFilter = 'pending';
+                    cargarHistorial();
+                });
+                document.getElementById('filter-process').addEventListener('click', () => {
+                    currentFilter = 'process';
+                    cargarHistorial();
+                });
+                document.getElementById('filter-repaired').addEventListener('click', () => {
+                    currentFilter = 'repaired';
+                    cargarHistorial();
+                });
+                
+                document.getElementById('filter-sector').addEventListener('change', cargarHistorial);
+                document.getElementById('search-input').addEventListener('input', cargarHistorial);
+                
+                // Configurar fecha estimada (mínimo hoy)
+                const fechaInput = document.getElementById('fecha-estimada');
+                if (fechaInput) {
+                    const hoy = new Date().toISOString().split('T')[0];
+                    fechaInput.min = hoy;
+                    fechaInput.value = hoy; // Por defecto hoy
+                }
+                
+                // Mostrar dashboard por defecto
+                cambiarPagina('dashboard');
+                
+                console.log('✅ Sistema inicializado correctamente');
+                
+            } catch (error) {
+                console.error('❌ Error inicializando aplicación:', error);
+                updateStatusIndicator('error', 'Error de inicialización');
+                alert('Error inicializando la aplicación. Revisa la consola para más detalles.');
+            } finally {
+                showLoading(false);
+            }
+        }
+
+        // ==============================================
+        // EVENTOS GLOBALES
+        // ==============================================
+        document.addEventListener('DOMContentLoaded', inicializarApp);
+
+        // Detectar cambios de conexión
+        window.addEventListener('online', () => {
+            console.log('🌐 Conexión a Internet restablecida');
+            if (supabaseClient) {
+                updateStatusIndicator('connected', 'Reconectando...');
+                sincronizarDatos();
+            }
+        });
+
+        window.addEventListener('offline', () => {
+            console.log('📴 Sin conexión a Internet');
+            updateStatusIndicator('disconnected', 'Sin conexión - Modo Offline');
+            CONFIG.offlineMode = true;
+        });
+
+        // Prevenir salida sin guardar
+        window.addEventListener('beforeunload', (e) => {
+            if (unsafeConditions.some(c => c.Estado === 'pendiente')) {
                 e.preventDefault();
-                e.stopPropagation();
-            }
-            
-            ['dragenter', 'dragover'].forEach(eventName => {
-                dropArea.addEventListener(eventName, highlight, false);
-            });
-            
-            ['dragleave', 'drop'].forEach(eventName => {
-                dropArea.addEventListener(eventName, unhighlight, false);
-            });
-            
-            function highlight() {
-                dropArea.classList.add('dragging');
-            }
-            
-            function unhighlight() {
-                dropArea.classList.remove('dragging');
-            }
-            
-            dropArea.addEventListener('drop', handleDrop, false);
-            
-            function handleDrop(e) {
-                const dt = e.dataTransfer;
-                const file = dt.files[0];
-                handlePhotoUpload(file);
+                e.returnValue = 'Tienes reportes pendientes. ¿Seguro que quieres salir?';
             }
         });
-        
-        // Cerrar modal al hacer clic fuera
-        document.getElementById('photoModal').addEventListener('click', function(e) {
-            if (e.target === this) cerrarModalFoto();
-        });
-        
+
         // ==============================================
-        // FUNCIONES GLOBALES
+        // HACK PARA MÓVILES: MEJORAR EXPERIENCIA TÁCTIL
         // ==============================================
-        window.cambiarEstado = cambiarEstado;
-        window.mostrarConfigPanel = mostrarConfigPanel;
-        window.probarConexion = probarConexion;
-        window.limpiarDatos = limpiarDatos;
-        window.guardarConfigSupabase = guardarConfigSupabase;
-        window.forzarActualizacion = forzarActualizacion;
-        window.mostrarEjemplo = mostrarEjemplo;
-        window.exportarHistorial = exportarHistorial;
-        window.actualizarAnalisis = actualizarAnalisis;
-        window.mostrarModalFoto = mostrarModalFoto;
-        window.cerrarModalFoto = cerrarModalFoto;
-        window.resetPhoto = resetPhoto;
-        window.generarCodigoOT = generarCodigoOT;
-        window.resetConfig = resetConfig;
-        window.backupLocal = backupLocal;
-        window.generarReportePDF = generarReportePDF;
-        window.abrirManualSupabase = abrirManualSupabase;
-        window.manejarFotoSimple = manejarFotoSimple;
-        window.eliminarFotoSimple = eliminarFotoSimple;
-   
+        document.addEventListener('touchstart', function() {}, {passive: true});
+
+        // Prevenir zoom en inputs en iOS
+        document.addEventListener('touchmove', function(e) {
+            if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.tagName === 'SELECT') {
+                e.preventDefault();
+            }
+        }, { passive: false });
+
+        // Mejorar rendimiento en scroll
+        document.addEventListener('touchmove', function(e) {
+            if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') {
+                return;
+            }
+            e.stopPropagation();
+        }, { passive: true });
+
+        console.log('📱 Sistema optimizado para móviles');
     </script>
 </body>
 </html>
